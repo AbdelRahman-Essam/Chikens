@@ -6,6 +6,7 @@
   uploading average Temp and humidity
   Forced State and control for heaters and fans
   vibrate blue led when no conection
+  light need to be set to zero to work
 */
 #include <WiFi.h>
 #include"FirebaseESP32.h"
@@ -41,8 +42,8 @@ float MaxTemp_Trigger = 35;
 float MinVent_Trigger = 350;
 float MaxVent_Trigger = 400;
 float Hum_Trigger = 50;
-int WifiReconnectingTime = 60; //in seconds
-int TimeDelay = 500;
+int WifiReconnectingTime = 120; //in seconds
+int TimeDelay = 5;
 /////////////////////////Variables//////////////////////////////////
 
 int WifiReconnectingTime_Counter = 0;
@@ -72,7 +73,7 @@ char Host_charArray[45];
 char Token_charArray[45];
 char readeeprom[45];
 
-int LED_Status;
+int LED_Status = 0;
 int Light_Status = 1;
 int Set_ForcedHA = 0;
 int Set_ForcedHB = 0;
@@ -234,7 +235,7 @@ void setup()
 
   Serial.println("Conecting....");
 
-  wifiManager.setConfigPortalTimeout(120);
+  wifiManager.setConfigPortalTimeout(30);
   wifiManager.autoConnect("Chickens control", "123456789");
   delay(500);
   if (WiFi.status() == WL_CONNECTED)
@@ -290,20 +291,24 @@ void setup()
   Serial.println(Token_charArray);
 
   Firebase.begin(Host_charArray, Token_charArray);
-  //?????????????????????????????????????????????????????????????????????????????????????????????????????????
   //it tells the project to reconnect to wifi when it's able to, but it keep spaming
-  Firebase.reconnectWiFi(false);
+  if (WiFi.status() != WL_CONNECTED)
+    Firebase.reconnectWiFi(true);
+  else
+    Firebase.reconnectWiFi(false);
+
   Firebase.get(firebaseData, "/Chickens/WhichHeater");
   WhichHeater = firebaseData.stringData();
+  if((WhichHeater!="A")||(WhichHeater!="B"))
+  WhichHeater="A";
   timeClient.begin();
   timeClient.setTimeOffset(7200);
-
 }
 ////////////////////////////////////////////////////////////////////////
 void loop()
 {
   Serial.println("inside void loop");
-  delay(TimeDelay);
+  delay(TimeDelay * 1000);
   //////////////////////////////////////////////////TempFn///////////////////////////////////////////////////////
   //DHT data
   Temperature1 = dht1.readTemperature(); // Gets the values of the temperature
@@ -324,34 +329,34 @@ void loop()
   //variables needed to be uploaded to firebase     : Temperature1,Temperature2,Temperature3,Humidity1,Humidity2,Humidity3,heaterA_status,heaterB_status,AirQuality,conductivity
   //                                                  Temperature,Humidity,MinVent_Trigger,MaxVent_Trigger
   //variables needed to be downloaded from firebase : MinTemp_Trigger, MaxTemp_Trigger,delayTime,ResetFlag
+  if(ResetFlag==1)
+  {
+    Firebase.setInt(firebaseData, "/Chickens/ResetFlag", 0);
+    ESP.restart(); 
+  }
   if ((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger))
   {
     digitalWrite(Cooler, 1);
     cooler_status = 1;
   }
-  else if(Temperature > MaxTemp_Trigger + 5)
+  else if (Temperature > MaxTemp_Trigger + 5)
   {
     digitalWrite(Cooler, 1);
     cooler_status = 1;
   }
-  else if(Set_ForcedF == 1)
+  else if (Set_ForcedF == 1)
   {
     digitalWrite(Cooler, 1);
     cooler_status = 1;
   }
-  else if(Temperature < MinTemp_Trigger)
-  {
-    digitalWrite(Cooler, 0);
-    cooler_status = 0;
-  }
-  else if(gas < MinVent_Trigger)
+  else if ((Temperature < MinTemp_Trigger) || (gas < MinVent_Trigger))
   {
     digitalWrite(Cooler, 0);
     cooler_status = 0;
   }
 
 
-  
+
   if (Set_ForcedHA == 1)
   {
     //HeaterA
@@ -433,138 +438,108 @@ void loop()
   }
 
   Serial.println("will start firebase");
-  //////////////////////////////////////////////////firebase///////////////////////////////////////////////////////
-  if (WiFi.status() != WL_CONNECTED)
-    goto H;
+//  //////////////////////////////////////////////////firebase///////////////////////////////////////////////////////
+//  if (WiFi.status() != WL_CONNECTED)
+//    goto H;
   if (WhichHeater_prev != WhichHeater)
   {
     Serial.print("WhichHeater: "); Serial.println(WhichHeater);
     WhichHeater_prev = WhichHeater;
     Firebase.setString(firebaseData, "/Chickens/WhichHeater", WhichHeater);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   if (temp_prev != Temperature)
   {
+    float val = (int)(Temperature*10+0.5);
+    Temperature = (float) val/10;
     Serial.print("Temperature: "); Serial.println(Temperature);
+    if(isnan(Temperature))
+    Temperature=00.0;
     temp_prev = Temperature;
     Firebase.setFloat(firebaseData, "/Chickens/Temperature", Temperature);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   if (temp_prev1 != Temperature1)
   {
     Serial.print("temp1: "); Serial.println(Temperature1);
+    if(isnan(Temperature1))
+    Temperature1=00.0;
     temp_prev1 = Temperature1;
     Firebase.setFloat(firebaseData, "/Chickens/Temp1", Temperature1);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   if (temp_prev2 != Temperature2)
   {
+    if(isnan(Temperature2))
+    Temperature2=00.0;
     temp_prev2 = Temperature2;
     Serial.print("temp2: "); Serial.println(Temperature2);
     Firebase.setFloat(firebaseData, "/Chickens/Temp2", Temperature2);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   if (temp_prev3 != Temperature3)
   {
+    if(isnan(Temperature3))
+    Temperature3=00.0;
     temp_prev3 = Temperature3;
     Serial.print("temp3: "); Serial.println(Temperature3);
     Firebase.setFloat(firebaseData, "/Chickens/Temp3", Temperature3);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   if (hum_prev != Humidity)
   {
+    float val = (int)(Humidity*10+0.5);
+    Humidity = (float) val/10;
+    if(isnan(Humidity))
+    Humidity=00.0;
     hum_prev = Humidity;
     Serial.print("Humidity: "); Serial.println(Humidity);
     Firebase.setFloat(firebaseData, "/Chickens/Humidity", Humidity);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   if (hum_prev1 != Humidity1)
   {
+    if(isnan(Humidity1))
+    Humidity1=00.0;
     hum_prev1 = Humidity1;
     Serial.print("Humidity1: "); Serial.println(Humidity1);
     Firebase.setFloat(firebaseData, "/Chickens/Hum1", Humidity1);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   if (hum_prev2 != Humidity2)
   {
+    if(isnan(Humidity2))
+    Humidity2=00.0;
     hum_prev2 = Humidity2;
     Serial.print("Humidity2: "); Serial.println(Humidity2);
     Firebase.setFloat(firebaseData, "/Chickens/Hum2", Humidity2);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   if (hum_prev3 != Humidity3)
   {
+    if(isnan(Humidity3))
+    Humidity3=00.0;
     hum_prev3 = Humidity3;
     Serial.print("Humidity3: "); Serial.println(Humidity3);
     Firebase.setFloat(firebaseData, "/Chickens/Hum3", Humidity3);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   if (conductivity_prev != gas)
   { // the String will be produced in the android program
+    if(isnan(conductivity))
+    conductivity=00.0;
     conductivity_prev = conductivity;
     Serial.print("gas: "); Serial.println(gas);
     Firebase.setFloat(firebaseData, "/Chickens/AirQuality", gas);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   if (heaterA_status_prev != heaterA_status)
   {
     heaterA_status_prev = heaterA_status;
     Serial.print("heaterA_status: "); Serial.println(heaterA_status);
     Firebase.setInt(firebaseData, "/Chickens/HeaterA_status", heaterA_status);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   if (heaterB_status_prev != heaterB_status)
   {
     heaterB_status_prev = heaterB_status;
     Serial.print("heaterB_status: "); Serial.println(heaterB_status);
     Firebase.setInt(firebaseData, "/Chickens/HeaterB_status", heaterB_status);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   if (cooler_status_prev != cooler_status)
   {
     cooler_status_prev = cooler_status;
     Serial.print("cooler_status: "); Serial.println(cooler_status);
     Firebase.setInt(firebaseData, "/Chickens/Cooler_status", cooler_status);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   /////////////////////////////////////////////////////////
 
@@ -575,11 +550,9 @@ void loop()
     Serial.println("ForcedHA Changed!");
     Set_ForcedHA_prev = string;
     Set_ForcedHA = Set_ForcedHA_prev.toInt();
+    if(!((Set_ForcedHA==1)||(Set_ForcedHA==0)))
+      Set_ForcedHA=0;
     Firebase.setInt(firebaseData, "/Chickens/Get_ForcedHA", Set_ForcedHA);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   Firebase.get(firebaseData, "/Chickens/Set_ForcedHB");
   string = firebaseData.stringData();
@@ -588,11 +561,9 @@ void loop()
     Serial.println("ForcedHB Changed!");
     Set_ForcedHB_prev = string;
     Set_ForcedHB = Set_ForcedHB_prev.toInt();
+    if(!((Set_ForcedHB==1)||(Set_ForcedHB==0)))
+      Set_ForcedHB=0;
     Firebase.setInt(firebaseData, "/Chickens/Get_ForcedHB", Set_ForcedHB);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   Firebase.get(firebaseData, "/Chickens/Set_ForcedF");
   string = firebaseData.stringData();
@@ -601,117 +572,116 @@ void loop()
     Serial.println("ForcedF Changed!");
     Set_ForcedF_prev = string;
     Set_ForcedF = Set_ForcedF_prev.toInt();
+    if(!((Set_ForcedF==1)||(Set_ForcedF==0)))
+      Set_ForcedF=0;
     Firebase.setInt(firebaseData, "/Chickens/Get_ForcedF", Set_ForcedF);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   Firebase.get(firebaseData, "/Chickens/ResetFlag");
-  if (ResetFlag_prev != firebaseData.stringData())
+  string = firebaseData.stringData();
+  if (ResetFlag_prev != string)
   {
     Serial.println("ResetFlag Changed!");
-    ResetFlag_prev = firebaseData.stringData();
+    ResetFlag_prev = string;
     ResetFlag = ResetFlag_prev.toInt();
-    Firebase.setInt(firebaseData, "/Chickens/ResetFlag", 0);
-    ESP.restart();
+    if(!((ResetFlag==1)||(ResetFlag==0)))
+      ResetFlag=0;
   }
   Firebase.get(firebaseData, "/Chickens/Set_Led1");
-  if (c != firebaseData.stringData())
+  string = firebaseData.stringData();
+  if (c != string)
   {
     Serial.println("BlueLed Changed!");
-    c = firebaseData.stringData();
+    c = string;
     LED_Status = c.toInt();
+    if(!((LED_Status==1)||(LED_Status==0)))
+      LED_Status=0;
     Firebase.setInt(firebaseData, "/Chickens/Get_Led1", LED_Status);
     digitalWrite(BlueLed, LED_Status);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   ///////////////////////////////////////////////////////////////////////////////////////
   Firebase.get(firebaseData, "/Chickens/Set_Light");
-  if (Light_prev != firebaseData.stringData())
+  string = firebaseData.stringData();
+  if (Light_prev != string)
   {
     Serial.println("Light Changed!");
-    Light_prev = firebaseData.stringData();
+    Light_prev = string;
     Light_Status = Light_prev.toInt();
+    if(!((Light_Status==1)||(Light_Status==0)))
+      Light_Status=1;
     Firebase.setInt(firebaseData, "/Chickens/Get_Light", Light_Status);
     digitalWrite(Light, !(Light_Status));
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   //////////////////////////////////////////////////////////////////////////////////////////////
   Firebase.get(firebaseData, "/Chickens/MinVent");
-  if (MinVent_prev != firebaseData.stringData())
+  string = firebaseData.stringData();
+  if (MinVent_prev != string)
   {
-    MinVent_prev = firebaseData.stringData();
+    MinVent_prev = string;
     MinVent_Trigger = MinTemp_prev.toInt();
+    if(!((MinVent_Trigger>=50)&&(MinVent_Trigger<=800)))
+      MinVent_Trigger=350;
     Serial.print("MinVent_Trigger :"); Serial.println(MinVent_Trigger);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   Firebase.get(firebaseData, "/Chickens/MaxVent");
-  if (MaxVent_prev != firebaseData.stringData())
+  string = firebaseData.stringData();
+  if (MaxVent_prev != string)
   {
-    MaxVent_prev = firebaseData.stringData();
+    MaxVent_prev = string;
     MaxVent_Trigger = MaxVent_prev.toInt();
+    if(!((MaxVent_Trigger>=50)&&(MaxVent_Trigger<=800)))
+      MaxVent_Trigger=550;
     Serial.print("MaxVent_Trigger :"); Serial.println(MaxVent_Trigger);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   Firebase.get(firebaseData, "/Chickens/MaxTemp");
-  if (MaxTemp_prev != firebaseData.stringData())
+  string = firebaseData.stringData();
+  if (MaxTemp_prev != string)
   {
-    MaxTemp_prev = firebaseData.stringData();
+    MaxTemp_prev = string;
     MaxTemp_Trigger = MaxTemp_prev.toInt();
+    if(!((MaxTemp_Trigger>=5)&&(MaxTemp_Trigger<=50)))
+      MaxTemp_Trigger=31;
     Serial.print("MaxTemp_Trigger :"); Serial.println(MaxTemp_Trigger);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   Firebase.get(firebaseData, "/Chickens/MinTemp");
-  if (MinTemp_prev != firebaseData.stringData())
+  string = firebaseData.stringData();
+  if (MinTemp_prev != string)
   {
-    MinTemp_prev = firebaseData.stringData();
+    MinTemp_prev = string;
     MinTemp_Trigger = MinTemp_prev.toInt();
+    if(!((MinTemp_Trigger>=5)&&(MinTemp_Trigger<=50)))
+      MinTemp_Trigger=27;
     Serial.print("MinTemp_Trigger :"); Serial.println(MinTemp_Trigger);
-    timeClient.update();
-    Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   }
   Firebase.get(firebaseData, "/Chickens/Delay");
-  if (TimeDelay_prev != firebaseData.stringData())
+  string = firebaseData.stringData();
+  if (TimeDelay_prev != string)
   {
-    TimeDelay_prev = firebaseData.stringData();
+    TimeDelay_prev = string;
     TimeDelay = TimeDelay_prev.toInt();
+    if(!((TimeDelay>=0)&&(TimeDelay<=5000)))
+      TimeDelay=1;
+    Serial.print("TimeDelay :"); Serial.println(TimeDelay);
+  }
     timeClient.update();
     Firebase.setInt(firebaseData, "/Chickens/Hour", timeClient.getHours());
     Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
     Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
-  }
   //////////////////////////////////////checking the connection////////////////////////////////////
-H:
+//H:
   Serial.println(WifiReconnectingTime_Counter);
   if (WiFi.status() != WL_CONNECTED)
   { //waits spesific time before trying to reconnect
-    delay(500);
-    int value = digitalRead(BlueLed);
-    digitalWrite(BlueLed, ~value);
-//need to toggle
-    WifiReconnectingTime_Counter++;
-    //if (WifiReconnectingTime_Counter >= WifiReconnectingTime)
+    delay(1000);
+    LED_Status = ! LED_Status;
+    digitalWrite(BlueLed, LED_Status);
+    digitalWrite(Light, 0);
     Firebase.reconnectWiFi(true);
     Serial.println(" Firebase.reconnectWiFi(true)");
-    //ESP.restart();
+
+
+    WifiReconnectingTime_Counter++;
+    if (WifiReconnectingTime_Counter >= WifiReconnectingTime)
+    ESP.restart();
 
   }
   else
@@ -719,4 +689,5 @@ H:
     Firebase.reconnectWiFi(false);
     Serial.println(" Firebase.reconnectWiFi(false)");
   }
+  
 }
