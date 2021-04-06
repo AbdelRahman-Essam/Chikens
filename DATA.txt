@@ -1,0 +1,15 @@
+firstProject
+firstproject-5457e.firebaseio
+LSBOTx6LeHWW3JO3ZhzxIfXUUzGqITuWcNRfPkly
+
+
+
+ProjectA
+proja-8b55a-default-rtdb.firebaseio
+wYecROzY1L5T4bJ85BjQdpuWD2He7VmVlthluQ6H
+
+
+ProjectB
+projb-42628-default-rtdb.firebaseio
+vFrzfZWKpITCvjEGPpeqWMm4DmWjkP3n492faTMS
+
