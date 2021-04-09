@@ -13,3 +13,35 @@ ProjectB
 projb-42628-default-rtdb.firebaseio
 vFrzfZWKpITCvjEGPpeqWMm4DmWjkP3n492faTMS
 
+
+UploadTime|||Temp1 |||Temp2 
+||| Temp3||| AV_Temp||| Hum1||| 
+Hum2||| Hum3||| AV_Hum||| AirQ
+||| HAS||| HBS|||  OccurredAtFanS
+||| LightS||| BLEDS||| MinTemp||| 
+MaxTemp||| MinVent||| MaxVent
+
+float
+gas
+heaterA_status  //int 	
+heaterB_status		int 	
+cooler_status		int
+Set_ForcedHA
+Set_ForcedHB
+Set_ForcedF
+ResetFlag
+LED_Status
+Light_Status
+MinVent_Trigger
+MaxVent_Trigger
+MaxTemp_Trigger
+MinTemp_Trigger
+
+
+
+
+
+
+
+
+

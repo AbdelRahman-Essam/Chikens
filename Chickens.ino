@@ -7,6 +7,7 @@
 #include <WiFiUdp.h>
 #include "Chickens_priv.h"
 #include "config.h"
+#include <HTTPClient.h>
 
 #define DHTTYPE DHT11
 DHT dht1(DHT1Pin, DHTTYPE);
@@ -17,6 +18,36 @@ NTPClient timeClient(ntpUDP);
 FirebaseData firebaseData;
 WiFiManager  wifiManager;
 
+
+
+void sendDataToSheet(void)
+{
+  String DATA = String((float)Temperature1) + "|||" + String((float)Temperature2) + "|||" + String((float)Temperature3) + "|||" + String((float)Temperature) + "|||" + String((int)Humidity1) + "|||" + String((int)Humidity2) + "|||" + String((int)Humidity3) + "|||" + String((int)Humidity) + "|||" + String((int)gas) + "|||" + String((int)heaterA_status) + "|||" + String((int)heaterB_status) + "|||" + String((int)cooler_status) + "|||" + String((int)Light_Status) + "|||" + String((int)LED_Status) + "|||" + String((int)MinTemp_Trigger) + "|||" + String((int)MaxTemp_Trigger) + "|||" + String((int)MinVent_Trigger) + "|||" + String((int)MaxVent_Trigger) + "|||" + String((int)ResetFlag) + "|||" + String((int)Set_ForcedHA) + "|||" + String((int)Set_ForcedHB) + "|||" + String((int)Set_ForcedF);
+  String url = server + "/trigger/" + eventName + "/with/key/" + IFTTT_Key + "?value1=" + DATA;  
+  //Serial.println(url);
+  //Start to send data to IFTTT
+  HTTPClient http;
+  //Serial.print("[HTTP] begin...\n");
+  http.begin(url); //HTTP
+
+  //Serial.print("[HTTP] GET...\n");
+  // start connection and send HTTP header
+  int httpCode = http.GET();
+  // httpCode will be negative on error
+  if(httpCode > 0) {
+    // HTTP header has been send and Server response header has been handled
+    //Serial.printf("[HTTP] GET... code: %d\n", httpCode);
+    // file found at server
+    if(httpCode == HTTP_CODE_OK) {
+      String payload = http.getString();
+      //Serial.println(payload);
+    }
+  } else {
+    //Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+  }
+  http.end();
+
+}
 void eeprom_read(int address)
 {
   int x = 0;
@@ -390,6 +421,14 @@ void loop()
     heaterB_status = 0;
   }
 
+  //String url = server + "/trigger/" + eventName + "/with/key/" + IFTTT_Key + "?value1=" + String((int)value1)+"|||"+"Hello"+"|||"+"World" + "&value2="+String((int)value2) +"&value3=" + String((int)value3);  
+
+  /////////////////////////////////////////////////////GoogleSheets////////////////////////////////////////////////////
+  if(timeClient.getHours()!=Hour_prev)
+  {
+    Hour_prev=timeClient.getHours();
+    sendDataToSheet();
+  }
   int xe = 0;
   //Serial.println("will start firebase");
   //  //////////////////////////////////////////////////firebase///////////////////////////////////////////////////////

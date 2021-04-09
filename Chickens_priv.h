@@ -11,6 +11,12 @@
   vibrate blue led when no conection
   light need to be set to zero to work
 */
+
+String server = "http://maker.ifttt.com";
+String eventName = "ESP32";
+String IFTTT_Key = "dRKdPFw2Xk3MFxA-JSDKKi7W_Aq_hoU4CADOtnMWXTh";
+String IFTTTUrl="https://maker.ifttt.com/trigger/ESP32/with/key/dRKdPFw2Xk3MFxA-JSDKKi7W_Aq_hoU4CADOtnMWXTh";
+
 /////////////////////////Variables//////////////////////////////////
 
 int WifiReconnectingTime_Counter = 0;
@@ -61,6 +67,7 @@ String MaxVent_prev;
 String MinVent_prev;
 String ResetFlag_prev;
 String TimeDelay_prev;
+int Hour_prev;
 int Time_prev;
 bool shouldSaveConfig = false;
 /////////////////mq135/////////////////////
