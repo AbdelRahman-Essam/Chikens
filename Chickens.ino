@@ -1,3 +1,5 @@
+// need to find away to clear string
+
 #include <WiFi.h>
 #include"FirebaseESP32.h"
 #include <WiFiManager.h>
@@ -420,21 +422,14 @@ void loop()
     heaterA_status = 0;
     heaterB_status = 0;
   }
-
-  //String url = server + "/trigger/" + eventName + "/with/key/" + IFTTT_Key + "?value1=" + String((int)value1)+"|||"+"Hello"+"|||"+"World" + "&value2="+String((int)value2) +"&value3=" + String((int)value3);  
-
-  /////////////////////////////////////////////////////GoogleSheets////////////////////////////////////////////////////
-  if(timeClient.getHours()!=Hour_prev)
-  {
-    Hour_prev=timeClient.getHours();
-    sendDataToSheet();
-  }
   int xe = 0;
   //Serial.println("will start firebase");
   //  //////////////////////////////////////////////////firebase///////////////////////////////////////////////////////
   if((timeClient.getMinutes()>=(TimeDelay+Time_prev))||(timeClient.getMinutes()<Time_prev))
   {
     Time_prev=timeClient.getMinutes();
+    Error = firebaseData.httpCode();
+  //Serial.print("HTTPC_ERROR_NOT_CONNECTED : "); //Serial.println(Error);
   if (WhichHeater_prev != WhichHeater)
   {
     //Serial.print("WhichHeater: "); //Serial.println(WhichHeater);
@@ -455,6 +450,9 @@ void loop()
     Firebase.setFloat(firebaseData, "/Chickens/Temp1", Temperature1);
   }
   //Serial.print("After: "); //Serial.println(xe); xe++;
+  Error = firebaseData.httpCode();
+  if ((Error != Error_prev)&&(Error!=200)) ESP.restart();
+  //Serial.print("HTTPC_ERROR_NOT_CONNECTED : "); //Serial.println(Error);
   if (temp_prev2 != Temperature2)
   {
     temp_prev2 = Temperature2;
@@ -469,6 +467,9 @@ void loop()
     Firebase.setFloat(firebaseData, "/Chickens/Temp3", Temperature3);
   }
   //Serial.print("After: "); //Serial.println(xe); xe++;
+  Error = firebaseData.httpCode();
+  if ((Error != Error_prev)&&(Error!=200)) ESP.restart();
+  //Serial.print("HTTPC_ERROR_NOT_CONNECTED : "); //Serial.println(Error);
   if (hum_prev != Humidity)
   {
     hum_prev = Humidity;
@@ -497,6 +498,9 @@ void loop()
     Firebase.setFloat(firebaseData, "/Chickens/Hum3", Humidity3);
   }
   //Serial.print("After: "); //Serial.println(xe); xe++;
+  Error = firebaseData.httpCode();
+  if ((Error != Error_prev)&&(Error!=200)) ESP.restart();
+  //Serial.print("HTTPC_ERROR_NOT_CONNECTED : "); //Serial.println(Error);
   if (conductivity_prev != gas)
   { // the String will be produced in the android program
     conductivity_prev = conductivity;
@@ -511,6 +515,8 @@ void loop()
     Firebase.setInt(firebaseData, "/Chickens/HeaterA_status", heaterA_status);
   }
   //Serial.print("After: "); //Serial.println(xe); xe++;
+  Error = firebaseData.httpCode();
+  //Serial.print("HTTPC_ERROR_NOT_CONNECTED : "); //Serial.println(Error);
   if (heaterB_status_prev != heaterB_status)
   {
     heaterB_status_prev = heaterB_status;
@@ -526,6 +532,9 @@ void loop()
   }
   /////////////////////////////////////////////////////////
   //Serial.print("After: "); //Serial.println(xe); xe++;
+  Error = firebaseData.httpCode();
+  if ((Error != Error_prev)&&(Error!=200)) ESP.restart();
+  //Serial.print("HTTPC_ERROR_NOT_CONNECTED : "); //Serial.println(Error);
   Firebase.get(firebaseData, "/Chickens/Set_ForcedHA");
   string = " ";
   string = firebaseData.stringData();
@@ -540,6 +549,9 @@ void loop()
     Firebase.setInt(firebaseData, "/Chickens/Get_ForcedHA", Set_ForcedHA);
   }
   //Serial.print("After: "); //Serial.println(xe); xe++;
+  Error = firebaseData.httpCode();
+  if ((Error != Error_prev)&&(Error!=200)) ESP.restart();
+  //Serial.print("HTTPC_ERROR_NOT_CONNECTED : "); //Serial.println(Error);
   Firebase.get(firebaseData, "/Chickens/Set_ForcedHB");
   string = " ";
   string = firebaseData.stringData();
@@ -568,6 +580,9 @@ void loop()
     Firebase.setInt(firebaseData, "/Chickens/Get_ForcedF", Set_ForcedF);
   }
   //Serial.print("After: "); //Serial.println(xe); xe++;
+  Error = firebaseData.httpCode();
+  if ((Error != Error_prev)&&(Error!=200)) ESP.restart();
+  //Serial.print("HTTPC_ERROR_NOT_CONNECTED : "); //Serial.println(Error);
   //Serial.print("ResetBefore"); //Serial.println(ResetFlag);
   Firebase.get(firebaseData, "/Chickens/ResetFlag");
   //Serial.print("ResetAfter"); //Serial.println(ResetFlag);
@@ -597,6 +612,9 @@ void loop()
   }
   ///////////////////////////////////////////////////////////////////////////////////////
   //Serial.print("After: "); //Serial.println(xe); xe++;
+  Error = firebaseData.httpCode();
+  if ((Error != Error_prev)&&(Error!=200)) ESP.restart();
+  //Serial.print("HTTPC_ERROR_NOT_CONNECTED : "); //Serial.println(Error);
   Firebase.get(firebaseData, "/Chickens/Set_Light");
   string = " ";
   string = firebaseData.stringData();
@@ -629,6 +647,9 @@ void loop()
     //Serial.print("MinVent_Trigger :"); //Serial.println(MinVent_Trigger);
   }
   //Serial.print("After: "); //Serial.println(xe); xe++;
+  Error = firebaseData.httpCode();
+  if ((Error != Error_prev)&&(Error!=200)) ESP.restart();
+  //Serial.print("HTTPC_ERROR_NOT_CONNECTED : "); //Serial.println(Error);
   Firebase.get(firebaseData, "/Chickens/MaxVent");
   string = " ";
   string = firebaseData.stringData();
@@ -689,6 +710,12 @@ void loop()
   Firebase.setInt(firebaseData, "/Chickens/Minute", timeClient.getMinutes());
   Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   //////////////////////////////////////checking the connection////////////////////////////////////
+  }
+    /////////////////////////////////////////////////////GoogleSheets////////////////////////////////////////////////////
+  if(timeClient.getHours()!=Hour_prev)
+  {
+    Hour_prev=timeClient.getHours();
+    sendDataToSheet();
   }
   timeClient.getMinutes();
   if ((Error <= 0))
