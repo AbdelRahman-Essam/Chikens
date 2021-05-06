@@ -21,6 +21,7 @@ String IFTTTUrl="https://maker.ifttt.com/trigger/ESP32/with/key/dRKdPFw2Xk3MFxA-
 
 int WifiReconnectingTime_Counter = 0;
 int ResetFlag = 0;
+int UpdateCode =0;
 
 float val;
 
@@ -67,6 +68,7 @@ String MaxVent_prev;
 String MinVent_prev;
 String ResetFlag_prev;
 String TimeDelay_prev;
+String UpdateCode_prev;
 int Hour_prev;
 int Time_prev;
 bool shouldSaveConfig = false;

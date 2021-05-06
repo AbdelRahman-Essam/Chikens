@@ -10,6 +10,9 @@
 #include "Chickens_priv.h"
 #include "config.h"
 #include <HTTPClient.h>
+#include <HTTPUpdate.h>
+
+String CodeVersion ="1.0.0.1";
 
 #define DHTTYPE DHT11
 DHT dht1(DHT1Pin, DHTTYPE);
@@ -20,8 +23,23 @@ NTPClient timeClient(ntpUDP);
 FirebaseData firebaseData;
 WiFiManager  wifiManager;
 
-
-
+String getChipId()
+{
+  String ChipIdHex = String((uint32_t)(ESP.getEfuseMac() >> 32), HEX);
+  ChipIdHex += String((uint32_t)ESP.getEfuseMac(), HEX);
+  return ChipIdHex;
+}
+void update()
+{
+  ////Serial.println("updating..");
+  String url = "http://otadrive.com/deviceapi/update?";
+  url += "k=af436368-9238-4e59-8b71-f4c764e349a7";
+  url += "&v="+CodeVersion;
+  url += "&s=" + getChipId();
+  WiFiClient client;
+  httpUpdate.update(client, url, CodeVersion);
+  ////Serial.println("Done!..");
+}
 void sendDataToSheet(void)
 {
   String DATA = String((float)Temperature1) + "|||" + String((float)Temperature2) + "|||" + String((float)Temperature3) + "|||" + String((float)Temperature) + "|||" + String((int)Humidity1) + "|||" + String((int)Humidity2) + "|||" + String((int)Humidity3) + "|||" + String((int)Humidity) + "|||" + String((int)gas) + "|||" + String((int)heaterA_status) + "|||" + String((int)heaterB_status) + "|||" + String((int)cooler_status) + "|||" + String((int)Light_Status) + "|||" + String((int)LED_Status) + "|||" + String((int)MinTemp_Trigger) + "|||" + String((int)MaxTemp_Trigger) + "|||" + String((int)MinVent_Trigger) + "|||" + String((int)MaxVent_Trigger) + "|||" + String((int)ResetFlag) + "|||" + String((int)Set_ForcedHA) + "|||" + String((int)Set_ForcedHB) + "|||" + String((int)Set_ForcedF);
@@ -423,8 +441,8 @@ void loop()
     heaterB_status = 0;
   }
   int xe = 0;
-  //Serial.println("will start firebase");
   //  //////////////////////////////////////////////////firebase///////////////////////////////////////////////////////
+    //Serial.println("will start firebase");
   if((timeClient.getMinutes()>=(TimeDelay+Time_prev))||(timeClient.getMinutes()<Time_prev))
   {
     Time_prev=timeClient.getMinutes();
@@ -582,10 +600,7 @@ void loop()
   //Serial.print("After: "); //Serial.println(xe); xe++;
   Error = firebaseData.httpCode();
   if ((Error != Error_prev)&&(Error!=200)) ESP.restart();
-  //Serial.print("HTTPC_ERROR_NOT_CONNECTED : "); //Serial.println(Error);
-  //Serial.print("ResetBefore"); //Serial.println(ResetFlag);
   Firebase.get(firebaseData, "/Chickens/ResetFlag");
-  //Serial.print("ResetAfter"); //Serial.println(ResetFlag);
   string = " ";
   string = firebaseData.stringData();
   if (ResetFlag_prev != string)
@@ -595,8 +610,23 @@ void loop()
     ResetFlag = ResetFlag_prev.toInt();
     if (!((ResetFlag == 1) || (ResetFlag == 0)))
       ResetFlag = 0;
+  }  
+  Firebase.get(firebaseData, "/Chickens/UpdateCode");
+  string = " ";
+  string = firebaseData.stringData();
+  if (UpdateCode_prev != string)
+  {
+    UpdateCode_prev = string;
+    UpdateCode = UpdateCode_prev.toInt();
+    if(UpdateCode==1)
+    {
+    Firebase.setInt(firebaseData, "/Chickens/UpdateCode", 0);
+    UpdateCode=0;
+    update();
+    }
+    if (!((UpdateCode == 1) || (UpdateCode == 0)))
+      UpdateCode = 0;
   }
-  //Serial.print("After: "); //Serial.println(xe); xe++;
   Firebase.get(firebaseData, "/Chickens/Set_Led1");
   string = " ";
   string = firebaseData.stringData();
@@ -711,8 +741,9 @@ void loop()
   Firebase.setInt(firebaseData, "/Chickens/Seconds", timeClient.getSeconds());
   //////////////////////////////////////checking the connection////////////////////////////////////
   }
-    /////////////////////////////////////////////////////GoogleSheets////////////////////////////////////////////////////
-  if(timeClient.getHours()!=Hour_prev)
+    //Serial.println("will start googleSheets");
+      /////////////////////////////////////////////////////GoogleSheets////////////////////////////////////////////////////
+  //if(timeClient.getHours()!=Hour_prev)
   {
     Hour_prev=timeClient.getHours();
     sendDataToSheet();
