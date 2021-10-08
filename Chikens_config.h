@@ -2,7 +2,7 @@
 #define CONFIG_H_
 
 //////////////////////Config Settings//////////////////////
-String CodeVersion ="1.0.0.4";
+String CodeVersion ="1.0.1.0";
 
 #define BlueLed  2
 #define Light  4
@@ -18,6 +18,8 @@ uint8_t DHT2Pin = 25;
 uint8_t DHT3Pin = 14;
 //Dont use 32,34,35,12
 // pin 27 ADC2 can't be used while using wifi
+
+
 #define EEPROM_SIZE 512
 float MinTemp_Trigger = 25;
 float MaxTemp_Trigger = 35;
