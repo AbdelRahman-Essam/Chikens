@@ -2,6 +2,8 @@
 #define CONFIG_H_
 
 //////////////////////Config Settings//////////////////////
+String CodeVersion ="1.0.0.4";
+
 #define BlueLed  2
 #define Light  4
 #define Heater1 5
@@ -23,7 +25,8 @@ float MinVent_Trigger = 350;
 float MaxVent_Trigger = 400;
 float Hum_Trigger = 50;
 int WifiReconnectingTime = 30; //in seconds
+int ConfigPortalTimeout = 60;
 int TimeDelay = 1;
-
+int stringLength = 60;  // length of the host and token
 
 #endif CONFIG_H_

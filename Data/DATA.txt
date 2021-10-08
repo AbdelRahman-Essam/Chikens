@@ -1,3 +1,8 @@
+FarmControl
+farmcontrol-6d462-default-rtdb.firebaseio.com/
+R0yZHPsAoBWbDs2zeosu3kQjLPGLutkfp2VifoJ0
+
+
 firstProject
 firstproject-5457e.firebaseio.com/
 LSBOTx6LeHWW3JO3ZhzxIfXUUzGqITuWcNRfPkly

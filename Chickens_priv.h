@@ -41,13 +41,13 @@ int cooler_status = 0;
 int cooler_status_prev = 5;
 
 
-char output[40];
-char mqtt_server[40];
+char output[60];
+char mqtt_server[60];
 String Host;
 String Token;
-char Host_charArray[45];
-char Token_charArray[45];
-char readeeprom[45];
+char Host_charArray[60];
+char Token_charArray[60];
+char readeeprom[60];
 
 int LED_Status = 0;
 int Light_Status = 1;
