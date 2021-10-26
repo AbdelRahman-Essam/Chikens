@@ -2,6 +2,7 @@
 #define CHICKENS_H_
 #include "Chickens_priv.h"
 #include "Chikens_config.h"
+
 #include <WiFi.h>
 #include"FirebaseESP32.h"
 #include <WiFiManager.h>
@@ -11,6 +12,8 @@
 #include <WiFiUdp.h>
 #include <HTTPClient.h>
 #include <HTTPUpdate.h>
+#include <PN532_HSU.h>
+#include <PN532.h>
 
 #define DHTTYPE DHT11
 DHT dht1(DHT1Pin, DHTTYPE);
@@ -47,9 +50,9 @@ void firbaseSetup(void);
 void parameterSetup(void);
 void timeServerSetup(void);
 
-
-
-
+boolean RFID_Setup(void);
+void RFID_Read(boolean RFID_Success);
+void RFIDsendData(String params);
 
 
 

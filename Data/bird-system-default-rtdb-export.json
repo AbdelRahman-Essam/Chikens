@@ -1,0 +1,213 @@
+{
+  "Admin" : {
+    "updateCode" : 1
+  },
+  "lapE4x0hMJWomTR5gUsOtae0XNf2_1" : {
+    "Heaters" : {
+      "Fan" : 1,
+      "FanAuto" : 0,
+      "coolerStatus" : 1,
+      "heaterA" : 0,
+      "heaterAauto" : 1,
+      "heaterB" : 1,
+      "heaterBAuto" : 1,
+      "startTime" : {
+        "A" : 0,
+        "B" : 0
+      },
+      "whichHeater" : "A"
+    },
+    "Hum" : {
+      "hum1" : 1,
+      "hum2" : 80,
+      "hum3" : 40
+    },
+    "Lights" : {
+      "insideLedGet" : 1,
+      "insideLedSet" : 0,
+      "outsideLedGet" : 0,
+      "outsideLedSet" : 0
+    },
+    "RFID" : {
+      "data" : "Ahmed,photo",
+      "lastID" : "NULL,notfound"
+    },
+    "Temp" : {
+      "temp1" : 100,
+      "temp2" : 70,
+      "temp3" : 50
+    },
+    "Time" : "32,12,2021",
+    "airQuality" : 40,
+    "configFlag" : 1,
+    "newConfig" : {
+      "pass" : "farm",
+      "ssid" : "123456789",
+      "uId" : "lapE4x0hMJWomTR5gUsOtae0XNf2_1"
+    },
+    "resetFlag" : 0,
+    "usersCount" : 4,
+    "valueRanges" : {
+      "delay" : "1",
+      "temp" : "33,77",
+      "timeToWait" : "30",
+      "vent" : "20,37"
+    }
+  },
+  "lapE4x0hMJWomTR5gUsOtae0XNf2_2" : {
+    "Heaters" : {
+      "Fan" : 1,
+      "FanAuto" : 0,
+      "coolerStatus" : 1,
+      "heaterA" : 0,
+      "heaterAauto" : 1,
+      "heaterB" : 1,
+      "heaterBAuto" : 1,
+      "startTime" : {
+        "A" : 0,
+        "B" : 0
+      },
+      "whichHeater" : "A"
+    },
+    "Hum" : {
+      "hum1" : 12,
+      "hum2" : 20,
+      "hum3" : 40
+    },
+    "Lights" : {
+      "insideLedGet" : 0,
+      "insideLedSet" : 0,
+      "outsideLedGet" : 0,
+      "outsideLedSet" : 0
+    },
+    "RFID" : {
+      "data" : "Name,photo",
+      "lastID" : "NULL,notfound"
+    },
+    "Temp" : {
+      "temp1" : 70,
+      "temp2" : 50,
+      "temp3" : 20
+    },
+    "Time" : "-",
+    "airQuality" : 15,
+    "configFlag" : 0,
+    "newConfig" : {
+      "pass" : 123456789,
+      "ssid" : "menam",
+      "uId" : "lapE4x0hMJWomTR5gUsOtae0XNf2_2"
+    },
+    "resetFlag" : 0,
+    "usersCount" : 4,
+    "valueRanges" : {
+      "delay" : "10",
+      "temp" : "50,100",
+      "timeToWait" : "30",
+      "vent" : "33,73"
+    }
+  },
+  "lapE4x0hMJWomTR5gUsOtae0XNf2_3" : {
+    "Heaters" : {
+      "Fan" : 1,
+      "FanAuto" : 1,
+      "coolerStatus" : 1,
+      "heaterA" : 0,
+      "heaterAauto" : 1,
+      "heaterB" : 1,
+      "heaterBAuto" : 1,
+      "startTime" : {
+        "A" : 0,
+        "B" : 0
+      },
+      "whichHeater" : "A"
+    },
+    "Hum" : {
+      "hum1" : 12,
+      "hum2" : 20,
+      "hum3" : 40
+    },
+    "Lights" : {
+      "insideLedGet" : 0,
+      "insideLedSet" : 0,
+      "outsideLedGet" : 0,
+      "outsideLedSet" : 0
+    },
+    "RFID" : {
+      "data" : "Name,photo",
+      "lastID" : "NULL,notfound"
+    },
+    "Temp" : {
+      "temp1" : 70,
+      "temp2" : 50,
+      "temp3" : 20
+    },
+    "Time" : "11,20,2020",
+    "airQuality" : 15,
+    "configFlag" : 0,
+    "newConfig" : {
+      "pass" : 123456789,
+      "ssid" : "menam",
+      "uId" : "lapE4x0hMJWomTR5gUsOtae0XNf2_3"
+    },
+    "resetFlag" : 0,
+    "usersCount" : 4,
+    "valueRanges" : {
+      "delay" : "10",
+      "temp" : "50,100",
+      "timeToWait" : "30",
+      "vent" : "33,73"
+    }
+  },
+  "lapE4x0hMJWomTR5gUsOtae0XNf2_4" : {
+    "Heaters" : {
+      "Fan" : 0,
+      "FanAuto" : 1,
+      "coolerStatus" : 1,
+      "heaterA" : 0,
+      "heaterAauto" : 1,
+      "heaterB" : 0,
+      "heaterBAuto" : 1,
+      "startTime" : {
+        "A" : 0,
+        "B" : 0
+      },
+      "whichHeater" : "A"
+    },
+    "Hum" : {
+      "hum1" : 12,
+      "hum2" : 20,
+      "hum3" : 40
+    },
+    "Lights" : {
+      "insideLedGet" : 0,
+      "insideLedSet" : 0,
+      "outsideLedGet" : 0,
+      "outsideLedSet" : 0
+    },
+    "RFID" : {
+      "data" : "Name,photo",
+      "lastID" : "NULL,notfound"
+    },
+    "Temp" : {
+      "temp1" : 70,
+      "temp2" : 50,
+      "temp3" : 20
+    },
+    "Time" : "-",
+    "airQuality" : 15,
+    "configFlag" : 0,
+    "newConfig" : {
+      "pass" : 123456789,
+      "ssid" : "menam",
+      "uId" : "lapE4x0hMJWomTR5gUsOtae0XNf2_4"
+    },
+    "resetFlag" : 0,
+    "usersCount" : 4,
+    "valueRanges" : {
+      "delay" : "10",
+      "temp" : "50,100",
+      "timeToWait" : "30",
+      "vent" : "33,73"
+    }
+  }
+}

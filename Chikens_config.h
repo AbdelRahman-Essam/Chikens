@@ -2,7 +2,7 @@
 #define CONFIG_H_
 
 //////////////////////Config Settings//////////////////////
-String CodeVersion ="1.0.1.0";
+String CodeVersion ="1.0.1.1";
 
 #define BlueLed  2
 #define Light  4

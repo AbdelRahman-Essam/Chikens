@@ -31,15 +31,18 @@ void sendDataToSheet(void)
   // start connection and send HTTP header
   int httpCode = http.GET();
   // httpCode will be negative on error
-  if(httpCode > 0) {
+  if(httpCode > 0) 
+  {
     // HTTP header has been send and Server response header has been handled
     Serial.printf("[HTTP] GET... code: %d\n", httpCode);
     // file found at server
-    if(httpCode == HTTP_CODE_OK) {
+    if(httpCode == HTTP_CODE_OK) 
+    {
       String payload = http.getString();
       Serial.println(payload);
     }
-  } else {
+  } 
+  else {
     Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
   }
   http.end();
@@ -245,7 +248,14 @@ void controlStatments(void)
   {
     if (HeaterFlag == 0)
     {
-      if ((WhichHeater == "A")&&(Set_ForcedHA != 1))
+      if ((Set_ForcedHA == 1)||(Set_ForcedHB == 1))
+      {
+        digitalWrite(Heater1, Set_ForcedHA);
+        digitalWrite(Heater2, Set_ForcedHA); 
+        digitalWrite(Heater3, Set_ForcedHB);
+        digitalWrite(Heater4, Set_ForcedHB);
+      }
+      else if ((WhichHeater == "A"))
       {
         //HeaterA
         digitalWrite(Heater1, 0);
@@ -259,7 +269,7 @@ void controlStatments(void)
         timeClient.update();
         heaterB_Stime = timeClient.getHours();
       }
-      else if ((WhichHeater == "B")&&(Set_ForcedHB != 1))
+      else if ((WhichHeater == "B"))
       {
         //HeaterA
         digitalWrite(Heater1, 1);
@@ -284,7 +294,7 @@ void controlStatments(void)
       }
     }
   }
-  else if (Temperature > MaxTemp_Trigger)
+  else if ((Temperature > MaxTemp_Trigger)&&(Set_ForcedHA!=1)&&(Set_ForcedHB!=1))
   {
     //HeaterA
     digitalWrite(Heater1, 0);
@@ -299,8 +309,7 @@ void controlStatments(void)
 void firebaseStatments(void)
 {
   int xe = 0;
-  //  //////////////////////////////////////////////////firebase///////////////////////////////////////////////////////
-  if(((timeClient.getMinutes()>=(TimeDelay+Time_prev))||(timeClient.getMinutes()<Time_prev))&&(firebaseErrorDetect()>0))
+ if(((timeClient.getMinutes()>=(TimeDelay+Time_prev))||(timeClient.getMinutes()<Time_prev))&&(firebaseErrorDetect()>0))
   {
   Serial.println("will start firebase");
   Time_prev=timeClient.getMinutes();
@@ -589,10 +598,10 @@ void resetCheck(void)
 }
 void gooogleSheetStatments(void)
 {
-  if(timeClient.getMinutes()!=Hour_prev)
+  if(timeClient.getHours()!=Hour_prev)
   {
     Serial.println("will start googleSheets");
-    Hour_prev=timeClient.getMinutes();
+    Hour_prev=timeClient.getHours();
     sendDataToSheet();
   }
 }
@@ -824,5 +833,100 @@ void timeServerSetup(void)
   timeClient.begin();
   timeClient.setTimeOffset(7200);
 }
+
+
+
+boolean RFID_Setup(void)
+{
+  nfc.begin();
+  uint32_t versiondata = nfc.getFirmwareVersion();
+  if (! versiondata)
+  {
+    Serial.print("Didn't Find PN53x Module");
+    return false;
+  }
+  else
+  {
+    Serial.print("Found chip PN5"); Serial.println((versiondata >> 24) & 0xFF, HEX);
+    Serial.print("Firmware ver. "); Serial.print((versiondata >> 16) & 0xFF, DEC);
+    Serial.print('.'); Serial.println((versiondata >> 8) & 0xFF, DEC);
+    // Configure board to read RFID tags
+    nfc.SAMConfig();
+    Serial.println("Waiting for an ISO14443A Card ...");
+    return true;
+  }
+}
+void RFID_Read(boolean RFID_Success)
+{
+  if ( RFID_Success )
+  {
+    boolean success;
+    uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
+    uint8_t uidLength;                       // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+    success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength);
+    if (success) {
+      Serial.println("Found A Card!");
+      Serial.print("UID Length: "); Serial.print(uidLength, DEC); Serial.println(" bytes");
+      Serial.print("UID Value: ");
+      for (uint8_t i = 0; i < uidLength; i++)
+      {
+        Serial.print(" 0x"); Serial.print(uid[i], HEX);
+      }
+      Serial.println("");
+      // 2 second halt
+      delay(2000);
+      if (uidLength == 4)
+      {
+        // We probably have a Mifare Classic card ...
+        uint32_t cardid = uid[0];
+        cardid <<= 8;
+        cardid |= uid[1];
+        cardid <<= 8;
+        cardid |= uid[2];
+        cardid <<= 8;
+        cardid |= uid[3];
+        String UID_string = (String)cardid ;
+        Serial.println("ID is : " + UID_string);
+       RFIDsendData(UID_string + "&persondata=zzzz&index=2");
+      }
+    }
+    else
+    {
+      Serial.println("Timed out! Waiting for a card...");
+    }
+  }
+}
+
+void RFIDsendData(String params) 
+{
+
+  HTTPClient http;
+  String url = "https://script.google.com/macros/s/AKfycbxjeykhu5BpiraSKXN_ugb-oz6_3nSC51_Oc_-zMcNywjLttXFMXJ-S0Qb3en6Y7hRS/exec?uid=lIkJLB0WSwUwpAhJIPBgXroy9ce2&fun=record&cardid=" + params;
+  Serial.println(url);
+  Serial.println("Making a request");
+  http.setFollowRedirects(followRedirects_t::HTTPC_STRICT_FOLLOW_REDIRECTS); /*to act like a typical web browser
+    because the url is redeirect to another url*/
+  http.begin(url.c_str());
+  while (httpResponseCode != 200) {
+    httpResponseCode = http.GET();
+
+    if (httpResponseCode > 0) {
+      Serial.print("HTTP Response code: ");
+      Serial.println(httpResponseCode);
+      String payload = http.getString();
+      Serial.println(payload);
+    }
+    else {
+      Serial.print("Error code: ");
+      Serial.println(httpResponseCode);
+    }
+  }
+  // Free resources
+  httpResponseCode = 0;
+  http.end();
+
+  Serial.println("Waiting for another ISO14443A Card ...");
+}
+
 
 

@@ -1,15 +1,11 @@
-/*
- * need to find away to clear string
- * need to make my own wifi manager with html page to take the id & p.w too
- * need to make authentication wich create splitted part in firebase
- * */
 #include "Chikens_init.h"
 
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 FirebaseData firebaseData;
 WiFiManager  wifiManager;
-
+PN532_HSU pn532hsu(Serial2);
+PN532 nfc(pn532hsu);
 
 void setup()
 {
@@ -26,12 +22,13 @@ void setup()
   EEPROMSetup();
   firbaseSetup();
   timeServerSetup();
+  RFID_Success = RFID_Setup();
   parameterSetup();
 }
 
 void loop()
 {
-  delay(1000);
+  //delay(1000);
   Serial.println("\n\n\n\nVoid Loop\n\n\n\n");
   firebaseErrorDetect();
   resetCheck();
@@ -42,6 +39,7 @@ void loop()
   gooogleSheetStatments();
   timeUpgrade();
   errorStatments();
+  RFID_Read(RFID_Success);
   //serialPrints();
 }
 
