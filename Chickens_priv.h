@@ -1,5 +1,35 @@
 #ifndef CHICKENS_PRIV_H_
 #define CHICKENS_PRIV_H_
+/*V2.0.0.0
+ * make timing for all the update functions done
+ * make Group1 and Group2 Pinout done
+ * edit the firebase function done
+ * edit the 0,1 configurations done
+ * edit the KeepAlive with period done
+ * edit the googlesheet transmission
+ * need to change the mechanism of ranges search until the ,
+ * add the LCD
+ * 
+ * Errors
+ * network fail will cause to get the latest data rcvd
+ * 
+ */
+/*V1.0.2.7
+ * Error when wifi DC status changes
+ * 
+ */
+
+/*V1.0.2.3
+ * temporary edits 
+ * to solve status error in flutter
+ * search for temporary and remove the commands 
+ */
+
+/*V1.0.2.2
+ * Added the Manual/Auto Compilation
+ * Upload to the farm directly
+ */
+
 /*
  * added RFID
  * need buzzer
@@ -7,9 +37,9 @@
 /* V1.0.1.X
  * need to separate the code to files and arrange it done 
  * need to find away to clear string  done
- * need to make my own wifi manager with html page to take the id & p.w too
- * need to make authentication wich create splitted part in firebase
- * need to add charts for the last 50 sample in google sheet
+ * need to make my own wifi manager with html page to take the id & p.w too Done
+ * need to make authentication wich create splitted part in firebase Done using Flutter
+ * need to add charts for the last 50 sample in google sheet Done using flutter
  * */
 /* V1.0.0.X
  * need to make Ven motion trigger changable done!
@@ -18,16 +48,57 @@
  * Vent Min & max Values synchronized with cloud done
  * flag for changing the heaterA & B and synchorizing with the network done
  * uploading average Temp and humidity done
- * Forced State and control for heaters and fans done
+ * Manual State and control for heaters and fans done
  * vibrate blue led when no conection done
  * light need to be set to zero to work done
  * add a googlesheet to the code done
  * add FOTA to gthe code DONE
+ * changes to be switable with the flutter APP
 */
 
+/******************************* Timing ************************************/
+unsigned long long int currentmillis =0;
 
-String server = "http://maker.ifttt.com";
-String eventName = "ESP32";
+//WiFiCheck 
+unsigned long long int WiFiCheck_previousMillis = 0;
+//WiFi_Reconnect
+unsigned long long int WiFi_Reconnect_previousMillis = 0;
+//CreditionalsConfig
+unsigned long long int CreditionalsConfig_previousMillis = 0;
+// temperature
+unsigned long long int temp_previousMillis = 0;
+// gas
+unsigned long long int gas_previousMillis = 0;
+// control
+unsigned long long int control_previousMillis = 0;
+//firebase
+unsigned long long int firebase_previousMillis = 0;
+// ResetCheck
+unsigned long long int resetCheck_previousMillis = 0;
+// GoogleSheet
+unsigned long long int googleSheet_previousMillis = 0;
+//timeUpgrade
+unsigned long long int timeUpgrade_previousMillis =0;
+// serial
+unsigned long long int serial_previousMillis = 0;
+// RFID_Read
+unsigned long long int RFID_Read_previousMillis = 0;
+// LCD
+unsigned long long int LCD_previousMillis = 0;
+
+
+unsigned int heaterA_Stime = 0;
+unsigned int heaterB_Stime = 0;
+unsigned int heaterA_Stime_previousMillis = 0;
+unsigned int heaterB_Stime_previousMillis = 0;
+
+///////////////////////////////////////////////// LCD /////////////////////////////////////////////////////
+String line1, line2;
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+String ifttt_server = "http://maker.ifttt.com";
+String eventName = "ESP32_Mod2";
 String IFTTT_Key = "dRKdPFw2Xk3MFxA-JSDKKi7W_Aq_hoU4CADOtnMWXTh";
 String IFTTTUrl="https://maker.ifttt.com/trigger/ESP32/with/key/dRKdPFw2Xk3MFxA-JSDKKi7W_Aq_hoU4CADOtnMWXTh";
 
@@ -36,63 +107,71 @@ boolean RFID_Success = true;
 int httpResponseCode = 0 ; // being here for handling error and send againg http request  if error occured using while loop
 
 
-int WifiReconnectingTime_Counter = 0;
-int ResetFlag = 0;
-int UpdateCode =0;
+String ResetFlag = "OFF";
+String UpdateCode ="OFF";
+/************Auto Variables*******************/
+String FanAuto="ON";
+String heaterAauto="ON";
+String heaterBAuto="ON";
+String FanAuto_prev="H";
+String heaterAauto_prev="H";
+String heaterBAuto_prev="H";
 
+/*********************************************/
 float val;
 
-int heaterA_status = 0;
-int heaterB_status = 0;
-int heaterA_status_prev = 5;
-int heaterB_status_prev = 5;
+String heaterA_status = "OFF";
+String heaterB_status = "OFF";
+String heaterA_status_prev = "H";
+String heaterB_status_prev = "H";
 
-int heaterA_Stime = 0;
-int heaterB_Stime = 0;
-int heaterA_Stime_prev = 0;
-int heaterB_Stime_prev = 0;
 
-int HeaterFlag = 0;
+
+String HeaterFlag = "OFF";
 String WhichHeater = "A";
-int cooler_status = 0;
-int cooler_status_prev = 5;
+String cooler_status = "OFF";
+String cooler_status_prev = "H";
+
+///////////////////////////////////Creditionals////////////////////////
+int buttonState = 1;
+boolean ConfigResetFlag = false;
+boolean shouldSaveConfig = false;
 
 
-char output[60];
-char mqtt_server[60];
-String Host;
-String Token;
-char Host_charArray[60];
-char Token_charArray[60];
-char readeeprom[60];
+String ssid{};
+String password{};
+String username{};
+// lIkJLB0WSwUwpAhJIPBgXroy9ce2_1
 
-int LED_Status = 0;
-int Light_Status = 1;
-int Set_ForcedHA = 0;
-int Set_ForcedHB = 0;
-int Set_ForcedF = 0;
+
+
+String header{};
+int count = 0;
+boolean exit_but;
+///////////////////////////////////////////////////////////////////////////
+int LED_Status=0;
+String LED_Status_Str = "OFF";
+String Light_Status = "ON";
+String Set_ManualHA = "OFF";
+String Set_ManualHB = "OFF";
+String Set_ManualF = "OFF";
 
 String string;
-String Set_ForcedHA_prev;
-String Set_ForcedHB_prev;
-String Set_ForcedF_prev;
-String c;
-String WhichHeater_prev = "A";
-String Light_prev;
-String MinTemp_prev;
-String MaxTemp_prev;
-String MaxVent_prev;
-String MinVent_prev;
-String ResetFlag_prev;
-String TimeDelay_prev;
+String Set_ManualHA_prev = "H";
+String Set_ManualHB_prev = "H";
+String Set_ManualF_prev = "H";
+String LED_prev = "H";
+String WhichHeater_prev = "H";
+String Light_prev = "H";
+String VentRange_prev = "H";
+String TempRange_prev = "H";
+String ResetFlag_prev = "H";
+String firebase_interval_prev;
 String UpdateCode_prev;
 int Hour_prev;
-int Time_prev;
-bool shouldSaveConfig = false;
 /////////////////mq135/////////////////////
-int conductivity = 0;
-int conductivity_prev = 0;
 String quality = "FF";
+int gas_prev;
 int gas;
 int Error;
 int Error_prev;
@@ -141,6 +220,5 @@ const char * root_ca = \
                        "AfvDbbnvRG15RjF+Cv6pgsH/76tuIMRQyV+dTZsXjAzlAcmgQWpzU/qlULRuJQ/7\n" \
                        "TBj0/VLZjmmx6BEP3ojY+x1J96relc8geMJgEtslQIxq/H5COEBkEveegeGTLg==\n" \
                        "-----END CERTIFICATE-----\n";
-
 
 #endif CHICKENS_PRIV_H_

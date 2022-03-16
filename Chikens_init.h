@@ -2,23 +2,24 @@
 #define CHICKENS_H_
 #include "Chickens_priv.h"
 #include "Chikens_config.h"
-
+#include <String.h>
 #include <WiFi.h>
 #include"FirebaseESP32.h"
-#include <WiFiManager.h>
 #include <EEPROM.h>
 #include "DHT.h"
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 #include <HTTPClient.h>
 #include <HTTPUpdate.h>
-#include <PN532_HSU.h>
-#include <PN532.h>
+//#include <PN532_HSU.h>
+//#include <PN532.h>
+#include <LiquidCrystal_I2C.h>
 
 #define DHTTYPE DHT11
 DHT dht1(DHT1Pin, DHTTYPE);
 DHT dht2(DHT2Pin, DHTTYPE);
 DHT dht3(DHT3Pin, DHTTYPE);
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 int firebaseErrorDetect(void);
 void tempFn(void);
@@ -28,32 +29,35 @@ void firebaseStatments(void);
 void resetCheck(void);
 void gooogleSheetStatments(void);
 void timeUpgrade(void);
-void errorStatments(void);
 void serialPrints(void);
 
+String getChipId();
 void UPDATE();
+void UpdateCheck(void);
 void sendDataToSheet(void);
-void eeprom_read(int address, int stringLength);
-void eeprom_clear(int address, int stringLength);
+String eeprom_read(int address, int stringLength);
 void eeprom_Write(int address, char*ptr, int stringLength);
-void saveConfigCallback ();
 void EEPROMWriteInt(int p_address, int p_value);
 unsigned int EEPROMReadInt(int p_address);
 
-
+void LCD_weather();
+void LCD_setup();
 
 void pinSetup(void);
-void wifiSetup(void);
+void WifiSetup(void);
 void DHTSetup(void);
 void EEPROMSetup(void);
 void firbaseSetup(void);
 void parameterSetup(void);
 void timeServerSetup(void);
 
-boolean RFID_Setup(void);
-void RFID_Read(boolean RFID_Success);
-void RFIDsendData(String params);
+//boolean RFID_Setup(void);
+//void RFID_Read(boolean RFID_Success);
+//void RFIDsendData(String params);
 
-
+void set_access_point(void);
+void client_handle(void);
+void CreditionalsConfig(void);
+void WiFiCheck(void);
 
 #endif CHICKENS_H_
