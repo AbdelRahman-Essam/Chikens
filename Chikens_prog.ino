@@ -383,14 +383,10 @@ void firebaseStatments(void)
       Firebase.setString(firebaseData, username + "/Heaters/Get_ManualF", cooler_status);// temporary
     }
     ///////////////////////////// Setters ////////////////////////////
-    Serial.print("stringData");Serial.println(firebaseData.stringData());
     firebaseData.clearData();
     string.clear();
-    Serial.print("stringData");Serial.println(firebaseData.stringData());Serial.println("");
     Firebase.get(firebaseData, username + "/Heaters/FanAuto");
-    Serial.print("string1");Serial.println(string);
     string =firebaseData.stringData();
-    Serial.print("string2");Serial.println(string);Serial.println("");
     if ((FanAuto_prev != string)&&(string== "ON"||string== "OFF"))
     {
         Serial.println("FanAuto Changed!");
@@ -399,14 +395,10 @@ void firebaseStatments(void)
         Serial.print("FanAuto: "); Serial.println(FanAuto);
         Firebase.setString(firebaseData, username + "/Heaters/Get_FanAuto", FanAuto);
     }
-    Serial.print("stringData");Serial.println(firebaseData.stringData());
     firebaseData.clearData();
     string.clear();
-    Serial.print("stringData");Serial.println(firebaseData.stringData());Serial.println("");
     Firebase.get(firebaseData, username + "/Heaters/heaterAauto");  
-    Serial.print("string1");Serial.println(string);
     string =firebaseData.stringData();
-    Serial.print("string2");Serial.println(string);Serial.println("");
     if ((heaterAauto_prev != string)&&(string== "ON"||string== "OFF"))
     {
         Serial.println("heaterAauto Changed!");
@@ -415,14 +407,10 @@ void firebaseStatments(void)
         Serial.print("heaterAauto: "); Serial.println(heaterAauto);
         Firebase.setString(firebaseData, username + "/Heaters/Get_heaterAauto", heaterAauto);
     }
-    Serial.print("stringData");Serial.println(firebaseData.stringData());
     firebaseData.clearData();
     string.clear();
-    Serial.print("stringData");Serial.println(firebaseData.stringData());Serial.println("");
     Firebase.get(firebaseData, username + "/Heaters/heaterBAuto");
-    Serial.print("string1");Serial.println(string);
     string =firebaseData.stringData();
-    Serial.print("string2");Serial.println(string);Serial.println("");
     if ((heaterBAuto_prev != string)&&(string== "ON"||string== "OFF"))
     {
         Serial.println("heaterBAuto Changed!");
@@ -431,14 +419,10 @@ void firebaseStatments(void)
         Serial.print("heaterBAuto: "); Serial.println(heaterBAuto);
         Firebase.setString(firebaseData, username + "/Heaters/Get_heaterBAuto", heaterBAuto);
     }
-    Serial.print("stringData");Serial.println(firebaseData.stringData());
     firebaseData.clearData();
     string.clear();
-    Serial.print("stringData");Serial.println(firebaseData.stringData());Serial.println("");
     Firebase.get(firebaseData, username + "/Heaters/Set_ManualHA");
-    Serial.print("string1");Serial.println(string);
     string =firebaseData.stringData();
-    Serial.print("string2");Serial.println(string);Serial.println("");
     if ((Set_ManualHA_prev != string)&&(string== "ON"||string== "OFF"))
     {
         Serial.println("ManualHA Changed!");
@@ -447,14 +431,10 @@ void firebaseStatments(void)
         Serial.print("Set_ManualHA: "); Serial.println(Set_ManualHA);
         //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualHA", Set_ManualHA);// temporary
     }
-    Serial.print("stringData");Serial.println(firebaseData.stringData());
     firebaseData.clearData();
     string.clear();
-    Serial.print("stringData");Serial.println(firebaseData.stringData());Serial.println("");
     Firebase.get(firebaseData, username + "/Heaters/Set_ManualHB");
-    Serial.print("string1");Serial.println(string);
     string =firebaseData.stringData();
-    Serial.print("string2");Serial.println(string);Serial.println("");
     if ((Set_ManualHB_prev != string)&&(string== "ON"||string== "OFF"))
     {
         Serial.println("ManualHB Changed!");
@@ -463,14 +443,10 @@ void firebaseStatments(void)
         Serial.print("Set_ManualHB: "); Serial.println(Set_ManualHB);
         // Firebase.setString(firebaseData, username + "/Heaters/Get_ManualHB", Set_ManualHB);//temporary
     }
-    Serial.print("stringData");Serial.println(firebaseData.stringData());
     firebaseData.clearData();
     string.clear();
-    Serial.print("stringData");Serial.println(firebaseData.stringData());Serial.println("");
     Firebase.get(firebaseData, username + "/Heaters/Set_ManualF");
-    Serial.print("string1");Serial.println(string);
     string =firebaseData.stringData();
-    Serial.print("string2");Serial.println(string);Serial.println("");
     if ((Set_ManualF_prev != string)&&(string== "ON"||string== "OFF"))
     {
         Serial.println("ManualF Changed!");
@@ -479,28 +455,20 @@ void firebaseStatments(void)
         Serial.print("Set_ManualF: "); Serial.println(Set_ManualF);
         //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualF", Set_ManualF); //temporary
     }
-    Serial.print("stringData");Serial.println(firebaseData.stringData());
     firebaseData.clearData();
     string.clear();
-    Serial.print("stringData");Serial.println(firebaseData.stringData());Serial.println("");
     Firebase.get(firebaseData, username + "/resetFlag");
-    Serial.print("string1");Serial.println(string);
     string =firebaseData.stringData();
-    Serial.print("string2");Serial.println(string);Serial.println("");
     if ((ResetFlag_prev != string)&&(string== "ON"||string== "OFF"))
     {
         Serial.println("ResetFlag Changed!");
         ResetFlag_prev = string;
         ResetFlag = ResetFlag_prev;
     }
-    Serial.print("stringData");Serial.println(firebaseData.stringData());
     firebaseData.clearData();
     string.clear();
-    Serial.print("stringData");Serial.println(firebaseData.stringData());Serial.println("");
     Firebase.get(firebaseData, username + "/Lights/Set_Led1");
-    Serial.print("string1");Serial.println(string);
     string =firebaseData.stringData();
-    Serial.print("string2");Serial.println(string);Serial.println("");
     if ((LED_prev != string)&&(string== "ON"||string== "OFF"))
     {
         Serial.println("BlueLed Changed!");
@@ -513,14 +481,10 @@ void firebaseStatments(void)
           LED_Status=0;
         digitalWrite(BlueLed, LED_Status);
     }
-    Serial.print("stringData");Serial.println(firebaseData.stringData());
     firebaseData.clearData();
     string.clear();
-    Serial.print("stringData");Serial.println(firebaseData.stringData());Serial.println("");
     Firebase.get(firebaseData, username + "/Lights/Set_Light");
-    Serial.print("string1");Serial.println(string);
     string =firebaseData.stringData();
-    Serial.print("string2");Serial.println(string);Serial.println("");
     if ((Light_prev != string)&&(string== "ON"||string== "OFF"))
     {
         Serial.println("Light Changed!");
@@ -533,78 +497,73 @@ void firebaseStatments(void)
           digitalWrite(Light, light_ON);
         Firebase.setString(firebaseData, username + "/Lights/Get_Light", Light_Status);
     }
-    Serial.print("stringData");Serial.println(firebaseData.stringData());
     firebaseData.clearData();
     string.clear();
-    Serial.print("stringData");Serial.println(firebaseData.stringData());Serial.println("");
     Firebase.get(firebaseData, username + "/valueRanges/vent");
-    Serial.print("string1");Serial.println(string);
     string =firebaseData.stringData();
-    Serial.print("string2");Serial.println(string);Serial.println("");
     if ((VentRange_prev != string))
     {
       VentRange_prev = string;
       String sbstring = VentRange_prev.substring(0, 3);
       MinVent_Trigger = sbstring.toInt();
-      if ((MinVent_Trigger >= 5) && (MinVent_Trigger <= 1000))
+      if (((MinVent_Trigger >= 5) && (MinVent_Trigger <= 1000))&&(EEPROMReadInt(300)!= MinVent_Trigger))
+      {
         EEPROMWriteInt(300, MinVent_Trigger);
+        Serial.print("MinVent_Trigger :"); Serial.println(MinVent_Trigger);      
+      }
       else
         MinVent_Trigger = EEPROMReadInt(300);
-      Serial.print("MinVent_Trigger :"); Serial.println(MinVent_Trigger);
       sbstring = "";
       sbstring = VentRange_prev.substring(4, 7);
       MaxVent_Trigger = sbstring.toInt();
-      Serial.print("MaxVent_Trigger :"); Serial.println(MaxVent_Trigger);
-      if ((MaxVent_Trigger >= 5) && (MaxVent_Trigger <= 1000))
+      if (((MaxVent_Trigger >= 5) && (MaxVent_Trigger <= 1000))&&(EEPROMReadInt(310)!= MaxVent_Trigger))
       {
         EEPROMWriteInt(310, MaxVent_Trigger);
+        Serial.print("MaxVent_Trigger :"); Serial.println(MaxVent_Trigger);
       }
       else
         MaxVent_Trigger = EEPROMReadInt(310);
-      Serial.print("MaxVent_Trigger :"); Serial.println(MaxVent_Trigger);
     }
-    Serial.print("stringData");Serial.println(firebaseData.stringData());
     firebaseData.clearData();
     string.clear();
-    Serial.print("stringData");Serial.println(firebaseData.stringData());Serial.println("");
     Firebase.get(firebaseData, username + "/valueRanges/temp");
-    Serial.print("string1");Serial.println(string);
     string =firebaseData.stringData();
-    Serial.print("string2");Serial.println(string);Serial.println("");
     if ((TempRange_prev != string))
     {
       TempRange_prev = string;
       String sbstring = TempRange_prev.substring(0, 3);
       MinTemp_Trigger = sbstring.toInt();
-      if ((MinTemp_Trigger >= 5) && (MinTemp_Trigger <= 1000))
+      if (((MinTemp_Trigger >= 5) && (MinTemp_Trigger <= 1000))&&(EEPROMReadInt(330)!= MinTemp_Trigger))
+      {
         EEPROMWriteInt(330, MinTemp_Trigger);
+        Serial.print("MinTemp_Trigger :"); Serial.println(MinTemp_Trigger);
+      }
       else
         MinTemp_Trigger = EEPROMReadInt(330);
-      Serial.print("MinTemp_Trigger :"); Serial.println(MinTemp_Trigger);
       sbstring = "";
       sbstring = TempRange_prev.substring(3, 7);
       MaxTemp_Trigger = sbstring.toInt();
-      if ((MaxTemp_Trigger >= 5) && (MaxTemp_Trigger <= 1000))
+      if (((MaxTemp_Trigger >= 5) && (MaxTemp_Trigger <= 1000))&&(EEPROMReadInt(320)!= MaxTemp_Trigger))
+      {
         EEPROMWriteInt(320, MaxTemp_Trigger);
+        Serial.print("MaxTemp_Trigger :"); Serial.println(MaxTemp_Trigger);
+      }
       else
         MaxTemp_Trigger = EEPROMReadInt(320);
-      Serial.print("MaxTemp_Trigger :"); Serial.println(MaxTemp_Trigger);
     }
-    Serial.print("stringData");Serial.println(firebaseData.stringData());
     firebaseData.clearData();
     string.clear();
-    Serial.print("stringData");Serial.println(firebaseData.stringData());Serial.println("");
     Firebase.get(firebaseData, username + "/valueRanges/delay");
-    Serial.print("string1");Serial.println(string);
     string =firebaseData.stringData();
-    Serial.print("string2");Serial.println(string);Serial.println("");
     if ((firebase_interval_prev != string))
     {
       firebase_interval_prev = string;
       firebase_interval = firebase_interval_prev.toInt();
       if (!((firebase_interval >= 0) && (firebase_interval <= 5000)))
+      {
         firebase_interval = 1;
       Serial.print("firebase_interval :"); Serial.println(firebase_interval);
+      }
     }
     timeClient.update();
     Firebase.setInt(firebaseData, username + "/Time/Hour", timeClient.getHours());
