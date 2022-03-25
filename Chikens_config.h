@@ -2,7 +2,7 @@
 #define CONFIG_H_
 
 //////////////////////Config Settings//////////////////////
-String CodeVersion ="2.0.0.1";
+String CodeVersion ="2.0.0.3";
 
 const char* ssid_ap     = "ChickenFarm";
 const char* password_ap = "88888888";
@@ -14,7 +14,7 @@ unsigned long int WiFiCheck_interval = 1000;//            uses internet periodic
 unsigned long int WiFi_Reconnect_interval = 30000;
 unsigned long int CreditionalsConfig_interval = 100;
 unsigned long int temp_interval=1000;
-unsigned long int gas_interval=1000;
+unsigned long int gas_interval=1000*10;
 unsigned long int control_interval = 100;
 unsigned long int firebase_interval = 0; // in minutes     uses internet periodically send & recieve the data with firebase
 unsigned long int resetCheck_interval = 1000;
@@ -24,7 +24,7 @@ unsigned long int serial_interval = 2000;
 unsigned long int RFID_Read_interval = 100;
 unsigned long int LCD_interval = 10000;
 unsigned long int HeaterSwitch_interval = 1000*60*60;//1Hour
-
+unsigned long int ErrorDetect_interval = 1000*60;
 //Group1
 
   #define light_ON    0
@@ -93,9 +93,9 @@ unsigned long int HeaterSwitch_interval = 1000*60*60;//1Hour
 //Dont use 32,34,35,12
 // pin 27 ADC2 can't be used while using wifi
 
-
+#define ADC_READING_NUMBER  100
 #define EEPROM_SIZE 512
-int Temp_variance_Cool = 2; // this is the jetter after the max to start cooling
+int Temp_variance_Cool = 2; // this is the jetter after the max or less than the min to start cooling
 float MinTemp_Trigger = 25;
 float MaxTemp_Trigger = 35;
 float MinVent_Trigger = 350;

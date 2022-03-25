@@ -26,6 +26,7 @@ void setup()
 
 void loop()
 {
+  firebaseErrorDetect();
   currentmillis = millis();
   timeUpgrade();
   WiFiCheck();

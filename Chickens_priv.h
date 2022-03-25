@@ -1,5 +1,6 @@
 #ifndef CHICKENS_PRIV_H_
 #define CHICKENS_PRIV_H_
+#include "Chikens_config.h"
 /*V2.0.0.0
  * make timing for all the update functions done
  * make Group1 and Group2 Pinout done
@@ -85,7 +86,7 @@ unsigned long long int serial_previousMillis = 0;
 unsigned long long int RFID_Read_previousMillis = 0;
 // LCD
 unsigned long long int LCD_previousMillis = 0;
-
+unsigned long long int ErrorDetect_previousMillis = 0;
 
 unsigned int heaterA_Stime = 0;
 unsigned int heaterB_Stime = 0;
@@ -171,11 +172,12 @@ String UpdateCode_prev;
 int Hour_prev;
 /////////////////mq135/////////////////////
 String quality = "FF";
-int gas_prev;
-int gas;
+long int gas_prev;
+long int gas;
+int GAS[ADC_READING_NUMBER];
 int Error;
 int Error_prev;
-
+int gasCounter=0;
 
 float Temperature;
 float Humidity;
