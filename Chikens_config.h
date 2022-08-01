@@ -2,7 +2,7 @@
 #define CONFIG_H_
 
 //////////////////////Config Settings//////////////////////
-String CodeVersion ="2.0.0.3";
+String CodeVersion ="1.2.0.0";
 
 const char* ssid_ap     = "ChickenFarm";
 const char* password_ap = "88888888";
@@ -24,36 +24,55 @@ unsigned long int serial_interval = 2000;
 unsigned long int RFID_Read_interval = 100;
 unsigned long int LCD_interval = 10000;
 unsigned long int HeaterSwitch_interval = 1000*60*60;//1Hour
-unsigned long int ErrorDetect_interval = 1000*60;
-//Group1
+unsigned long int CoolerSwitch_interval = 1000*60*60;//1Hour   
+unsigned long int FanDelayBTWN_Fans_interval = 1000*20;//20 second   
 
+unsigned long int ErrorDetect_interval = 1000*60;
+
+unsigned long int Fan_min_interval = 1000*30;
+
+//Group1
+//
   #define light_ON    0
   #define light_OFF   1
   #define control_ON  1
   #define control_OFF 0
-//// Relay 
-  #define Heater1 5
-  #define Heater2 19
-  #define Heater3 18
-  #define Heater4 21
-  #define Cooler 22
-  #define Light  4
-// others  
+
+  #define Buzzer  15
   #define buttonPin 0 
   #define BlueLed  2
 
+  #define RFID_TX 16   // used internally
+  #define RFID_RX 17   // used internally
+  #define LCD_SDA  21
+  #define LCD_SCL  22
+  
+  #define HeaterA 4
+  #define HeaterB 23
+  #define FanA    5
+  #define FanB    18  
+  #define Cooler  19
+  #define Light   13
+// others  
 
-  #define GASA1   33
-  //#define GASA2   12
-  uint8_t DHT1Pin = 13;
-  uint8_t DHT2Pin = 25;
+  #define WLS1    34
+  #define WLS2    35
+
+  #define IO25    25
+  #define IO12    12
+
+  #define GASA1   36
+  #define GASA2   39
+  uint8_t DHT1Pin = 26;
+  uint8_t DHT2Pin = 27;
   uint8_t DHT3Pin = 14;
-  #define SDA0_Pin  17
-  #define SCL0_Pin  16
+  uint8_t DHT4Pin = 32;
+  uint8_t DHT5Pin = 33;
 
 
-//Group2
 
+////Group2
+//
 //  #define light_ON    1
 //  #define light_OFF   0
 //  #define control_ON  0
@@ -65,8 +84,8 @@ unsigned long int ErrorDetect_interval = 1000*60;
 //  #define Heater3 18
 //  #define Heater2 19
 //  #define Heater4 23
-//  #define Cooler 15
-//  #define unused2 3
+//  #define Fan 15
+//  #define Cooler 3
 //  
 //  #define buttonPin 0 
 //  #define BlueLed  2
@@ -96,6 +115,8 @@ unsigned long int ErrorDetect_interval = 1000*60;
 #define ADC_READING_NUMBER  100
 #define EEPROM_SIZE 512
 int Temp_variance_Cool = 2; // this is the jetter after the max or less than the min to start cooling
+int Temp_variance_Fan = 1; // this is the jetter after the max or less than the min to start cooling
+
 float MinTemp_Trigger = 25;
 float MaxTemp_Trigger = 35;
 float MinVent_Trigger = 350;

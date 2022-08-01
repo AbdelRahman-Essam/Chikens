@@ -13,7 +13,7 @@ void setup()
   Serial.println("\n\n\n\nVoid Setup\n\n\n\n");
   pinSetup();
   DHTSetup();
-  Wire.begin(SDA0_Pin, SCL0_Pin);
+  Wire.begin(LCD_SDA, LCD_SCL);
   EEPROMSetup();
   WifiSetup();
   firbaseSetup();

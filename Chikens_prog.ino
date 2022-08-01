@@ -84,8 +84,14 @@ void tempFn(void)
   {
     //Serial.println("will start temp");
     temp_previousMillis = currentmillis;
-    int tempTotalNumber = 3;
-    int humTotalNumber  = 3;
+    int tempTotalNumber = 5;
+    int humTotalNumber  = 5;
+    T1_S =1;
+    T2_S =1;
+    T3_S =1;
+    T4_S =1;
+    T5_S =1;
+    
     Temperature1 = dht1.readTemperature(); // Gets the values of the temperature
     Humidity1 = dht1.readHumidity(); // Gets the values of the humidity
 
@@ -94,6 +100,12 @@ void tempFn(void)
 
     Temperature3 = dht3.readTemperature(); // Gets the values of the temperature
     Humidity3 = dht3.readHumidity(); // Gets the values of the humidity
+
+    Temperature4 = dht4.readTemperature(); // Gets the values of the temperature
+    Humidity4 = dht4.readHumidity(); // Gets the values of the humidity
+
+    Temperature5 = dht5.readTemperature(); // Gets the values of the temperature
+    Humidity5 = dht5.readHumidity(); // Gets the values of the humidity
 
     /////////////////////////////////protection/////////////////////////////////////
     if (isnan(Temperature1))
@@ -111,6 +123,16 @@ void tempFn(void)
       Temperature3 = 00.0;
       tempTotalNumber--;
     }
+    if (isnan(Temperature4))
+    {
+      Temperature4 = 00.0;
+      tempTotalNumber--;
+    }
+    if (isnan(Temperature5))
+    {
+      Temperature5 = 00.0;
+      tempTotalNumber--;
+    }
     if (isnan(Humidity1))
     {
       Humidity1 = 00.0;
@@ -126,8 +148,18 @@ void tempFn(void)
       Humidity3 = 00.0;
       humTotalNumber--;
     }
-    Temperature = (( Temperature1 + Temperature2 + Temperature3) / tempTotalNumber);
-    Humidity    = ((Humidity1 + Humidity2 + Humidity3) / humTotalNumber);
+    if (isnan(Humidity4))
+    {
+      Humidity4 = 00.0;
+      humTotalNumber--;
+    }
+    if (isnan(Humidity5))
+    {
+      Humidity5 = 00.0;
+      humTotalNumber--;
+    }
+    Temperature = (( Temperature1 + Temperature2 + Temperature3 + Temperature4 + Temperature5) / tempTotalNumber);
+    Humidity    = ((Humidity1 + Humidity2 + Humidity3 + Humidity4 + Humidity5) / humTotalNumber);
 
 
 
@@ -150,44 +182,27 @@ void tempFn(void)
 }
 void detectGas()
 {
-  GAS[gasCounter] = analogRead(GASA1);
-  GAS[gasCounter] = 200;
-  gasCounter++;
-  if ((currentmillis - gas_previousMillis >= gas_interval) || (currentmillis < gas_previousMillis) )
+  if((currentmillis - gas_previousMillis >= gas_interval)||(currentmillis < gas_previousMillis))
   {
-    gas_previousMillis = currentmillis;
-    gas = 0;
-    for (int i = 0; i > gasCounter; i++)
+    //Serial.println("will start detectGas");
+    gas_previousMillis = currentmillis;  
+    gas = analogRead(GASA1);
+    quality = "Good";
+    if (gas <= MinVent_Trigger)
     {
-      gas += GAS[i];
+      quality = "Good";
+    }
+    else if (gas <= MaxVent_Trigger)
+    {
+      quality = "Moderate";
+    }
+    else
+    {
+      quality = "Poor";
     }
     Serial.print("gas: "); Serial.println(gas);
-    Serial.print("gasCounter: "); Serial.println(gasCounter);
-    gas = gas/gasCounter;
-    gasCounter = 0;
-    Serial.print("gas: "); Serial.println(gas);
+    Serial.print("quality: "); Serial.println(quality);
   }
-  
-//  if((currentmillis - gas_previousMillis >gas_interval) || (currentmillis < gas_previousMillis))    (gasCounter >= ADC_READING_NUMBER)|| (gasCounter >= ADC_READING_NUMBER)
-//  {
-//    gas_previousMillis = currentmillis;
-//    gas = 0;
-//    for (int i = 0; i > gasCounter; i++)
-//    {
-//      gas += GAS[i];
-//    }
-//    int temp =gas;
-//    gas = temp /ADC_READING_NUMBER;
-//    gasCounter = 0;
-//    Serial.print("gas: "); Serial.println(gas);
-//  }
-//  else
-//  {
-//    GAS[gasCounter] = analogRead(GASA1);
-//    GAS[gasCounter] = 200;
-//    gasCounter++;
-//   // Serial.print("GAS: "); Serial.println(GAS[gasCounter]);
-//  }
 }
 void controlStatments(void)
 {
@@ -196,14 +211,85 @@ void controlStatments(void)
     //Serial.println("will start control");
     control_previousMillis = currentmillis;
 
-    if (FanAuto == "OFF")
+    if (FanA_Auto == "OFF")
     {
-      if (Set_ManualF == "ON")
+      if (Set_ManualFA == "ON")
+      {
+        digitalWrite(FanA, control_ON);
+        if(fanA_status == "OFF")
+          FanAStartTime = currentmillis;
+        fanA_status = "ON";
+      }
+      else if (Set_ManualFA == "OFF")
+      {
+        digitalWrite(FanA, control_OFF);
+        fanA_status = "OFF";
+      }
+    }
+    else if (FanA_Auto != "OFF")
+    {
+      if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_Fan))
+      {
+        digitalWrite(FanA, control_ON);
+        if(fanA_status == "OFF")
+          FanAStartTime = currentmillis;
+        fanA_status = "ON";
+      }
+      else if ((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))// here may be require  - Temp_variance_Cool
+      {
+        if((currentmillis - FanAStartTime >= Fan_min_interval) || (currentmillis < FanAStartTime))
+        {
+        digitalWrite(FanA, control_OFF);
+        fanA_status = "OFF"; 
+        }
+      }
+    }
+    
+    if (FanB_Auto == "OFF")
+    {
+      if (Set_ManualFB == "ON")
+      {
+        digitalWrite(FanB, control_ON);
+        if(fanB_status == "OFF")
+          FanBStartTime = currentmillis;
+        fanB_status = "ON";
+      }
+      else if (Set_ManualFB == "OFF")
+      {
+        digitalWrite(FanB, control_OFF);
+        fanB_status = "OFF";
+      }
+    }
+    else if (FanB_Auto != "OFF")
+    {
+      if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_Fan))
+      {
+        if((currentmillis - FanAStartTime >= FanDelayBTWN_Fans_interval) || (currentmillis < FanAStartTime))
+        {
+        digitalWrite(FanB, control_ON);
+        if(fanB_status == "OFF")
+          FanBStartTime = currentmillis;
+        fanB_status = "ON";
+        }
+      }
+      else if ((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))
+      {
+        if((currentmillis - FanBStartTime >= Fan_min_interval) || (currentmillis < FanBStartTime))
+        {
+        digitalWrite(FanB, control_OFF);
+        fanB_status = "OFF"; 
+        }
+      }
+    }
+
+    if (Cooler_Auto == "OFF")
+    {
+      if (Set_ManualC == "ON")
       {
         digitalWrite(Cooler, control_ON);
         cooler_status = "ON";
       }
-      else if (Set_ManualF == "OFF")
+      else if (Set_ManualC == "OFF")
       {
         digitalWrite(Cooler, control_OFF);
         cooler_status = "OFF";
@@ -211,12 +297,12 @@ void controlStatments(void)
     }
     else
     {
-      if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_Cool))
+      if (Temperature > MaxTemp_Trigger + Temp_variance_Cool)
       {
         digitalWrite(Cooler, control_ON);
         cooler_status = "ON";
       }
-      else if ((Temperature < (MinTemp_Trigger - Temp_variance_Cool)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))
+      else if (Temperature < MaxTemp_Trigger )
       {
         digitalWrite(Cooler, control_OFF);
         cooler_status = "OFF";
@@ -224,32 +310,29 @@ void controlStatments(void)
     }
 
 
-    if ((heaterAauto == "OFF") && (heaterBAuto == "OFF"))
+
+    if ((heaterA_Auto == "OFF") && (heaterB_Auto == "OFF"))
     {
       //HeaterA
       if (Set_ManualHA == "ON")
       {
-        digitalWrite(Heater1, control_ON);
-        digitalWrite(Heater2, control_ON);
+        digitalWrite(HeaterA, control_ON);
         heaterA_status = Set_ManualHA;
       }
       else if (Set_ManualHA == "OFF")
       {
-        digitalWrite(Heater1, control_OFF);
-        digitalWrite(Heater2, control_OFF);
+        digitalWrite(HeaterA, control_OFF);
         heaterA_status = Set_ManualHA;
       }
       //HeaterB
       if (Set_ManualHB == "ON")
       {
-        digitalWrite(Heater3, control_ON);
-        digitalWrite(Heater4, control_ON);
+        digitalWrite(HeaterB, control_ON);
         heaterB_status = Set_ManualHB;
       }
       else if (Set_ManualHA == "OFF")
       {
-        digitalWrite(Heater3, control_OFF);
-        digitalWrite(Heater4, control_OFF);
+        digitalWrite(HeaterB, control_OFF);
         heaterB_status = Set_ManualHB;
       }
     }
@@ -258,11 +341,9 @@ void controlStatments(void)
       if (Temperature <= MinTemp_Trigger)
       {
         //HeaterA
-        digitalWrite(Heater1, control_ON);
-        digitalWrite(Heater2, control_ON);
+        digitalWrite(HeaterA, control_ON);
         //HeaterB
-        digitalWrite(Heater3, control_ON);
-        digitalWrite(Heater4, control_ON);
+        digitalWrite(HeaterB, control_ON);
         heaterA_status = "ON";
         heaterB_status = "ON";
       }
@@ -273,12 +354,10 @@ void controlStatments(void)
           if ((WhichHeater == "A"))
           {
             //HeaterA
-            digitalWrite(Heater1, control_OFF);
-            digitalWrite(Heater2, control_OFF);
+            digitalWrite(HeaterA, control_OFF);
             heaterA_status = "OFF";
             //HeaterB
-            digitalWrite(Heater3, control_ON);
-            digitalWrite(Heater4, control_ON);
+            digitalWrite(HeaterB, control_ON);
             heaterB_status = "ON";
             WhichHeater = "B";
             heaterB_Stime = currentmillis / (HeaterSwitch_interval);
@@ -286,13 +365,11 @@ void controlStatments(void)
           else if ((WhichHeater == "B"))
           {
             //HeaterA
-            digitalWrite(Heater1, control_ON);
-            digitalWrite(Heater2, control_ON);
+            digitalWrite(HeaterA, control_ON);
             heaterA_status = "ON";
             WhichHeater = "A";
             //HeaterB
-            digitalWrite(Heater3, control_OFF);
-            digitalWrite(Heater4, control_OFF);
+            digitalWrite(HeaterB, control_OFF);
             heaterB_status = "OFF";
             heaterA_Stime = currentmillis / (HeaterSwitch_interval);
           }
@@ -309,11 +386,9 @@ void controlStatments(void)
       else if (Temperature > MaxTemp_Trigger)
       {
         //HeaterA
-        digitalWrite(Heater1, control_OFF);
-        digitalWrite(Heater2, control_OFF);
+        digitalWrite(HeaterA, control_OFF);
         //HeaterB
-        digitalWrite(Heater3, control_OFF);
-        digitalWrite(Heater4, control_OFF);
+        digitalWrite(HeaterB, control_OFF);
         heaterA_status = "OFF";
         heaterB_status = "OFF";
       }
@@ -394,49 +469,87 @@ void firebaseStatments(void)
       Firebase.setString(firebaseData, username + "/Heaters/heaterB_status", heaterB_status);
       Firebase.setString(firebaseData, username + "/Heaters/Get_ManualHB", heaterB_status);// temporary
     }
+    if (fanA_status_prev != fanA_status)
+    {
+      fanA_status_prev = fanA_status;
+      Serial.print("fanA_status: "); Serial.println(fanA_status);
+      Firebase.setString(firebaseData, username + "/Heaters/Fan_status", fanA_status); //ABDO Fan_status --> FanA_status
+      Firebase.setString(firebaseData, username + "/Heaters/Get_ManualC", fanA_status);//ABDO temporary
+    }
+    if (fanB_status_prev != fanB_status)
+    {
+      fanB_status_prev = fanB_status;
+      Serial.print("fanB_status: "); Serial.println(fanB_status);
+      Firebase.setString(firebaseData, username + "/Heaters/FanB_status", fanB_status);
+      Firebase.setString(firebaseData, username + "/Heaters/Get_ManualC", fanB_status);// temporary
+    }
     if (cooler_status_prev != cooler_status)
     {
       cooler_status_prev = cooler_status;
       Serial.print("cooler_status: "); Serial.println(cooler_status);
       Firebase.setString(firebaseData, username + "/Heaters/Cooler_status", cooler_status);
-      Firebase.setString(firebaseData, username + "/Heaters/Get_ManualF", cooler_status);// temporary
+      Firebase.setString(firebaseData, username + "/Heaters/Get_ManualC", cooler_status);// temporary
     }
     ///////////////////////////// Setters ////////////////////////////
     firebaseData.clearData();
     string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/FanAuto");
+    Firebase.get(firebaseData, username + "/Heaters/FanAuto"); //ABDO FanAuto --> FanA_Auto
     string = firebaseData.stringData();
-    if ((FanAuto_prev != string) && (string == "ON" || string == "OFF"))
+    if ((FanA_Auto_prev != string) && (string == "ON" || string == "OFF"))
     {
-      Serial.println("FanAuto Changed!");
-      FanAuto_prev = string;
-      FanAuto = FanAuto_prev;
-      Serial.print("FanAuto: "); Serial.println(FanAuto);
-      Firebase.setString(firebaseData, username + "/Heaters/Get_FanAuto", FanAuto);
+      Serial.println("FanA_Auto Changed!");
+      FanA_Auto_prev = string;
+      FanA_Auto = FanA_Auto_prev;
+      Serial.print("FanA_Auto: "); Serial.println(FanA_Auto);
+      Firebase.setString(firebaseData, username + "/Heaters/Get_FanAuto", FanA_Auto); //ABDO Get_FanAuto --> Get_FanA_Auto 
     }
     firebaseData.clearData();
     string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/heaterAauto");
+    Firebase.get(firebaseData, username + "/Heaters/FanB_Auto");
     string = firebaseData.stringData();
-    if ((heaterAauto_prev != string) && (string == "ON" || string == "OFF"))
+    if ((FanB_Auto_prev != string) && (string == "ON" || string == "OFF"))
     {
-      Serial.println("heaterAauto Changed!");
-      heaterAauto_prev = string;
-      heaterAauto = heaterAauto_prev;
-      Serial.print("heaterAauto: "); Serial.println(heaterAauto);
-      Firebase.setString(firebaseData, username + "/Heaters/Get_heaterAauto", heaterAauto);
+      Serial.println("FanB_Auto Changed!");
+      FanB_Auto_prev = string;
+      FanB_Auto = FanB_Auto_prev;
+      Serial.print("FanB_Auto: "); Serial.println(FanB_Auto);
+      Firebase.setString(firebaseData, username + "/Heaters/Get_FanB_Auto", FanB_Auto);
     }
     firebaseData.clearData();
     string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/heaterBAuto");
+    Firebase.get(firebaseData, username + "/Heaters/CoolerAuto"); //ABDO need to be changed to Cooler_Auto
     string = firebaseData.stringData();
-    if ((heaterBAuto_prev != string) && (string == "ON" || string == "OFF"))
+    if ((Cooler_Auto_prev != string) && (string == "ON" || string == "OFF"))
+    {
+      Serial.println("Cooler_Auto Changed!");
+      Cooler_Auto_prev = string;
+      Cooler_Auto = Cooler_Auto_prev;
+      Serial.print("Cooler_Auto: "); Serial.println(Cooler_Auto);
+      Firebase.setString(firebaseData, username + "/Heaters/Get_CoolerAuto", Cooler_Auto);
+    }
+    firebaseData.clearData();
+    string.clear();
+    Firebase.get(firebaseData, username + "/Heaters/heaterAauto"); //ABDO change the nameing heaterA_Auto
+    string = firebaseData.stringData();
+    if ((heaterA_Auto_prev != string) && (string == "ON" || string == "OFF"))
+    {
+      Serial.println("heaterA_Auto Changed!");
+      heaterA_Auto_prev = string;
+      heaterA_Auto = heaterA_Auto_prev;
+      Serial.print("heaterA_Auto: "); Serial.println(heaterA_Auto);
+      Firebase.setString(firebaseData, username + "/Heaters/Get_heaterAauto", heaterA_Auto);//ABDO change the nameing heaterA_Auto
+    }
+    firebaseData.clearData();
+    string.clear();
+    Firebase.get(firebaseData, username + "/Heaters/heaterBAuto");//ABDO change the nameing heaterB_Auto
+    string = firebaseData.stringData();
+    if ((heaterB_Auto_prev != string) && (string == "ON" || string == "OFF"))
     {
       Serial.println("heaterBAuto Changed!");
-      heaterBAuto_prev = string;
-      heaterBAuto = heaterBAuto_prev;
-      Serial.print("heaterBAuto: "); Serial.println(heaterBAuto);
-      Firebase.setString(firebaseData, username + "/Heaters/Get_heaterBAuto", heaterBAuto);
+      heaterB_Auto_prev = string;
+      heaterB_Auto = heaterB_Auto_prev;
+      Serial.print("heaterB_Auto: "); Serial.println(heaterB_Auto);
+      Firebase.setString(firebaseData, username + "/Heaters/Get_heaterB_Auto", heaterB_Auto);
     }
     firebaseData.clearData();
     string.clear();
@@ -464,15 +577,39 @@ void firebaseStatments(void)
     }
     firebaseData.clearData();
     string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/Set_ManualF");
+    Firebase.get(firebaseData, username + "/Heaters/Set_ManualC");
     string = firebaseData.stringData();
-    if ((Set_ManualF_prev != string) && (string == "ON" || string == "OFF"))
+    if ((Set_ManualC_prev != string) && (string == "ON" || string == "OFF"))
     {
-      Serial.println("ManualF Changed!");
-      Set_ManualF_prev = string;
-      Set_ManualF = Set_ManualF_prev;
-      Serial.print("Set_ManualF: "); Serial.println(Set_ManualF);
-      //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualF", Set_ManualF); //temporary
+      Serial.println("ManualC Changed!");
+      Set_ManualC_prev = string;
+      Set_ManualC = Set_ManualC_prev;
+      Serial.print("Set_ManualC: "); Serial.println(Set_ManualC);
+      //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualC", Set_ManualC); //temporary
+    }
+    firebaseData.clearData();
+    string.clear();
+    Firebase.get(firebaseData, username + "/Heaters/Set_ManualF");//ABDO
+    string = firebaseData.stringData();
+    if ((Set_ManualFA_prev != string) && (string == "ON" || string == "OFF"))
+    {
+      Serial.println("ManualFA Changed!");
+      Set_ManualFA_prev = string;
+      Set_ManualFA = Set_ManualFA_prev;
+      Serial.print("Set_ManualFA: "); Serial.println(Set_ManualFA);
+      //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualFA", Set_ManualFA); //temporary
+    }
+    firebaseData.clearData();
+    string.clear();
+    Firebase.get(firebaseData, username + "/Heaters/Set_ManualFB");
+    string = firebaseData.stringData();
+    if ((Set_ManualFB_prev != string) && (string == "ON" || string == "OFF"))
+    {
+      Serial.println("ManualFB Changed!");
+      Set_ManualFB_prev = string;
+      Set_ManualFB = Set_ManualFB_prev;
+      Serial.print("Set_ManualFB: "); Serial.println(Set_ManualFB);
+      //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualFB", Set_ManualFB); //temporary
     }
     firebaseData.clearData();
     string.clear();
@@ -685,7 +822,8 @@ void serialPrints(void)
     //    Serial.print("gas: "); Serial.println(gas);
     Serial.print("Set_ManualHA: "); Serial.println(Set_ManualHA);
     Serial.print("Set_ManualHB: "); Serial.println(Set_ManualHB);
-    Serial.print("Set_ManualF: "); Serial.println(Set_ManualF);
+    Serial.print("Set_ManualFA: "); Serial.println(Set_ManualFA);
+    Serial.print("Set_ManualFB: "); Serial.println(Set_ManualFB);
     Serial.print("ResetFlag: "); Serial.println(ResetFlag);
     Serial.print("LED_Status: "); Serial.println(LED_Status);
     Serial.print("Light_Status: "); Serial.println(Light_Status);
@@ -694,9 +832,10 @@ void serialPrints(void)
     //    Serial.print("MinTemp_Trigger: "); Serial.println(MinTemp_Trigger);
     //    Serial.print("MaxTemp_Trigger: "); Serial.println(MaxTemp_Trigger);
     //    Serial.print("firebase_interval: "); Serial.println(firebase_interval);
-    Serial.print("FanAuto: "); Serial.println(FanAuto);
-    Serial.print("heaterAauto: "); Serial.println(heaterAauto);
-    Serial.print("heaterBAuto: "); Serial.println(heaterBAuto);
+    Serial.print("FanA_Auto: "); Serial.println(FanA_Auto);
+    Serial.print("FanB_Auto: "); Serial.println(FanB_Auto);
+    Serial.print("heaterA_Auto: "); Serial.println(heaterA_Auto);
+    Serial.print("heaterB_Auto: "); Serial.println(heaterB_Auto);
     //    Serial.print("timeClient.getSeconds(): "); Serial.println(timeClient.getSeconds());
     //    Serial.print("timeClient.getMinutes(): "); Serial.println(timeClient.getMinutes());
     //    Serial.print("timeClient.getHours(): "); Serial.println(timeClient.getHours());
@@ -734,25 +873,30 @@ void pinSetup(void)
   pinMode(DHT1Pin, INPUT);
   pinMode(DHT2Pin, INPUT);
   pinMode(DHT3Pin, INPUT);
-  pinMode(Heater1, OUTPUT);
-  pinMode(Heater2, OUTPUT);
-  pinMode(Heater3, OUTPUT);
-  pinMode(Heater4, OUTPUT);
+  pinMode(DHT4Pin, INPUT);
+  pinMode(DHT5Pin, INPUT);
+  
+  pinMode(HeaterA, OUTPUT);
+  pinMode(HeaterB, OUTPUT);
   pinMode(Cooler, OUTPUT);
+  pinMode(FanA, OUTPUT);
+  pinMode(FanB, OUTPUT);
   pinMode(BlueLed, OUTPUT);
+  pinMode(Buzzer, OUTPUT);
   pinMode(Light, OUTPUT);
   pinMode(buttonPin, INPUT);
 
-  digitalWrite(Heater3, control_ON);
-  digitalWrite(Heater4, control_ON);
-  digitalWrite(Heater1, control_OFF);
-  digitalWrite(Heater2, control_OFF);
+  digitalWrite(Buzzer, control_OFF);
+  digitalWrite(HeaterB, control_ON);
+  digitalWrite(HeaterA, control_OFF);
 }
 void DHTSetup(void)
 {
   dht1.begin();
   dht2.begin();
   dht3.begin();
+  dht4.begin();
+  dht5.begin();
 }
 void EEPROMSetup(void)
 {
@@ -912,7 +1056,7 @@ void UPDATE()
 // depends on who will communicate with google sheet may be deleted
 void sendDataToSheet(void)
 {
-  String DATA = String(String((float)Temperature) + "|||" + String((int)Humidity) + "|||" + String((int)gas) + "|||" + (float)Temperature1) + "|||" + String((float)Temperature2) + "|||" + String((float)Temperature3) + "|||" + String((int)Humidity1) + "|||" + String((int)Humidity2) + "|||" + String((int)Humidity3) + "|||" + heaterA_status + "|||" + heaterB_status + "|||" + cooler_status + "|||" + Light_Status + "|||" + LED_Status_Str + "|||" + String((int)MinTemp_Trigger) + "|||" + String((int)MaxTemp_Trigger) + "|||" + String((int)MinVent_Trigger) + "|||" + String((int)MaxVent_Trigger) + "|||" + ResetFlag + "|||" + UpdateCode + "|||" + Set_ManualHA + "|||" + Set_ManualHB + "|||" + Set_ManualF + "|||" + FanAuto + "|||" + heaterAauto + "|||" + heaterBAuto + "|||" + String((unsigned int)heaterA_Stime) + "|||" + String((unsigned int)heaterB_Stime) + "|||" + WhichHeater;
+  String DATA = String(String((float)Temperature) + "|||" + String((int)Humidity) + "|||" + String((int)gas) + "|||" + (float)Temperature1) + "|||" + String((float)Temperature2) + "|||" + String((float)Temperature3) + "|||" + String((int)Humidity1) + "|||" + String((int)Humidity2) + "|||" + String((int)Humidity3) + "|||" + heaterA_status + "|||" + heaterB_status + "|||" + cooler_status + "|||" + Light_Status + "|||" + LED_Status_Str + "|||" + String((int)MinTemp_Trigger) + "|||" + String((int)MaxTemp_Trigger) + "|||" + String((int)MinVent_Trigger) + "|||" + String((int)MaxVent_Trigger) + "|||" + ResetFlag + "|||" + UpdateCode + "|||" + Set_ManualHA + "|||" + Set_ManualHB + "|||" + Set_ManualFA + "|||" + Set_ManualFB + "|||" + FanA_Auto + "|||" + FanB_Auto + "|||" + heaterA_Auto + "|||" + heaterB_Auto + "|||" + String((unsigned int)heaterA_Stime) + "|||" + String((unsigned int)heaterB_Stime) + "|||" + WhichHeater;
   String url = ifttt_server + "/trigger/" + eventName + "/with/key/" + IFTTT_Key + "?value1=" + DATA;
   Serial.println(url);
   //Start to send data to IFTTT

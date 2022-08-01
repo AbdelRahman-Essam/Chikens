@@ -91,7 +91,9 @@ unsigned long long int ErrorDetect_previousMillis = 0;
 unsigned int heaterA_Stime = 0;
 unsigned int heaterB_Stime = 0;
 unsigned int heaterA_Stime_previousMillis = 0;
-unsigned int heaterB_Stime_previousMillis = 0;
+unsigned int heaterB_Stime_previousMillis = 0; 
+unsigned int FanAStartTime = 0;
+unsigned int FanBStartTime = 0;
 
 ///////////////////////////////////////////////// LCD /////////////////////////////////////////////////////
 String line1, line2;
@@ -111,12 +113,17 @@ int httpResponseCode = 0 ; // being here for handling error and send againg http
 String ResetFlag = "OFF";
 String UpdateCode ="OFF";
 /************Auto Variables*******************/
-String FanAuto="ON";
-String heaterAauto="ON";
-String heaterBAuto="ON";
-String FanAuto_prev="H";
-String heaterAauto_prev="H";
-String heaterBAuto_prev="H";
+String FanA_Auto="ON";
+String FanB_Auto="ON";
+String Cooler_Auto="ON";
+String heaterA_Auto="ON";
+String heaterB_Auto="ON";
+
+String FanA_Auto_prev="H";
+String FanB_Auto_prev="H";
+String Cooler_Auto_prev="H";
+String heaterA_Auto_prev="H";
+String heaterB_Auto_prev="H";
 
 /*********************************************/
 float val;
@@ -132,6 +139,12 @@ String HeaterFlag = "OFF";
 String WhichHeater = "A";
 String cooler_status = "OFF";
 String cooler_status_prev = "H";
+
+String fanA_status = "OFF";
+String fanA_status_prev = "H";
+
+String fanB_status = "OFF";
+String fanB_status_prev = "H";
 
 ///////////////////////////////////Creditionals////////////////////////
 int buttonState = 1;
@@ -155,12 +168,16 @@ String LED_Status_Str = "OFF";
 String Light_Status = "ON";
 String Set_ManualHA = "OFF";
 String Set_ManualHB = "OFF";
-String Set_ManualF = "OFF";
+String Set_ManualFA = "OFF";
+String Set_ManualFB = "OFF";
+String Set_ManualC = "OFF";
 
 String string;
 String Set_ManualHA_prev = "H";
 String Set_ManualHB_prev = "H";
-String Set_ManualF_prev = "H";
+String Set_ManualFA_prev = "H";
+String Set_ManualFB_prev = "H";
+String Set_ManualC_prev = "H";
 String LED_prev = "H";
 String WhichHeater_prev = "H";
 String Light_prev = "H";
@@ -188,16 +205,31 @@ float Temperature1 = 0;
 float Humidity1 = 0;
 float temp_prev1; // save previous to check if there is a change
 float hum_prev1;
+int   T1_S =1;
 
 float Temperature2;
 float Humidity2;
 float temp_prev2; // save previous to check if there is a change
 float hum_prev2;
+int   T2_S =1;
 
 float Temperature3;
 float Humidity3;
 float temp_prev3; // save previous to check if there is a change
 float hum_prev3;
+int   T3_S =1;
+
+float Temperature4;
+float Humidity4;
+float temp_prev4; // save previous to check if there is a change
+float hum_prev4;
+int   T4_S =1;
+
+float Temperature5;
+float Humidity5;
+float temp_prev5; // save previous to check if there is a change
+float hum_prev5;
+int   T5_S =1;
 
 const char * root_ca = \
                        "-----BEGIN CERTIFICATE-----\n" \
