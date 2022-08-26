@@ -34,7 +34,7 @@ void loop()
   resetCheck();
   tempFn();
   detectGas();
-  controlStatments();
+  controlStatments();/////////////////////vip
   firebaseStatments();
   gooogleSheetStatments();
   //RFID_Read(RFID_Success);
