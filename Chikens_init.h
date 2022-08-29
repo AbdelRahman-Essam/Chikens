@@ -21,7 +21,8 @@ DHT dht1(DHT1Pin, DHTTYPE);
 DHT dht2(DHT2Pin, DHTTYPE);
 DHT dht3(DHT3Pin, DHTTYPE);
 DHT dht4(DHT4Pin, DHTTYPE);
-DHT dht5(DHT5Pin, DHTTYPE);
+//DHT dht5(DHT5Pin, DHTTYPE);
+
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 int firebaseErrorDetect(void);

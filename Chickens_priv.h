@@ -94,7 +94,9 @@ unsigned int heaterA_Stime_previousMillis = 0;
 unsigned int heaterB_Stime_previousMillis = 0; 
 unsigned int FanAStartTime = 0;
 unsigned int FanBStartTime = 0;
-
+////////////////////////////////Cooler 
+unsigned long long int CoolerStartTime = 0;
+uint8_t CoolerFlag = 0;
 ///////////////////////////////////////////////// LCD /////////////////////////////////////////////////////
 String line1, line2;
 
@@ -124,6 +126,18 @@ String FanB_Auto_prev="H";
 String Cooler_Auto_prev="H";
 String heaterA_Auto_prev="H";
 String heaterB_Auto_prev="H";
+
+/********************* BTNs ************************/
+int setFlag_h=0;
+int negFlag_h=0;
+int posFlag_h=0;
+int setFlag_l=0;
+int negFlag_l=0;
+int posFlag_l=0;
+
+// button
+long long int button_previousMillis = 0;
+int buzzer_Status=0;
 
 /*********************************************/
 float val;
@@ -196,39 +210,39 @@ int Error;
 int Error_prev;
 int gasCounter=0;
 
-float Temperature;
-float Humidity;
-float temp_prev; // save previous to check if there is a change
-float hum_prev;
+float Temperature = 0;
+float Humidity = 0;
+float temp_prev = 200; // save previous to check if there is a change
+float hum_prev = 200;
 
 float Temperature1 = 0;
 float Humidity1 = 0;
-float temp_prev1; // save previous to check if there is a change
-float hum_prev1;
+float temp_prev1 = 200; // save previous to check if there is a change
+float hum_prev1 = 200;
 int   T1_S =1;
 
 float Temperature2;
 float Humidity2;
-float temp_prev2; // save previous to check if there is a change
-float hum_prev2;
+float temp_prev2 = 200; // save previous to check if there is a change
+float hum_prev2 = 200;
 int   T2_S =1;
 
 float Temperature3;
 float Humidity3;
-float temp_prev3; // save previous to check if there is a change
-float hum_prev3;
+float temp_prev3 = 200; // save previous to check if there is a change
+float hum_prev3 = 200;
 int   T3_S =1;
 
 float Temperature4;
 float Humidity4;
-float temp_prev4; // save previous to check if there is a change
-float hum_prev4;
+float temp_prev4 = 200; // save previous to check if there is a change
+float hum_prev4 = 200;
 int   T4_S =1;
 
 float Temperature5;
 float Humidity5;
-float temp_prev5; // save previous to check if there is a change
-float hum_prev5;
+float temp_prev5 = 200; // save previous to check if there is a change
+float hum_prev5 = 200;
 int   T5_S =1;
 
 const char * root_ca = \

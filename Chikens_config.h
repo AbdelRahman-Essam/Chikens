@@ -26,10 +26,15 @@ unsigned long int LCD_interval = 10000;
 unsigned long int HeaterSwitch_interval = 1000*60*60;//1Hour
 unsigned long int CoolerSwitch_interval = 1000*60*60;//1Hour   
 unsigned long int FanDelayBTWN_Fans_interval = 1000*20;//20 second   
+unsigned long int button_interval = 50; //millis
 
 unsigned long int ErrorDetect_interval = 1000*60;
 
-unsigned long int Fan_min_interval = 1000*30;
+unsigned long int Fan_min_interval = 1000*60;
+
+unsigned int Cooler_on_time = 60*1000;
+unsigned int Cooler_off_time =240*1000+Cooler_on_time;
+
 
 //Group1
 //
@@ -42,8 +47,12 @@ unsigned long int Fan_min_interval = 1000*30;
   #define buttonPin 0 
   #define BlueLed  2
 
-  #define RFID_TX 16   // used internally
-  #define RFID_RX 17   // used internally
+//  #define RFID_TX 16   
+//  #define RFID_RX 17  
+  #define SW_N 16 //BTNs Switch negative
+  #define SW_P 17 //Switch Positive
+  #define SW_S 33 //Switch Set
+  
   #define LCD_SDA  21
   #define LCD_SCL  22
   
@@ -67,7 +76,7 @@ unsigned long int Fan_min_interval = 1000*30;
   uint8_t DHT2Pin = 27;
   uint8_t DHT3Pin = 14;
   uint8_t DHT4Pin = 32;
-  uint8_t DHT5Pin = 33;
+//  uint8_t DHT5Pin = 33;
 
 
 
@@ -115,7 +124,8 @@ unsigned long int Fan_min_interval = 1000*30;
 #define ADC_READING_NUMBER  100
 #define EEPROM_SIZE 512
 int Temp_variance_Cool = 2; // this is the jetter after the max or less than the min to start cooling
-int Temp_variance_Fan = 1; // this is the jetter after the max or less than the min to start cooling
+int Temp_variance_FanB = 1; // this is the jetter after the max or less than the min to start cooling
+int Temp_variance_FanA = 0; // this is the jetter after the max or less than the min to start cooling
 
 float MinTemp_Trigger = 25;
 float MaxTemp_Trigger = 35;

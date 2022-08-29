@@ -10,36 +10,40 @@ FirebaseData firebaseData;
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("\n\n\n\nVoid Setup\n\n\n\n");
+  Serial.println("\n\n\n\nVoid Setup \n\n\n\n");
   pinSetup();
-  DHTSetup();
+//  DHTSetup();
   Wire.begin(LCD_SDA, LCD_SCL);
-  EEPROMSetup();
-  WifiSetup();
-  firbaseSetup();
-  timeServerSetup();
-//  RFID_Success = RFID_Setup();
-  parameterSetup();
-  UpdateCheck();
-  LCD_setup();
+//  EEPROMSetup();
+//  WifiSetup();
+//  firbaseSetup();
+//  timeServerSetup();
+////  RFID_Success = RFID_Setup();
+//  parameterSetup();
+//  UpdateCheck();
+//  LCD_setup();
+    digitalWrite(Buzzer,1);
+    delay (1000);
+    digitalWrite(Buzzer,0);
 }
 
 void loop()
 {
-  firebaseErrorDetect();
-  currentmillis = millis();
-  timeUpgrade();
-  WiFiCheck();
-  CreditionalsConfig();
-  resetCheck();
-  tempFn();
-  detectGas();
-  controlStatments();/////////////////////vip
-  firebaseStatments();
-  gooogleSheetStatments();
-  //RFID_Read(RFID_Success);
-  LCD_weather();
-  //serialPrints();
+//  firebaseErrorDetect();
+//  currentmillis = millis();
+//  timeUpgrade();
+//  WiFiCheck();
+//  CreditionalsConfig();
+//  resetCheck();
+//  tempFn();
+//  detectGas();
+//  controlStatments();
+//  firebaseStatments();
+//  gooogleSheetStatments();
+//  //RFID_Read(RFID_Success);
+//  LCD_weather();
+//  //serialPrints();
+  buttonCheck();
 }
 
 

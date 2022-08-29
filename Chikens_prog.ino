@@ -104,58 +104,58 @@ void tempFn(void)
     Temperature4 = dht4.readTemperature(); // Gets the values of the temperature
     Humidity4 = dht4.readHumidity(); // Gets the values of the humidity
 
-    Temperature5 = dht5.readTemperature(); // Gets the values of the temperature
-    Humidity5 = dht5.readHumidity(); // Gets the values of the humidity
+//    Temperature5 = dht5.readTemperature(); // Gets the values of the temperature
+//    Humidity5 = dht5.readHumidity(); // Gets the values of the humidity
 
     /////////////////////////////////protection/////////////////////////////////////
     if (isnan(Temperature1))
     {
-      Temperature1 = 00.0;
+      Temperature1 = 250;
       tempTotalNumber--;
     }
     if (isnan(Temperature2))
     {
-      Temperature2 = 00.0;
+      Temperature2 = 250;
       tempTotalNumber--;
     }
     if (isnan(Temperature3))
     {
-      Temperature3 = 00.0;
+      Temperature3 = 250;
       tempTotalNumber--;
     }
     if (isnan(Temperature4))
     {
-      Temperature4 = 00.0;
+      Temperature4 = 250.0;
       tempTotalNumber--;
     }
     if (isnan(Temperature5))
     {
-      Temperature5 = 00.0;
+      Temperature5 = 250.0;
       tempTotalNumber--;
     }
     if (isnan(Humidity1))
     {
-      Humidity1 = 00.0;
+      Humidity1 = 250.0;
       humTotalNumber--;
     }
     if (isnan(Humidity2))
     {
-      Humidity2 = 00.0;
+      Humidity2 = 250.0;
       humTotalNumber--;
     }
     if (isnan(Humidity3))
     {
-      Humidity3 = 00.0;
+      Humidity3 = 250.0;
       humTotalNumber--;
     }
     if (isnan(Humidity4))
     {
-      Humidity4 = 00.0;
+      Humidity4 = 250.0;
       humTotalNumber--;
     }
     if (isnan(Humidity5))
     {
-      Humidity5 = 00.0;
+      Humidity5 = 250.0;
       humTotalNumber--;
     }
     Temperature = (( Temperature1 + Temperature2 + Temperature3 + Temperature4 + Temperature5) / tempTotalNumber);
@@ -211,7 +211,7 @@ void controlStatments(void)
     //Serial.println("will start control");
     control_previousMillis = currentmillis;
 
-    if (FanA_Auto == "OFF")
+    if (FanA_Auto == "OFF")// if FanA manual
     {
       if (Set_ManualFA == "ON")
       {
@@ -228,7 +228,7 @@ void controlStatments(void)
     }
     else if (FanA_Auto != "OFF")
     {
-      if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_Fan))
+      if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanA))
       {
         digitalWrite(FanA, control_ON);
         if(fanA_status == "OFF")
@@ -237,7 +237,7 @@ void controlStatments(void)
       }
       else if ((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))// here may be require  - Temp_variance_Cool
       {
-        if((currentmillis - FanAStartTime >= Fan_min_interval) || (currentmillis < FanAStartTime))
+        if(((currentmillis - FanAStartTime) >= Fan_min_interval) || (currentmillis < FanAStartTime))
         {
         digitalWrite(FanA, control_OFF);
         fanA_status = "OFF"; 
@@ -262,7 +262,7 @@ void controlStatments(void)
     }
     else if (FanB_Auto != "OFF")
     {
-      if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_Fan))
+      if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanB))
       {
         if((currentmillis - FanAStartTime >= FanDelayBTWN_Fans_interval) || (currentmillis < FanAStartTime))
         {
@@ -281,7 +281,7 @@ void controlStatments(void)
         }
       }
     }
-
+{//Cooler code
     if (Cooler_Auto == "OFF")
     {
       if (Set_ManualC == "ON")
@@ -295,21 +295,39 @@ void controlStatments(void)
         cooler_status = "OFF";
       }
     }
-    else
+    else //ON/OFF time 60/240S
     {
-      if (Temperature > MaxTemp_Trigger + Temp_variance_Cool)
+      if (Temperature > MaxTemp_Trigger + Temp_variance_Cool)//cooler will work after max+Temp_variance_Cool
       {
-        digitalWrite(Cooler, control_ON);
-        cooler_status = "ON";
+        if(0 == CoolerFlag)
+        {     
+          CoolerFlag = 1;
+          CoolerStartTime = currentmillis;
+        }
       }
-      else if (Temperature < MaxTemp_Trigger )
+      else if (Temperature < MaxTemp_Trigger )// cooler will close after max+1
       {
+        CoolerFlag = 0;
         digitalWrite(Cooler, control_OFF);
-        cooler_status = "OFF";
+        cooler_status = "OFF";  
       }
     }
-
-
+    
+    if((((currentmillis - CoolerStartTime) <= Cooler_on_time)&&(CoolerFlag==1)) || (currentmillis < CoolerStartTime))
+    {
+      digitalWrite(Cooler, control_ON);
+      cooler_status = "ON";  
+    }
+    else if((((currentmillis - CoolerStartTime) <= Cooler_off_time)&&(CoolerFlag==1)) || (currentmillis < CoolerStartTime))
+    {
+      digitalWrite(Cooler, control_OFF);
+      cooler_status = "OFF";  
+    }
+    else if((((currentmillis - CoolerStartTime) > Cooler_off_time)&&(CoolerFlag==1)) || (currentmillis < CoolerStartTime))
+    {
+      CoolerStartTime = currentmillis;
+    }
+}
 
     if ((heaterA_Auto == "OFF") && (heaterB_Auto == "OFF"))
     {
@@ -412,41 +430,145 @@ void firebaseStatments(void)
       WhichHeater_prev = WhichHeater;
       Firebase.setString(firebaseData, username + "/Heaters/WhichHeater", WhichHeater);
     }
-    if ((temp_prev1 != Temperature1) && (Temperature1 > 3))
+    if (temp_prev1 != Temperature1)
     {
-      Serial.print("temp1: "); Serial.println(Temperature1);
-      temp_prev1 = Temperature1;
-      Firebase.setFloat(firebaseData, username + "/Temp/temp1", Temperature1);
+      if(Temperature1==250)
+      {
+        Firebase.deleteNode(firebaseData,  username + "/Temp/temp1");
+        temp_prev1 = Temperature1;
+      }
+      else
+      {
+        Serial.print("temp1: "); Serial.println(Temperature1);
+        temp_prev1 = Temperature1;
+        Firebase.setFloat(firebaseData, username + "/Temp/temp1", Temperature1);
+      }
     }
-    if ((temp_prev2 != Temperature2) && (Temperature2 > 3))
+    if (temp_prev2 != Temperature2)
     {
-      temp_prev2 = Temperature2;
-      Serial.print("temp2: "); Serial.println(Temperature2);
-      Firebase.setFloat(firebaseData, username + "/Temp/temp2", Temperature2);
+      if(Temperature2==250)
+      {
+        Firebase.deleteNode(firebaseData,  username + "/Temp/temp2");
+        temp_prev2 = Temperature2;
+      }
+      else
+      {
+        Serial.print("temp2: "); Serial.println(Temperature2);
+        temp_prev2 = Temperature2;
+        Firebase.setFloat(firebaseData, username + "/Temp/temp2", Temperature2);
+      }
     }
-    if ((temp_prev3 != Temperature3) && (Temperature3 > 3))
+    if (temp_prev3 != Temperature3)
     {
-      temp_prev3 = Temperature3;
-      Serial.print("temp3: "); Serial.println(Temperature3);
-      Firebase.setFloat(firebaseData, username + "/Temp/temp3", Temperature3);
+      if(Temperature3==250)
+      {
+        Firebase.deleteNode(firebaseData,  username + "/Temp/temp3");
+        temp_prev3 = Temperature3;
+      }
+      else
+      {
+        Serial.print("temp3: "); Serial.println(Temperature3);
+        temp_prev2 = Temperature2;
+        Firebase.setFloat(firebaseData, username + "/Temp/temp3", Temperature3);
+      }
     }
-    if ((hum_prev1 != Humidity1) && (Humidity1 > 3))
+    if (temp_prev4 != Temperature4)
     {
-      hum_prev1 = Humidity1;
-      Serial.print("Humidity1: "); Serial.println(Humidity1);
-      Firebase.setFloat(firebaseData, username + "/Hum/hum1", Humidity1);
+      if(Temperature4==250)
+      {
+        Firebase.deleteNode(firebaseData,  username + "/Temp/temp4");
+        temp_prev4 = Temperature4;
+      }
+      else
+      {
+        Serial.print("temp4: "); Serial.println(Temperature4);
+        temp_prev4 = Temperature4;
+        Firebase.setFloat(firebaseData, username + "/Temp/temp4", Temperature4);
+      }
     }
-    if ((hum_prev2 != Humidity2) && (Humidity2 > 3))
+    if (temp_prev5 != Temperature5)
     {
-      hum_prev2 = Humidity2;
-      Serial.print("Humidity2: "); Serial.println(Humidity2);
-      Firebase.setFloat(firebaseData, username + "/Hum/hum2", Humidity2);
+      if(Temperature5==250)
+      {
+        Firebase.deleteNode(firebaseData,  username + "/Temp/temp5");
+        temp_prev5 = Temperature5;
+      }
+      else
+      {
+        Serial.print("temp5: "); Serial.println(Temperature5);
+        temp_prev5 = Temperature5;
+        Firebase.setFloat(firebaseData, username + "/Temp/temp5", Temperature5);
+      }
     }
-    if ((hum_prev3 != Humidity3) && (Humidity3 > 3))
+    if (hum_prev1 != Humidity1)
+    {      
+      if(Humidity1==250)
+      {
+        Firebase.deleteNode(firebaseData,  username + "/Hum/hum1");
+        hum_prev1 = Humidity1;
+      }
+      else
+      {
+        Serial.print("Humidity1: "); Serial.println(Humidity1);
+        hum_prev1 = Humidity1;
+        Firebase.setFloat(firebaseData, username + "/Hum/hum1", Humidity1);
+      }
+    }
+    if (hum_prev2 != Humidity2)
     {
-      hum_prev3 = Humidity3;
-      Serial.print("Humidity3: "); Serial.println(Humidity3);
-      Firebase.setFloat(firebaseData, username + "/Hum/hum3", Humidity3);
+      if(Humidity2==250)
+      {
+        Firebase.deleteNode(firebaseData,  username + "/Hum/hum2");
+        hum_prev2 = Humidity2;
+      }
+      else
+      {
+        Serial.print("Humidity2: "); Serial.println(Humidity2);
+        hum_prev2 = Humidity2;
+        Firebase.setFloat(firebaseData, username + "/Hum/hum2", Humidity2);
+      }
+    }
+    if (hum_prev3 != Humidity3)
+    {
+      if(Humidity3==250)
+      {
+        Firebase.deleteNode(firebaseData,  username + "/Hum/hum3");
+        hum_prev3 = Humidity3;
+      }
+      else
+      {
+        Serial.print("Humidity3: "); Serial.println(Humidity3);
+        hum_prev3 = Humidity3;
+        Firebase.setFloat(firebaseData, username + "/Hum/hum3", Humidity3);
+      }
+    }
+    if (hum_prev4 != Humidity4)
+    {
+      if(Humidity4==250)
+      {
+        Firebase.deleteNode(firebaseData,  username + "/Hum/hum4");
+        hum_prev4 = Humidity4;
+      }
+      else
+      {
+        Serial.print("Humidity4: "); Serial.println(Humidity4);
+        hum_prev4 = Humidity4;
+        Firebase.setFloat(firebaseData, username + "/Hum/hum4", Humidity4);
+      }
+    }
+    if (hum_prev5 != Humidity5)
+    {
+      if(Humidity5==250)
+      {
+        Firebase.deleteNode(firebaseData,  username + "/Hum/hum5");
+        hum_prev5 = Humidity5;
+      }
+      else
+      {
+        Serial.print("Humidity5: "); Serial.println(Humidity5);
+        hum_prev5 = Humidity5;
+        Firebase.setFloat(firebaseData, username + "/Hum/hum5", Humidity5);
+      }
     }
     if ((gas_prev != gas) && (gas > 3))
     {
@@ -863,6 +985,110 @@ void LCD_weather()
     else lcd.write(1);
   }
 }
+void buttonUpdate()
+{
+  /*
+   * GND ---> White
+   * VCC ---> orange
+   * SDA ---> green
+   * SCL ---> yellow
+   */
+  if((setFlag_l)&&(setFlag_h))
+  {
+    Serial.println("// make the process of set");
+    setFlag_l=0;
+    setFlag_h=0;
+    buzzer_Status = ! buzzer_Status;
+    digitalWrite(Buzzer,buzzer_Status);
+    delay (1000);
+    buzzer_Status = ! buzzer_Status;
+    digitalWrite(Buzzer,buzzer_Status);
+  }
+  if((negFlag_l)&&(negFlag_h))
+  {
+    Serial.println("// make the process of neg");
+    negFlag_l=0;
+    negFlag_h=0;
+    buzzer_Status = ! buzzer_Status;
+    digitalWrite(Buzzer,buzzer_Status);
+    delay (1000);
+    buzzer_Status = ! buzzer_Status;
+    digitalWrite(Buzzer,buzzer_Status);
+  }
+  if((posFlag_l)&&(posFlag_h))
+  {
+    Serial.println("// make the process of pos");
+    posFlag_l=0;
+    posFlag_h=0;
+    buzzer_Status = ! buzzer_Status;
+    digitalWrite(Buzzer,buzzer_Status);
+    delay (1000);
+    buzzer_Status = ! buzzer_Status;
+    digitalWrite(Buzzer,buzzer_Status);
+  }
+}
+void buttonCheck(void)// here we need to deal with interrupt
+{
+    if((currentmillis - button_previousMillis >= button_interval)||(currentmillis < button_previousMillis))
+  {
+    button_previousMillis = currentmillis;
+    //  Check if button goes low set the first flag
+    if (digitalRead(SW_S)==0)
+    {
+      delay(50);
+      if (digitalRead(SW_S)==0)
+      {
+        setFlag_l = 1;
+        Serial.println(" setFlag_l = 1");
+      }
+    }
+    if (digitalRead(SW_N)==0)
+    {
+      delay(50);
+      if (digitalRead(SW_N)==0)
+      {
+        negFlag_l = 1;
+      }
+    }
+    if (digitalRead(SW_P)==0)
+    {
+      delay(50);
+      if (digitalRead(SW_P)==0)
+      {
+        posFlag_l = 1;
+      }
+    }
+  
+    // Check if it back high set the second flag 
+  
+    if ((digitalRead(SW_S)==1)&&(setFlag_l==1))
+    {
+      delay(50);
+      if ((digitalRead(SW_S)==1)&&(setFlag_l==1))
+      {
+        setFlag_h = 1;
+      }
+    }
+    if ((digitalRead(SW_N)==1)&&(negFlag_l==1))
+    {
+      delay(50);
+      if ((digitalRead(SW_N)==1)&&(negFlag_l==1))
+      {
+        negFlag_h = 1;
+      }
+    }
+    if ((digitalRead(SW_P)==1)&&(posFlag_l==1))
+    {
+      delay(50);
+      if ((digitalRead(SW_P)==1)&&(posFlag_l==1))
+      {
+        posFlag_h = 1;
+      }
+    }
+    buttonUpdate();
+  }
+}
+
 
 
 /********************************************** Init Functions *********************************************************/
@@ -874,7 +1100,10 @@ void pinSetup(void)
   pinMode(DHT2Pin, INPUT);
   pinMode(DHT3Pin, INPUT);
   pinMode(DHT4Pin, INPUT);
-  pinMode(DHT5Pin, INPUT);
+//  pinMode(DHT5Pin, INPUT);
+  pinMode(SW_N, INPUT_PULLUP); 
+  pinMode(SW_P, INPUT_PULLUP);
+  pinMode(SW_S, INPUT_PULLUP);
   
   pinMode(HeaterA, OUTPUT);
   pinMode(HeaterB, OUTPUT);
@@ -896,7 +1125,7 @@ void DHTSetup(void)
   dht2.begin();
   dht3.begin();
   dht4.begin();
-  dht5.begin();
+//  dht5.begin();
 }
 void EEPROMSetup(void)
 {
