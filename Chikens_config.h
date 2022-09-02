@@ -2,7 +2,7 @@
 #define CONFIG_H_
 
 //////////////////////Config Settings//////////////////////
-String CodeVersion ="1.2.0.0";
+String CodeVersion ="3.1.0.0";
 
 const char* ssid_ap     = "ChickenFarm";
 const char* password_ap = "88888888";
@@ -10,34 +10,52 @@ String Host="bird-system-default-rtdb.firebaseio.com/";
 String Token= "Wzsly4ViUy5D579xhksXRkIPGnTbYMjfp2xxWvzx";
 
 // Timing intervals in seconds
-unsigned long int WiFiCheck_interval = 1000;//            uses internet periodically update the keepalive
-unsigned long int WiFi_Reconnect_interval = 30000;
-unsigned long int CreditionalsConfig_interval = 100;
-unsigned long int temp_interval=1000;
-unsigned long int gas_interval=1000*10;
-unsigned long int control_interval = 100;
-unsigned long int firebase_interval = 0; // in minutes     uses internet periodically send & recieve the data with firebase
-unsigned long int resetCheck_interval = 1000;
-unsigned long int googleSheet_interval = 60; // in minutes uses internet periodically send & recieve the data with googlesheet
-unsigned long int timeUpgrade_interval = 20000;//          uses internet periodically update the timing
-unsigned long int serial_interval = 2000;
-unsigned long int RFID_Read_interval = 100;
-unsigned long int LCD_interval = 10000;
-unsigned long int HeaterSwitch_interval = 1000*60*60;//1Hour
-unsigned long int CoolerSwitch_interval = 1000*60*60;//1Hour   
-unsigned long int FanDelayBTWN_Fans_interval = 1000*20;//20 second   
-unsigned long int button_interval = 50; //millis
-
-unsigned long int ErrorDetect_interval = 1000*60;
-
-unsigned long int Fan_min_interval = 1000*60;
-
-unsigned int Cooler_on_time = 60*1000;
-unsigned int Cooler_off_time =240*1000+Cooler_on_time;
+uint32_t WiFiCheck_interval = 1000;//            uses internet periodically update the keepalive
+uint32_t WiFi_Reconnect_interval = 30000;
+uint32_t CreditionalsConfig_interval = 100;
+uint32_t temp_interval=1000;
+uint32_t gas_interval=1000*10;
+uint32_t control_interval = 100;
+uint32_t resetCheck_interval = 1000;
+uint32_t googleSheet_interval = 60; // in minutes uses internet periodically send & recieve the data with googlesheet
+uint32_t timeUpgrade_interval = 20000;//          uses internet periodically update the timing
+uint32_t serial_interval = 2000;
+uint32_t RFID_Read_interval = 100;
+uint32_t LCD_interval = 10000;
+uint32_t LCD_reinit_interval = 100000;
+uint32_t Fast_LCD_interval = 50;
+uint32_t HeaterSwitch_interval = 1000*60*60;//1Hour
+uint32_t CoolerSwitch_interval = 1000*60*60;//1Hour   
+uint32_t FanDelayBTWN_Fans_interval = 1000*20;//20 second   
+uint32_t button_interval = 50; //millis
+uint32_t Setting_interval = 10000; //millis
+uint32_t ErrorDetect_interval = 1000*60;
 
 
-//Group1
-//
+// configurations that might be changed with user
+uint8_t firebase_interval = 0; // in minutes     uses internet periodically send & recieve the data with firebase 0--255
+
+uint16_t Fan_min_interval = 60; //in seconds
+uint16_t Cool_min_interval = 60; //in seconds
+uint16_t Heat_min_interval = 60; //in seconds
+
+uint16_t Fan_on_time = 60;
+uint16_t Fan_off_time =240+Fan_on_time;
+uint16_t Cooler_on_time = 60;
+uint16_t Cooler_off_time =240+Cooler_on_time;
+uint16_t Heater_on_time = 60;
+uint16_t Heater_off_time =240+Heater_on_time;
+
+uint8_t Temp_variance_Cool = 2; // this is the jetter after the max or less than the min to start the action (after max to start cooler)
+uint8_t Temp_variance_FanB = 1; // this is the jetter after the max or less than the min to start the action (after max to start fan)
+uint8_t Temp_variance_FanA = 0; // this is the jetter after the max or less than the min to start the action (after max to start fan)
+
+float MinTemp_Trigger = 25;
+float MaxTemp_Trigger = 35;
+float MinVent_Trigger = 350;
+float MaxVent_Trigger = 400;
+
+
   #define light_ON    0
   #define light_OFF   1
   #define control_ON  1
@@ -51,7 +69,7 @@ unsigned int Cooler_off_time =240*1000+Cooler_on_time;
 //  #define RFID_RX 17  
   #define SW_N 16 //BTNs Switch negative
   #define SW_P 17 //Switch Positive
-  #define SW_S 33 //Switch Set
+  #define SW_S 12 //Switch Set
   
   #define LCD_SDA  21
   #define LCD_SCL  22
@@ -68,7 +86,7 @@ unsigned int Cooler_off_time =240*1000+Cooler_on_time;
   #define WLS2    35
 
   #define IO25    25
-  #define IO12    12
+//  #define IO12    12
 
   #define GASA1   36
   #define GASA2   39
@@ -76,36 +94,10 @@ unsigned int Cooler_off_time =240*1000+Cooler_on_time;
   uint8_t DHT2Pin = 27;
   uint8_t DHT3Pin = 14;
   uint8_t DHT4Pin = 32;
-//  uint8_t DHT5Pin = 33;
+  uint8_t DHT5Pin = 33;
 
 
 
-////Group2
-//
-//  #define light_ON    1
-//  #define light_OFF   0
-//  #define control_ON  0
-//  #define control_OFF 1
-//// Relay 
-//  #define unused1 1
-//  #define Light  4
-//  #define Heater1 5
-//  #define Heater3 18
-//  #define Heater2 19
-//  #define Heater4 23
-//  #define Fan 15
-//  #define Cooler 3
-//  
-//  #define buttonPin 0 
-//  #define BlueLed  2
-//  #define GASA1   34
-//  //#define GASA2   39
-//  uint8_t DHT1Pin = 32;
-//  uint8_t DHT2Pin = 33;
-//  uint8_t DHT3Pin = 27;
-//
-//  #define SDA0_Pin  25
-//  #define SCL0_Pin  26
 
 /////////////////////////////////////
 //DHT test
@@ -121,17 +113,12 @@ unsigned int Cooler_off_time =240*1000+Cooler_on_time;
 //Dont use 32,34,35,12
 // pin 27 ADC2 can't be used while using wifi
 
-#define ADC_READING_NUMBER  100
+#define ADC_READING_NUMBER  10
 #define EEPROM_SIZE 512
-int Temp_variance_Cool = 2; // this is the jetter after the max or less than the min to start cooling
-int Temp_variance_FanB = 1; // this is the jetter after the max or less than the min to start cooling
-int Temp_variance_FanA = 0; // this is the jetter after the max or less than the min to start cooling
 
-float MinTemp_Trigger = 25;
-float MaxTemp_Trigger = 35;
-float MinVent_Trigger = 350;
-float MaxVent_Trigger = 400;
-float Hum_Trigger = 50;
 int stringLength = 60;  // length of the host and token
+int Number_of_Pages = 4;
+int Number_of_Choices1 = 4;
+int Number_of_Choices2 = 8;
 
 #endif CONFIG_H_

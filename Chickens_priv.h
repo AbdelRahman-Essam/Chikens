@@ -19,18 +19,15 @@
  * Error when wifi DC status changes
  * 
  */
-
 /*V1.0.2.3
  * temporary edits 
  * to solve status error in flutter
  * search for temporary and remove the commands 
  */
-
 /*V1.0.2.2
  * Added the Manual/Auto Compilation
  * Upload to the farm directly
  */
-
 /*
  * added RFID
  * need buzzer
@@ -58,35 +55,26 @@
 */
 
 /******************************* Timing ************************************/
-unsigned long long int currentmillis =0;
+uint32_t currentmillis =0;
+/*
+ * delay
+ * 
+ * 
+ */
 
-//WiFiCheck 
-unsigned long long int WiFiCheck_previousMillis = 0;
-//WiFi_Reconnect
-unsigned long long int WiFi_Reconnect_previousMillis = 0;
-//CreditionalsConfig
-unsigned long long int CreditionalsConfig_previousMillis = 0;
-// temperature
-unsigned long long int temp_previousMillis = 0;
-// gas
-unsigned long long int gas_previousMillis = 0;
-// control
-unsigned long long int control_previousMillis = 0;
-//firebase
-unsigned long long int firebase_previousMillis = 0;
+
 // ResetCheck
-unsigned long long int resetCheck_previousMillis = 0;
+uint32_t resetCheck_previousMillis = 0;
 // GoogleSheet
-unsigned long long int googleSheet_previousMillis = 0;
+uint32_t googleSheet_previousMillis = 0;
 //timeUpgrade
-unsigned long long int timeUpgrade_previousMillis =0;
+uint32_t timeUpgrade_previousMillis =0;
 // serial
-unsigned long long int serial_previousMillis = 0;
+uint32_t serial_previousMillis = 0;
 // RFID_Read
-unsigned long long int RFID_Read_previousMillis = 0;
+uint32_t RFID_Read_previousMillis = 0;
 // LCD
-unsigned long long int LCD_previousMillis = 0;
-unsigned long long int ErrorDetect_previousMillis = 0;
+uint32_t ErrorDetect_previousMillis = 0;
 
 unsigned int heaterA_Stime = 0;
 unsigned int heaterB_Stime = 0;
@@ -95,12 +83,19 @@ unsigned int heaterB_Stime_previousMillis = 0;
 unsigned int FanAStartTime = 0;
 unsigned int FanBStartTime = 0;
 ////////////////////////////////Cooler 
-unsigned long long int CoolerStartTime = 0;
+uint32_t CoolerStartTime = 0;
 uint8_t CoolerFlag = 0;
 ///////////////////////////////////////////////// LCD /////////////////////////////////////////////////////
-String line1, line2;
-
-
+String line1, line2,line3,line4;
+byte wifi_customChar[8] = {B00000, B00000, B00000, B00000, B00001, B00011, B00111, B01111};
+byte no_wifi[8] = {B00000, B10100, B01000, B10100, B0001, B00011, B00111, B01111};
+byte arrow[8] = {0x0, 0x4 ,0x6, 0x3f, 0x6, 0x4, 0x0};
+int Page_number = 0;
+int Choise_number = 0;
+int App_mode =0;
+uint32_t LCD_previousMillis = 0;
+uint32_t Fast_LCD_previousMillis = 0;
+uint32_t Setting_previousMillis = 0;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 String ifttt_server = "http://maker.ifttt.com";
 String eventName = "ESP32_Mod2";
@@ -134,6 +129,9 @@ int posFlag_h=0;
 int setFlag_l=0;
 int negFlag_l=0;
 int posFlag_l=0;
+int setFlag=0;
+int negFlag=0;
+int posFlag=0;
 
 // button
 long long int button_previousMillis = 0;
@@ -269,4 +267,5 @@ const char * root_ca = \
                        "TBj0/VLZjmmx6BEP3ojY+x1J96relc8geMJgEtslQIxq/H5COEBkEveegeGTLg==\n" \
                        "-----END CERTIFICATE-----\n";
 
+  
 #endif CHICKENS_PRIV_H_
