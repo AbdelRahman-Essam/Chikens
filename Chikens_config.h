@@ -2,7 +2,7 @@
 #define CONFIG_H_
 
 //////////////////////Config Settings//////////////////////
-String CodeVersion ="3.1.0.9";
+String CodeVersion ="3.1.0.10";
 
 const char* ssid_ap     = "ChickenFarm";
 const char* password_ap = "88888888";
@@ -11,7 +11,7 @@ String Token= "Wzsly4ViUy5D579xhksXRkIPGnTbYMjfp2xxWvzx";
 
 // Timing intervals in seconds
 
-#define WDT_TIMEOUT 120 //30 seconds WDT
+#define WDT_TIMEOUT 60 //30 seconds WDT
 
 uint32_t WiFiCheck_interval = 1000;//            uses internet periodically update the keepalive
 uint32_t WiFi_Reconnect_interval = 30000;
@@ -26,7 +26,7 @@ uint32_t serial_interval = 2000;
 uint32_t RFID_Read_interval = 100;
 uint32_t LCD_interval = 10000;
 uint32_t LCD_reinit_interval = 100000;
-uint32_t Fast_LCD_interval = 50;
+uint32_t Fast_LCD_interval = 5;
 uint32_t HeaterSwitch_interval = 1000*60*60;//1Hour
 uint32_t CoolerSwitch_interval = 1000*60*60;//1Hour   
 uint32_t FanDelayBTWN_Fans_interval = 1000*20;//20 second   

@@ -20,8 +20,9 @@ void setup()
   First_Use();
   RestoreData();
   ResetReason();
+  parameterSetup();
   WDT_Feed();
-//  if (EEPROMReadByte(506) < 10)
+  if (EEPROMReadByte(506) < 10)
   {
     WifiSetup();
     WDT_Feed();
@@ -31,7 +32,7 @@ void setup()
     UpdateCheck();
   }
 //  RFID_Success = RFID_Setup();
-  parameterSetup();
+  
   
 }
 
