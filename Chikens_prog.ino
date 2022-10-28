@@ -964,9 +964,6 @@ void timeUpgrade(void)
     timeClient.getHours();
   }
 }
-
-
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /********************************************** update Functions *********************************************************/
 void SettingMode(void)
@@ -1008,8 +1005,25 @@ void First_FirebaseUse(void)
   if (EEPROMReadByte(371) != 0x5A)
   {
     Serial.println("Firebase First Use Set the Default Values");
+    //WDT Data
     Firebase.setString(firebaseData, username + "/Status/Clear_Reset_Reason", "OFF");
     Firebase.setString(firebaseData, username + "/Status/WDT_Action", "NORMAL");
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_UNKNOWN",  0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_POWERON",  0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_EXT",      0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_SW",       0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_PANIC",    0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_INT_WDT",  0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_TASK_WDT", 0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_WDT",      0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_DEEPSLEEP",0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_BROWNOUT", 0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_SDIO",     0);
+    // GAS CAL
+    Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas1",0);
+    Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas2",0);
+    Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas1_get",0);
+    Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas1_get",0);
     EEPROMWriteByte(371, 0x5A);
   }
 }
@@ -2385,9 +2399,9 @@ void firbaseSetup(void)
 {
   Serial.println("firebase setup");
   Firebase.begin(Host, Token);
-  //Set database read timeout to 10 Sec (max 15 minutes)
+  //Set database read timeout to 10 Sec (max 15 minutes)(in millis)
   Serial.println("firebase test 1");
-  Firebase.setReadTimeout(firebaseData,10);
+  Firebase.setReadTimeout(firebaseData,10000);
   Serial.println("firebase test 2");
   Firebase.reconnectWiFi(false);
   Serial.println("firebase test 3");
