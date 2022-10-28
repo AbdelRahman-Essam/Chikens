@@ -15,6 +15,8 @@
 //#include <PN532_HSU.h>
 //#include <PN532.h>
 #include <LiquidCrystal_I2C.h>
+#include <esp_task_wdt.h>
+
 
 #define DHTTYPE DHT11
 DHT dht1(DHT1Pin, DHTTYPE);
@@ -65,4 +67,4 @@ void client_handle(void);
 void CreditionalsConfig(void);
 void WiFiCheck(void);
 
-#endif CHICKENS_H_
+#endif //CHICKENS_H_

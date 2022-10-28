@@ -1,30 +1,1017 @@
 #include "Chikens_init.h"
 
+//////////////////////////////////////////////// WDT Module ////////////////////////////////////////////////////////////////
+void WDT_Init(void)
+{
+  Serial.println("Configuring WDT...");
+  esp_task_wdt_init(WDT_TIMEOUT, true); //enable panic so ESP32 restarts
+  esp_task_wdt_add(NULL); //add current thread to WDT watch
+}
+void WDT_Feed(void)
+{
+  if (WDT_Action =="Stuck")
+  {
+    Serial.println("Will stuck");
+    while(1);
+  }
+  else if (WDT_Action =="Disable")
+  {
+    WDT_Disable();
+  }
+  else if (WDT_Action =="Disable_Feed")
+  {
+    WDT_Disable();
+    esp_task_wdt_reset();
+  }
+  else if (WDT_Action =="Enable")
+  {
+    WDT_Enable();
+  }
+  else if (WDT_Action =="Enable_Feed")
+  {
+    WDT_Enable();
+    esp_task_wdt_reset();
+  }
+  else if (WDT_Action =="NO_Feed")
+  {
 
+  }
+  else
+  {
+    esp_task_wdt_reset();
+  }
+}
+void WDT_Disable(void)
+{
+  esp_task_wdt_init(WDT_TIMEOUT, false);
+}
+void WDT_Enable(void)
+{
+  esp_task_wdt_reset();
+  esp_task_wdt_init(WDT_TIMEOUT, true);
+  esp_task_wdt_reset();
+}
+/////////////////////////////////////// Reset Module ///////////////////////////////////////////////////
+void ResetReason(void)
+{
+  esp_reset_reason_t reason = esp_reset_reason();
+  Serial.print("Last Reset/Boot Reason was: "); Serial.println( reason );
+  switch (reason) {
+    case ESP_RST_UNKNOWN:
+      Serial.println("Reset reason can not be determined");
+      EEPROMWriteByte(500, (EEPROMReadByte(500)+1));
+      break;
+
+    case ESP_RST_POWERON:
+      Serial.println("Reset due to power-on event");
+      EEPROMWriteByte(501, (EEPROMReadByte(501)+1));
+      break;
+
+    case ESP_RST_EXT:
+      Serial.println("Reset by external pin (not applicable for ESP32)");
+      EEPROMWriteByte(502, (EEPROMReadByte(502)+1));
+      break;
+
+    case ESP_RST_SW:
+      Serial.println("Software reset via esp_restart");
+      EEPROMWriteByte(503, (EEPROMReadByte(503)+1));
+      break;
+
+    case ESP_RST_PANIC:
+      Serial.println("Software reset due to exception/panic");
+      EEPROMWriteByte(504, (EEPROMReadByte(504)+1));
+      break;
+
+    case ESP_RST_INT_WDT:
+      Serial.println("Reset (software or hardware) due to interrupt watchdog");
+      EEPROMWriteByte(505, (EEPROMReadByte(505)+1));
+      break;
+
+    case ESP_RST_TASK_WDT:
+      Serial.println("Reset due to task watchdog");
+      EEPROMWriteByte(506, (EEPROMReadByte(506)+1));
+      break;
+
+    case ESP_RST_WDT:
+      Serial.println("Reset due to other watchdogs");
+      EEPROMWriteByte(507, (EEPROMReadByte(507)+1));
+      break;
+
+    case ESP_RST_DEEPSLEEP:
+      Serial.println("Reset after exiting deep sleep mode");
+      EEPROMWriteByte(508, (EEPROMReadByte(508)+1));
+      break;
+
+    case ESP_RST_BROWNOUT:
+      Serial.println("Brownout reset (software or hardware)");
+      EEPROMWriteByte(509, (EEPROMReadByte(509)+1));
+      break;
+
+    case ESP_RST_SDIO:
+      Serial.println("Reset over SDIO");
+      EEPROMWriteByte(510, (EEPROMReadByte(510)+1));
+      break;
+
+    default:
+      break;
+  }
+
+}
+void SendResetReason(void)
+{
+  esp_reset_reason_t reason = esp_reset_reason();
+  
+  switch (reason) {
+    case ESP_RST_UNKNOWN:
+      Firebase.setString(firebaseData, username + "/Status/Last_Reset", "ESP_RST_UNKNOWN");
+      break;
+
+    case ESP_RST_POWERON:
+      Firebase.setString(firebaseData, username + "/Status/Last_Reset", "ESP_RST_POWERON");
+      break;
+
+    case ESP_RST_EXT:
+      Firebase.setString(firebaseData, username + "/Status/Last_Reset", "ESP_RST_EXT");
+      break;
+
+    case ESP_RST_SW:
+      Serial.println("Software reset via esp_restart");
+      Firebase.setString(firebaseData, username + "/Status/Last_Reset", "ESP_RST_SW");
+      break;
+
+    case ESP_RST_PANIC:
+      Firebase.setString(firebaseData, username + "/Status/Last_Reset", "ESP_RST_PANIC");
+      break;
+
+    case ESP_RST_INT_WDT:
+      Firebase.setString(firebaseData, username + "/Status/Last_Reset", "ESP_RST_INT_WDT");
+      break;
+
+    case ESP_RST_TASK_WDT:
+      Firebase.setString(firebaseData, username + "/Status/Last_Reset", "ESP_RST_TASK_WDT");
+      break;
+
+    case ESP_RST_WDT:
+      Firebase.setString(firebaseData, username + "/Status/Last_Reset", "ESP_RST_WDT");
+      break;
+
+    case ESP_RST_DEEPSLEEP:
+      Firebase.setString(firebaseData, username + "/Status/Last_Reset", "ESP_RST_DEEPSLEEP");
+      break;
+
+    case ESP_RST_BROWNOUT:
+      Firebase.setString(firebaseData, username + "/Status/Last_Reset", "ESP_RST_BROWNOUT");
+      break;
+
+    case ESP_RST_SDIO:
+      Firebase.setString(firebaseData, username + "/Status/Last_Reset", "ESP_RST_SDIO");
+      break;
+
+    default:
+      break;
+  }
+  Firebase.setInt(firebaseData, username + "/Status/ESP_RST_UNKNOWN", EEPROMReadByte(500));
+  Firebase.setInt(firebaseData, username + "/Status/ESP_RST_POWERON", EEPROMReadByte(501));
+  Firebase.setInt(firebaseData, username + "/Status/ESP_RST_EXT",     EEPROMReadByte(502));
+  Firebase.setInt(firebaseData, username + "/Status/ESP_RST_SW",      EEPROMReadByte(503));
+  Firebase.setInt(firebaseData, username + "/Status/ESP_RST_PANIC",   EEPROMReadByte(504));
+  Firebase.setInt(firebaseData, username + "/Status/ESP_RST_INT_WDT", EEPROMReadByte(505));
+  Firebase.setInt(firebaseData, username + "/Status/ESP_RST_TASK_WDT",EEPROMReadByte(506));
+  Firebase.setInt(firebaseData, username + "/Status/ESP_RST_WDT",     EEPROMReadByte(507));
+  Firebase.setInt(firebaseData, username + "/Status/ESP_RST_DEEPSLEEP",EEPROMReadByte(508));
+  Firebase.setInt(firebaseData, username + "/Status/ESP_RST_BROWNOUT",EEPROMReadByte(509));
+  Firebase.setInt(firebaseData, username + "/Status/ESP_RST_SDIO",    EEPROMReadByte(510));
+}
+void ClearResetReason(void)
+{
+  EEPROMWriteByte(500, 0);
+  EEPROMWriteByte(501, 0);
+  EEPROMWriteByte(502, 0);
+  EEPROMWriteByte(503, 0);
+  EEPROMWriteByte(504, 0);
+  EEPROMWriteByte(505, 0);
+  EEPROMWriteByte(506, 0);
+  EEPROMWriteByte(507, 0);
+  EEPROMWriteByte(508, 0);
+  EEPROMWriteByte(509, 0);
+  EEPROMWriteByte(510, 0);
+  EEPROMWriteByte(511, 0);
+}
+void ResetReason_Update(void)
+{
+  static uint8_t Sent =0;
+  if (Sent == 0)
+  {
+    if (firebaseErrorDetectNoPrint() > 0)
+    {
+      SendResetReason();
+      Sent = 1;
+    }
+  }
+  if (Clear_Reset_Reason == "ON")
+  {
+    ClearResetReason();
+    SendResetReason();
+    Firebase.setString(firebaseData, username + "/Status/Clear_Reset_Reason", "OFF");
+    Clear_Reset_Reason = "OFF";
+  }
+  
+}
+/////////////////////////////////////// WiFi Module ///////////////////////////////////////////////////
+void WiFiCheck(void)
+{
+  static unsigned long long int WiFiCheck_previousMillis = 0;
+  static unsigned long long int WiFi_Reconnect_previousMillis = 0;
+
+  if ((currentmillis - WiFiCheck_previousMillis >= WiFiCheck_interval) || (currentmillis < WiFiCheck_previousMillis))
+  {
+    //Serial.println("will start WiFiCheck");
+    WiFiCheck_previousMillis = currentmillis;
+    if ((Error <= 0))
+    {
+      LED_Status = ! LED_Status;
+      digitalWrite(BlueLed, LED_Status);
+    }
+    if (((currentmillis - WiFi_Reconnect_previousMillis >= WiFi_Reconnect_interval) || (currentmillis < WiFi_Reconnect_previousMillis)) && (Error < 0))
+    {
+      WDT_Feed();
+      WiFi_Reconnect_previousMillis = currentmillis;
+      Serial.println("Inside WiFiReconnect");
+      Serial.print(millis());
+      Serial.println("Reconnecting to WiFi...");
+      WiFi.disconnect();
+      WiFi.reconnect();
+    }
+    //Serial.println("will stop WiFiCheck");
+  }
+}
+void CreditionalsConfig(void)
+{
+  static unsigned long long int CreditionalsConfig_previousMillis = 0;
+  if ((currentmillis - CreditionalsConfig_previousMillis >= CreditionalsConfig_interval) || (currentmillis < CreditionalsConfig_previousMillis))
+  {
+    //Serial.println("will start cred config");
+    CreditionalsConfig_previousMillis = currentmillis;
+    buttonState = digitalRead(buttonPin);
+    if (buttonState == LOW)
+    {
+      delay(2000);
+      WDT_Feed();
+      buttonState = digitalRead(buttonPin);
+      if (buttonState == LOW)
+      {
+        WDT_Feed();
+        delay(2000);
+        buttonState = digitalRead(buttonPin);
+        if (buttonState == LOW)
+        {
+          digitalWrite(BlueLed, 0);
+          delay(500);
+          digitalWrite(BlueLed, 1);
+          delay(500);
+          digitalWrite(BlueLed, 0);
+          delay(500);
+          digitalWrite(BlueLed, LED_Status);
+          WDT_Feed();
+          set_access_point();
+          while (1)
+          {
+            WDT_Feed();
+            client_handle();
+            delay(1000);
+            if (ConfigResetFlag)
+              ESP.restart();
+          }
+        }
+      }
+    }
+    //Serial.println("will stop cred config");
+  }
+}
+void firebaseStatments(void)
+{
+  static uint32_t firebase_previousMillis = 0;
+  static uint32_t Case = 0;
+  if ((currentmillis - firebase_previousMillis >= firebase_interval * 60000) && (firebaseErrorDetectNoPrint() > 0))
+  {
+//    Serial.println("will start firebase");
+//    int Stime = millis();
+//    Serial.print("Start Time "); Serial.println(Stime);
+//    Serial.print("Case "); Serial.println(Case);
+    /***************************************/
+    switch (Case) {
+      case 0:
+        First_FirebaseUse();
+        Case++;
+      break;
+      case 1:
+        ///////////////////////////// Getters ////////////////////////////
+        if (WhichHeater_prev != WhichHeater) // the 3 is a number to avoid setting the 0 value to firebase
+        {
+          Serial.print("WhichHeater: "); Serial.println(WhichHeater);
+          WhichHeater_prev = WhichHeater;
+          Firebase.setString(firebaseData, username + "/Heaters/WhichHeater", WhichHeater);
+        }
+        Case++;
+      break;
+      case 2:
+        if (temp_prev1 != Temperature1)
+        {
+          if (Temperature1 <= 1)
+          {
+            Firebase.deleteNode(firebaseData,  username + "/Temp/temp1");
+            temp_prev1 = Temperature1;
+          }
+          else
+          {
+            Serial.print("temp1: "); Serial.println(Temperature1);
+            temp_prev1 = Temperature1;
+            Firebase.setFloat(firebaseData, username + "/Temp/temp1", Temperature1);
+          }
+        }
+        if (temp_prev2 != Temperature2)
+        {
+          if (Temperature2 <= 1)
+          {
+            Firebase.deleteNode(firebaseData,  username + "/Temp/temp2");
+            temp_prev2 = Temperature2;
+          }
+          else
+          {
+            Serial.print("temp2: "); Serial.println(Temperature2);
+            temp_prev2 = Temperature2;
+            Firebase.setFloat(firebaseData, username + "/Temp/temp2", Temperature2);
+          }
+        }
+        Case++;
+      break;
+      case 3:
+        if (temp_prev3 != Temperature3)
+        {
+          if (Temperature3 <= 1)
+          {
+            Firebase.deleteNode(firebaseData,  username + "/Temp/temp3");
+            temp_prev3 = Temperature3;
+          }
+          else
+          {
+            Serial.print("temp3: "); Serial.println(Temperature3);
+            temp_prev2 = Temperature2;
+            Firebase.setFloat(firebaseData, username + "/Temp/temp3", Temperature3);
+          }
+        }
+        Case++;
+      break;
+      case 4:
+        if (temp_prev4 != Temperature4)
+        {
+          if (Temperature4 <= 1)
+          {
+            Firebase.deleteNode(firebaseData,  username + "/Temp/temp4");
+            temp_prev4 = Temperature4;
+          }
+          else
+          {
+            Serial.print("temp4: "); Serial.println(Temperature4);
+            temp_prev4 = Temperature4;
+            Firebase.setFloat(firebaseData, username + "/Temp/temp4", Temperature4);
+          }
+        }
+        Case++;
+      break;
+      case 5:
+        if (temp_prev5 != Temperature5)
+        {
+          if (Temperature5 <= 1)
+          {
+            Firebase.deleteNode(firebaseData,  username + "/Temp/temp5");
+            temp_prev5 = Temperature5;
+          }
+          else
+          {
+            Serial.print("temp5: "); Serial.println(Temperature5);
+            temp_prev5 = Temperature5;
+            Firebase.setFloat(firebaseData, username + "/Temp/temp5", Temperature5);
+          }
+        }
+        Case++;
+      break;
+      case 6:
+        if (hum_prev1 != Humidity1)
+        {
+          if (Humidity1 <= 1)
+          {
+            Firebase.deleteNode(firebaseData,  username + "/Hum/hum1");
+            hum_prev1 = Humidity1;
+          }
+          else
+          {
+            Serial.print("Humidity1: "); Serial.println(Humidity1);
+            hum_prev1 = Humidity1;
+            Firebase.setFloat(firebaseData, username + "/Hum/hum1", Humidity1);
+          }
+        }
+        Case++;
+      break;
+      case 7:
+        if (hum_prev2 != Humidity2)
+        {
+          if (Humidity2 <= 1)
+          {
+            Firebase.deleteNode(firebaseData,  username + "/Hum/hum2");
+            hum_prev2 = Humidity2;
+          }
+          else
+          {
+            Serial.print("Humidity2: "); Serial.println(Humidity2);
+            hum_prev2 = Humidity2;
+            Firebase.setFloat(firebaseData, username + "/Hum/hum2", Humidity2);
+          }
+        }
+        Case++;
+      break;
+      case 8:
+        if (hum_prev3 != Humidity3)
+        {
+          if (Humidity3 <= 1)
+          {
+            Firebase.deleteNode(firebaseData,  username + "/Hum/hum3");
+            hum_prev3 = Humidity3;
+          }
+          else
+          {
+            Serial.print("Humidity3: "); Serial.println(Humidity3);
+            hum_prev3 = Humidity3;
+            Firebase.setFloat(firebaseData, username + "/Hum/hum3", Humidity3);
+          }
+        }
+        Case++;
+      break;
+      case 9:
+        if (hum_prev4 != Humidity4)
+        {
+          if (Humidity4 <= 1)
+          {
+            Firebase.deleteNode(firebaseData,  username + "/Hum/hum4");
+            hum_prev4 = Humidity4;
+          }
+          else
+          {
+            Serial.print("Humidity4: "); Serial.println(Humidity4);
+            hum_prev4 = Humidity4;
+            Firebase.setFloat(firebaseData, username + "/Hum/hum4", Humidity4);
+          }
+        }
+        Case++;
+      break;
+      case 10:
+        if (hum_prev5 != Humidity5)
+        {
+          if (Humidity5 <= 1)
+          {
+            Firebase.deleteNode(firebaseData,  username + "/Hum/hum5");
+            hum_prev5 = Humidity5;
+          }
+          else
+          {
+            Serial.print("Humidity5: "); Serial.println(Humidity5);
+            hum_prev5 = Humidity5;
+            Firebase.setFloat(firebaseData, username + "/Hum/hum5", Humidity5);
+          }
+        }
+        Case++;
+      break;
+      case 11:
+        if ((gas_prev != gas) && (gas > 3))
+        {
+          // the String will be produced in the android program
+          gas_prev = gas;
+          Serial.print("gas: "); Serial.println(gas);
+          Firebase.setInt(firebaseData, username + "/airQuality", gas);
+        }
+        Case++;
+      break;
+      case 12:
+        if ((gas1_prev != gas1) && (gas1 > 3))
+        {
+          // the String will be produced in the android program
+          gas1_prev = gas1;
+          Serial.print("gas1: "); Serial.println(gas1);
+          Firebase.setInt(firebaseData, username + "/airQuality1", gas1);
+        }
+        Case++;
+      break;
+      case 13:
+        if ((gas2_prev != gas2) && (gas2 > 3))
+        {
+          // the String will be produced in the android program
+          gas2_prev = gas2;
+          Serial.print("gas2: "); Serial.println(gas2);
+          Firebase.setInt(firebaseData, username + "/airQuality2", gas2);
+        }
+        Case++;
+      break;
+      case 14:
+        if (heaterA_status_prev != heaterA_status)
+        {
+          heaterA_status_prev = heaterA_status;
+          Serial.print("heaterA_status: "); Serial.println(heaterA_status);
+          Firebase.setString(firebaseData, username + "/Heaters/heaterA_status", heaterA_status);
+          Firebase.setString(firebaseData, username + "/Heaters/Get_ManualHA", heaterA_status);// temporary because the android is working with this variable
+        }
+        Case++;
+      break;
+      case 15:
+        if (heaterB_status_prev != heaterB_status)
+        {
+          heaterB_status_prev = heaterB_status;
+          Serial.print("heaterB_status: "); Serial.println(heaterB_status);
+          Firebase.setString(firebaseData, username + "/Heaters/heaterB_status", heaterB_status);
+          Firebase.setString(firebaseData, username + "/Heaters/Get_ManualHB", heaterB_status);// temporary
+        }
+        Case++;
+      break;
+      case 16:
+        if (fanA_status_prev != fanA_status)
+        {
+          fanA_status_prev = fanA_status;
+          Serial.print("fanA_status: "); Serial.println(fanA_status);
+          Firebase.setString(firebaseData, username + "/Heaters/Fan_status", fanA_status); //ABDO Fan_status --> FanA_status
+          Firebase.setString(firebaseData, username + "/Heaters/Get_ManualC", fanA_status);//ABDO temporary
+        }
+        Case++;
+      break;
+      case 17:
+        if (fanB_status_prev != fanB_status)
+        {
+          fanB_status_prev = fanB_status;
+          Serial.print("fanB_status: "); Serial.println(fanB_status);
+          Firebase.setString(firebaseData, username + "/Heaters/FanB_status", fanB_status);
+          Firebase.setString(firebaseData, username + "/Heaters/Get_ManualC", fanB_status);// temporary
+        }
+        Case++;
+      break;
+      case 18:
+        if (cooler_status_prev != cooler_status)
+        {
+          cooler_status_prev = cooler_status;
+          Serial.print("cooler_status: "); Serial.println(cooler_status);
+          Firebase.setString(firebaseData, username + "/Heaters/Cooler_status", cooler_status);
+          Firebase.setString(firebaseData, username + "/Heaters/Get_ManualC", cooler_status);// temporary
+        }
+        Case++;
+      break;
+      case 19:
+        ///////////////////////////// Setters ////////////////////////////
+        firebaseData.clearData();/////////////////////////////////////////////
+        string.clear();
+        Firebase.get(firebaseData, username + "/Gas_Cal/Gas1");
+        string = firebaseData.stringData();
+        if (Gas1_Sen_Cal_Prev != string)
+        {
+          Gas1_Sen_Cal_Prev = string;
+          Gas1_Sen_Cal = Gas1_Sen_Cal_Prev.toInt();
+          Serial.println("Gas1_Sen_Cal Changed!");
+          Serial.print("Gas1_Sen_Cal: "); Serial.println(Gas1_Sen_Cal);
+          Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas1_get", Gas1_Sen_Cal);
+        }
+        Case++;
+      break;
+      case 20:
+        firebaseData.clearData();/////////////////////////////////////////////
+        string.clear();
+        Firebase.get(firebaseData, username + "/Status/Clear_Reset_Reason");
+        string = firebaseData.stringData();
+        if (Clear_Reset_Reason_prev != string)
+        {
+          Clear_Reset_Reason_prev = string;
+          Clear_Reset_Reason = Clear_Reset_Reason_prev;
+          Serial.println("Clear_Reset_Reason Changed!");
+          Serial.print("Clear_Reset_Reason: "); Serial.println(Clear_Reset_Reason);
+        }
+        Case++;
+      break;
+      case 21:
+          firebaseData.clearData();/////////////////////////////////////////////
+          string.clear();
+          Firebase.get(firebaseData, username + "/Status/WDT_Action");
+          string = firebaseData.stringData();
+          if (WDT_Action_prev != string)
+          {
+          WDT_Action_prev = string;
+          WDT_Action = WDT_Action_prev;
+          Serial.println("WDT_Action Changed!");
+          Serial.print("WDT_Action: "); Serial.println(WDT_Action);
+          }
+          Case++;
+      break;
+      case 22:
+        //    firebaseData.clearData();/////////////////////////////////////////////
+        //    string.clear();
+        //    Firebase.get(firebaseData, username + "/Gas_Cal/Gas2");
+        //    string = firebaseData.stringData();
+        //    if (Gas2_Sen_Cal_Prev != string)
+        //    {
+        //      Gas2_Sen_Cal_Prev = string;
+        //      Gas2_Sen_Cal = Gas2_Sen_Cal_Prev.toInt();
+        //      Serial.println("Gas2_Sen_Cal Changed!");
+        //      Serial.print("Gas2_Sen_Cal: "); Serial.println(Gas2_Sen_Cal);
+        //      Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas2_get", Gas2_Sen_Cal);
+        //    }
+        Case++;
+      break;
+      case 23:
+        //    firebaseData.clearData();
+        //    string.clear();
+        //    Firebase.get(firebaseData, username + "/Gas_Cal/Gas2");
+        //    string = firebaseData.stringData();
+        //    if (Gas2_Sen_Cal_Prev != string)
+        //    {
+        //      Gas2_Sen_Cal_Prev = string;
+        //      Gas2_Sen_Cal = Gas2_Sen_Cal_Prev.toInt();
+        //      Serial.println("Gas2_Sen_Cal Changed!");
+        //      Serial.print("Gas2_Sen_Cal: "); Serial.println(Gas2_Sen_Cal);
+        //      Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas2_get", Gas2_Sen_Cal);
+        //    }////////////////////////////////////////////////////////////////
+        Case++;
+      break;
+      case 24:
+        firebaseData.clearData();/////////////////////////////////////////////
+        string.clear();
+        Firebase.get(firebaseData, username + "/Gas_Cal/Gas2");
+        string = firebaseData.stringData();
+        if (Gas2_Sen_Cal_Prev != string)
+        {
+          Gas2_Sen_Cal_Prev = string;
+          Gas2_Sen_Cal = Gas2_Sen_Cal_Prev.toInt();
+          Serial.println("Gas2_Sen_Cal Changed!");
+          Serial.print("Gas2_Sen_Cal: "); Serial.println(Gas2_Sen_Cal);
+          Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas2_get", Gas2_Sen_Cal);
+        }
+        Case++;
+      break;
+      case 25:
+        firebaseData.clearData();/////////////////////////////////////////////
+        string.clear();
+        Firebase.get(firebaseData, username + "/Heaters/FanAuto"); //ABDO FanAuto --> FanA_Auto
+        string = firebaseData.stringData();
+        if ((FanA_Auto_prev != string) && (string == "ON" || string == "OFF"))
+        {
+          Serial.println("FanA_Auto Changed!");
+          FanA_Auto_prev = string;
+          FanA_Auto = FanA_Auto_prev;
+          Serial.print("FanA_Auto: "); Serial.println(FanA_Auto);
+          Firebase.setString(firebaseData, username + "/Heaters/Get_FanAuto", FanA_Auto); //ABDO Get_FanAuto --> Get_FanA_Auto
+        }
+        Case++;
+      break;
+      case 26:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/Heaters/FanB_Auto");
+        string = firebaseData.stringData();
+        if ((FanB_Auto_prev != string) && (string == "ON" || string == "OFF"))
+        {
+          Serial.println("FanB_Auto Changed!");
+          FanB_Auto_prev = string;
+          FanB_Auto = FanB_Auto_prev;
+          Serial.print("FanB_Auto: "); Serial.println(FanB_Auto);
+          Firebase.setString(firebaseData, username + "/Heaters/Get_FanB_Auto", FanB_Auto);
+        }
+        Case++;
+      break;
+      case 27:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/Heaters/CoolerAuto"); //ABDO need to be changed to Cooler_Auto
+        string = firebaseData.stringData();
+        if ((Cooler_Auto_prev != string) && (string == "ON" || string == "OFF"))
+        {
+          Serial.println("Cooler_Auto Changed!");
+          Cooler_Auto_prev = string;
+          Cooler_Auto = Cooler_Auto_prev;
+          Serial.print("Cooler_Auto: "); Serial.println(Cooler_Auto);
+          Firebase.setString(firebaseData, username + "/Heaters/Get_CoolerAuto", Cooler_Auto);
+        }
+        Case++;
+      break;
+      case 28:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/Heaters/heaterAauto"); //ABDO change the nameing heaterA_Auto
+        string = firebaseData.stringData();
+        if ((heaterA_Auto_prev != string) && (string == "ON" || string == "OFF"))
+        {
+          Serial.println("heaterA_Auto Changed!");
+          heaterA_Auto_prev = string;
+          heaterA_Auto = heaterA_Auto_prev;
+          Serial.print("heaterA_Auto: "); Serial.println(heaterA_Auto);
+          Firebase.setString(firebaseData, username + "/Heaters/Get_heaterAauto", heaterA_Auto);//ABDO change the nameing heaterA_Auto
+        }
+        Case++;
+      break;
+      case 29:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/Heaters/heaterBAuto");//ABDO change the nameing heaterB_Auto
+        string = firebaseData.stringData();
+        if ((heaterB_Auto_prev != string) && (string == "ON" || string == "OFF"))
+        {
+          Serial.println("heaterBAuto Changed!");
+          heaterB_Auto_prev = string;
+          heaterB_Auto = heaterB_Auto_prev;
+          Serial.print("heaterB_Auto: "); Serial.println(heaterB_Auto);
+          Firebase.setString(firebaseData, username + "/Heaters/Get_heaterB_Auto", heaterB_Auto);
+        }
+        Case++;
+      break;
+      case 30:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/Heaters/Set_ManualHA");
+        string = firebaseData.stringData();
+        if ((Set_ManualHA_prev != string) && (string == "ON" || string == "OFF"))
+        {
+          Serial.println("ManualHA Changed!");
+          Set_ManualHA_prev = string;
+          Set_ManualHA = Set_ManualHA_prev;
+          Serial.print("Set_ManualHA: "); Serial.println(Set_ManualHA);
+          //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualHA", Set_ManualHA);// temporary
+        }
+        Case++;
+      break;
+      case 31:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/Heaters/Set_ManualHB");
+        string = firebaseData.stringData();
+        if ((Set_ManualHB_prev != string) && (string == "ON" || string == "OFF"))
+        {
+          Serial.println("ManualHB Changed!");
+          Set_ManualHB_prev = string;
+          Set_ManualHB = Set_ManualHB_prev;
+          Serial.print("Set_ManualHB: "); Serial.println(Set_ManualHB);
+          // Firebase.setString(firebaseData, username + "/Heaters/Get_ManualHB", Set_ManualHB);//temporary
+        }
+        Case++;
+      break;
+      case 32:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/Heaters/Set_ManualC");
+        string = firebaseData.stringData();
+        if ((Set_ManualC_prev != string) && (string == "ON" || string == "OFF"))
+        {
+          Serial.println("ManualC Changed!");
+          Set_ManualC_prev = string;
+          Set_ManualC = Set_ManualC_prev;
+          Serial.print("Set_ManualC: "); Serial.println(Set_ManualC);
+          //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualC", Set_ManualC); //temporary
+        }
+        Case++;
+      break;
+      case 33:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/Heaters/Set_ManualF");//ABDO
+        string = firebaseData.stringData();
+        if ((Set_ManualFA_prev != string) && (string == "ON" || string == "OFF"))
+        {
+          Serial.println("ManualFA Changed!");
+          Set_ManualFA_prev = string;
+          Set_ManualFA = Set_ManualFA_prev;
+          Serial.print("Set_ManualFA: "); Serial.println(Set_ManualFA);
+          //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualFA", Set_ManualFA); //temporary
+        }
+        Case++;
+      break;
+      case 34:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/Heaters/Set_ManualFB");
+        string = firebaseData.stringData();
+        if ((Set_ManualFB_prev != string) && (string == "ON" || string == "OFF"))
+        {
+          Serial.println("ManualFB Changed!");
+          Set_ManualFB_prev = string;
+          Set_ManualFB = Set_ManualFB_prev;
+          Serial.print("Set_ManualFB: "); Serial.println(Set_ManualFB);
+          //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualFB", Set_ManualFB); //temporary
+        }
+        Case++;
+      break;
+      case 35:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/resetFlag");
+        string = firebaseData.stringData();
+        if ((ResetFlag_prev != string) && (string == "ON" || string == "OFF"))
+        {
+          Serial.println("ResetFlag Changed!");
+          ResetFlag_prev = string;
+          ResetFlag = ResetFlag_prev;
+        }
+        Case++;
+      break;
+      case 36:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/Lights/Set_Led1");
+        string = firebaseData.stringData();
+        if ((LED_prev != string) && (string == "ON" || string == "OFF"))
+        {
+          Serial.println("BlueLed Changed!");
+          LED_prev = string;
+          LED_Status_Str = LED_prev;
+          Firebase.setString(firebaseData, username + "/Lights/Get_Led1", LED_Status_Str);
+          if (LED_Status_Str == "ON")
+            LED_Status = 1;
+          else if (LED_Status_Str == "OFF")
+            LED_Status = 0;
+          digitalWrite(BlueLed, LED_Status);
+        }
+        Case++;
+      break;
+      case 37:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/Lights/Set_Light");
+        string = firebaseData.stringData();
+        if ((Light_prev != string) && (string == "ON" || string == "OFF"))
+        {
+          Serial.println("Light Changed!");
+          Light_prev = string;
+          Light_Status = Light_prev;
+          Serial.print("Light_Status: "); Serial.println(Light_Status);
+          if (Light_Status == "OFF")
+            digitalWrite(Light, light_OFF);
+          else if (Light_Status == "ON")
+            digitalWrite(Light, light_ON);
+          Firebase.setString(firebaseData, username + "/Lights/Get_Light", Light_Status);
+        }
+        Case++;
+      break;
+      case 38:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/valueRanges/vent");
+        string = firebaseData.stringData();
+        if ((VentRange_prev != string))
+        {
+          VentRange_prev = string;
+          String sbstring = VentRange_prev.substring(0, 3);
+          MinVent_Trigger = sbstring.toInt();
+          if (((MinVent_Trigger >= 5) && (MinVent_Trigger <= 1000)) && (EEPROMReadInt(300) != MinVent_Trigger))
+          {
+            EEPROMWriteInt(300, MinVent_Trigger);
+            Serial.print("MinVent_Trigger :"); Serial.println(MinVent_Trigger);
+          }
+          else
+            MinVent_Trigger = EEPROMReadInt(300);
+          sbstring = "";
+          sbstring = VentRange_prev.substring(4, 7);
+          MaxVent_Trigger = sbstring.toInt();
+          if (((MaxVent_Trigger >= 5) && (MaxVent_Trigger <= 1000)) && (EEPROMReadInt(310) != MaxVent_Trigger))
+          {
+            EEPROMWriteInt(310, MaxVent_Trigger);
+            Serial.print("MaxVent_Trigger :"); Serial.println(MaxVent_Trigger);
+          }
+          else
+            MaxVent_Trigger = EEPROMReadInt(310);
+        }
+        Case++;
+      break;
+      case 39:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/valueRanges/temp");
+        string = firebaseData.stringData();
+        if ((TempRange_prev != string))
+        {
+          TempRange_prev = string;
+          String sbstring = TempRange_prev.substring(0, 3);
+          MinTemp_Trigger = sbstring.toInt();
+          if (((MinTemp_Trigger >= 5) && (MinTemp_Trigger <= 1000)) && (EEPROMReadInt(330) != MinTemp_Trigger))
+          {
+            EEPROMWriteInt(330, MinTemp_Trigger);
+            Serial.print("MinTemp_Trigger :"); Serial.println(MinTemp_Trigger);
+          }
+          else
+            MinTemp_Trigger = EEPROMReadInt(330);
+          sbstring = "";
+          sbstring = TempRange_prev.substring(3, 7);
+          MaxTemp_Trigger = sbstring.toInt();
+          if (((MaxTemp_Trigger >= 5) && (MaxTemp_Trigger <= 1000)) && (EEPROMReadInt(320) != MaxTemp_Trigger))
+          {
+            EEPROMWriteInt(320, MaxTemp_Trigger);
+            Serial.print("MaxTemp_Trigger :"); Serial.println(MaxTemp_Trigger);
+          }
+          else
+            MaxTemp_Trigger = EEPROMReadInt(320);
+        }
+        Case++;
+      break;
+      case 40:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/valueRanges/delay");
+        string = firebaseData.stringData();
+        if ((firebase_interval_prev != string))
+        {
+          firebase_interval_prev = string;
+          firebase_interval = firebase_interval_prev.toInt();
+          if (((firebase_interval_prev.toInt() >= 0) && (firebase_interval_prev.toInt() <= 250)))
+          {
+            firebase_interval = firebase_interval_prev.toInt();
+            Serial.print("firebase_interval :"); Serial.println(firebase_interval);
+          }
+        }
+        timeClient.update();
+        Firebase.setInt(firebaseData, username + "/Time/Hour", timeClient.getHours());
+        Firebase.setInt(firebaseData, username + "/Time/Minute", timeClient.getMinutes());
+        Firebase.setInt(firebaseData, username + "/Time/Seconds", timeClient.getSeconds());
+        Case = 0;
+        firebase_previousMillis = currentmillis;
+      break;
+      default:
+        firebase_previousMillis = currentmillis;
+        Case = 0;
+      break;
+    }
+//    Serial.println("Done Firebase");
+//    int endtime = millis() - Stime;
+//    Serial.print("End Time "); Serial.println(endtime);
+  }
+}
+void gooogleSheetStatments(void)
+{
+  if (((currentmillis - googleSheet_previousMillis >= googleSheet_interval * 60000) || (currentmillis < googleSheet_previousMillis)) && (Error > 0))
+  {
+    googleSheet_previousMillis = currentmillis;
+    Serial.println("will start googleSheets");
+    sendDataToSheet();
+  }
+}
+void timeUpgrade(void)
+{
+  if (((currentmillis - timeUpgrade_previousMillis >= timeUpgrade_interval) || (currentmillis < timeUpgrade_previousMillis)) && (Error > 0))
+  {
+    //Serial.println("will start timeupgrade");
+    timeUpgrade_previousMillis = currentmillis;
+    timeClient.update();
+    timeClient.getSeconds();
+    timeClient.getMinutes();
+    timeClient.getHours();
+  }
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 /********************************************** update Functions *********************************************************/
 void SettingMode(void)
 {
   //fail system to safe state here
   LCD_Fast_Update();
   buttonCheck();
-  
+
   tempFn();
   detectGas();
-  
+
   LCD_Fast_Update();
   buttonCheck();
-  
+
   resetCheck();
   controlStatments();
-  
+
   if (((currentmillis - Setting_previousMillis >= Setting_interval) || (currentmillis < Setting_previousMillis)))
-  {// here need to save the new data to the eeprom
-    Page_number=0;
-    Choise_number=0;
-    App_mode=0;
+  { // here need to save the new data to the eeprom
+    Page_number = 0;
+    Choise_number = 0;
+    App_mode = 0;
     StoreData();
   }
-  
+
+}
+void First_Use(void)
+{
+  if (EEPROMReadByte(370) != 0x5A)
+  {
+    Serial.println("First Use Set the Default Values");
+    StoreData();
+    ClearResetReason();
+    EEPROMWriteByte(370, 0x5A);
+  }
+}
+void First_FirebaseUse(void)
+{// still need to be implemented
+  if (EEPROMReadByte(371) != 0x5A)
+  {
+    Serial.println("Firebase First Use Set the Default Values");
+    Firebase.setString(firebaseData, username + "/Status/Clear_Reset_Reason", "OFF");
+    Firebase.setString(firebaseData, username + "/Status/WDT_Action", "NORMAL");
+    EEPROMWriteByte(371, 0x5A);
+  }
 }
 void RestoreData(void)
 {
@@ -49,95 +1036,97 @@ void RestoreData(void)
 void StoreData(void)
 {
   /*
-   * EEPROM storage positions
-   * 
-   * firebase_interv    --> 361
-   * Fan_min_interval   --> 359
-   * Cool_min_interval  --> 357
-   * Heat_min_interval  --> 355
-   * Fan_on_time        --> 353
-   * Fan_off_time       --> 351
-   * Cooler_on_time     --> 349
-   * Cooler_off_time    --> 347
-   * Heater_on_time     --> 345
-   * Heater_off_time    --> 343
-   * Temp_variance_Cool --> 342
-   * Temp_variance_FanA --> 341
-   * Temp_variance_FanB --> 340
-   * MinTemp_Trigger    --> 330
-   * MaxTemp_Trigger    --> 320
-   * MaxVent_Trigger    --> 310
-   * MinVent_Trigger    --> 300
-   * mobapp_username    --> 200
-   * WiFi_PW            --> 100
-   * WiFi_SSID          --> 0
-   */
-   
- if ((firebase_interval >= 0) && (firebase_interval <= 255) && (EEPROMReadInt(361) != firebase_interval))
+     EEPROM storage positions
+     ResetReasons       --> 500-510
+     First_FirebaseUse  --> 371
+     First_Use          --> 370
+     firebase_interv    --> 361
+     Fan_min_interval   --> 359
+     Cool_min_interval  --> 357
+     Heat_min_interval  --> 355
+     Fan_on_time        --> 353
+     Fan_off_time       --> 351
+     Cooler_on_time     --> 349
+     Cooler_off_time    --> 347
+     Heater_on_time     --> 345
+     Heater_off_time    --> 343
+     Temp_variance_Cool --> 342
+     Temp_variance_FanA --> 341
+     Temp_variance_FanB --> 340
+     MinTemp_Trigger    --> 330
+     MaxTemp_Trigger    --> 320
+     MaxVent_Trigger    --> 310
+     MinVent_Trigger    --> 300
+     mobapp_username    --> 200
+     WiFi_PW            --> 100
+     WiFi_SSID          --> 0
+  */
+
+  if ((firebase_interval <= 250) && (EEPROMReadInt(361) != firebase_interval))
   {
     EEPROMWriteInt(361, firebase_interval);
     Serial.print("firebase_interval :"); Serial.println(firebase_interval);
   }
   else
     firebase_interval = EEPROMReadInt(361);
-   
- if ((Fan_min_interval >= 0) && (EEPROMReadInt(359) != Fan_min_interval))
+
+  if ((EEPROMReadInt(359) != Fan_min_interval))
   {
     EEPROMWriteInt(359, Fan_min_interval);
     Serial.print("Fan_min_interval :"); Serial.println(Fan_min_interval);
   }
   else
     Fan_min_interval = EEPROMReadInt(359);
-    
- if ((Cool_min_interval >= 0) && (EEPROMReadInt(357) != Cool_min_interval))
+
+  if ((EEPROMReadInt(357) != Cool_min_interval))
   {
     EEPROMWriteInt(357, Cool_min_interval);
     Serial.print("Cool_min_interval :"); Serial.println(Cool_min_interval);
   }
   else
     Cool_min_interval = EEPROMReadInt(357);
-   
- if ((Heat_min_interval >= 0) && (EEPROMReadInt(355) != Heat_min_interval))
+
+  if (EEPROMReadInt(355) != Heat_min_interval)
   {
     EEPROMWriteInt(355, Heat_min_interval);
     Serial.print("Heat_min_interval :"); Serial.println(Heat_min_interval);
   }
   else
     Heat_min_interval = EEPROMReadInt(355);
-   
- if ((Fan_on_time >= 0) && (EEPROMReadInt(353) != Fan_on_time))
+
+  if ((EEPROMReadInt(353) != Fan_on_time))
   {
     EEPROMWriteInt(353, Fan_on_time);
     Serial.print("Fan_on_time :"); Serial.println(Fan_on_time);
   }
   else
     Fan_on_time = EEPROMReadInt(353);
-   
- if ((Fan_off_time >= 0) && (EEPROMReadInt(351) != Fan_off_time))
+
+  if ((EEPROMReadInt(351) != Fan_off_time))
   {
     EEPROMWriteInt(351, Fan_off_time);
     Serial.print("Fan_off_time :"); Serial.println(Fan_off_time);
   }
   else
     Fan_off_time = EEPROMReadInt(351);
-   
- if ((Cooler_on_time >= 0) && (EEPROMReadInt(349) != Cooler_on_time))
+
+  if ((EEPROMReadInt(349) != Cooler_on_time))
   {
     EEPROMWriteInt(349, Cooler_on_time);
     Serial.print("Cooler_on_time :"); Serial.println(Cooler_on_time);
   }
   else
     Cooler_on_time = EEPROMReadInt(349);
-   
- if ((Cooler_off_time >= 0) && (EEPROMReadInt(347) != Cooler_off_time))
+
+  if ((EEPROMReadInt(347) != Cooler_off_time))
   {
     EEPROMWriteInt(347, Cooler_off_time);
     Serial.print("Cooler_off_time :"); Serial.println(Cooler_off_time);
   }
   else
     Cooler_off_time = EEPROMReadInt(347);
-    
- if ((Heater_on_time >= 0) && (EEPROMReadInt(345) != Heater_on_time))
+
+  if ((EEPROMReadInt(345) != Heater_on_time))
   {
     EEPROMWriteInt(345, Heater_on_time);
     Serial.print("Heater_on_time :"); Serial.println(Heater_on_time);
@@ -145,39 +1134,39 @@ void StoreData(void)
   else
     Heater_on_time = EEPROMReadInt(345);
 
- if ((Heater_off_time >= 0) && (EEPROMReadInt(343) != Heater_off_time))
+  if (EEPROMReadInt(343) != Heater_off_time)
   {
     EEPROMWriteInt(343, Heater_off_time);
     Serial.print("Heater_off_time :"); Serial.println(Heater_off_time);
   }
   else
     Heater_off_time = EEPROMReadInt(343);
-    
- if (((Temp_variance_Cool >= 0) && (Temp_variance_Cool <= 255)) && (EEPROMReadByte(342) != Temp_variance_Cool))
+
+  if (EEPROMReadByte(342) != Temp_variance_Cool)
   {
     EEPROMWriteByte(342, Temp_variance_Cool);
     Serial.print("Temp_variance_Cool :"); Serial.println(Temp_variance_Cool);
   }
   else
     Temp_variance_Cool = EEPROMReadByte(342);
-    
- if (((Temp_variance_FanA >= 0) && (Temp_variance_FanA <= 255)) && (EEPROMReadByte(341) != Temp_variance_FanA))
+
+  if (EEPROMReadByte(341) != Temp_variance_FanA)
   {
     EEPROMWriteByte(341, Temp_variance_FanA);
     Serial.print("Temp_variance_FanA :"); Serial.println(Temp_variance_FanA);
   }
   else
     Temp_variance_FanA = EEPROMReadByte(341);
-   
- if (((Temp_variance_FanB >= 0) && (Temp_variance_FanB <= 255)) && (EEPROMReadByte(340) != Temp_variance_FanB))
+
+  if (EEPROMReadByte(340) != Temp_variance_FanB)
   {
     EEPROMWriteByte(340, Temp_variance_FanB);
     Serial.print("Temp_variance_FanB :"); Serial.println(Temp_variance_FanB);
   }
   else
     Temp_variance_FanB = EEPROMReadByte(340);
-    
-  if (((MinTemp_Trigger >= 5) && (MinTemp_Trigger <= 1000)) && (EEPROMReadInt(330) != MinTemp_Trigger))
+
+  if (((MinTemp_Trigger >= 5) && (MinTemp_Trigger <= 100)) && (EEPROMReadInt(330) != MinTemp_Trigger))
   {
     EEPROMWriteInt(330, MinTemp_Trigger);
     Serial.print("MinTemp_Trigger :"); Serial.println(MinTemp_Trigger);
@@ -185,7 +1174,7 @@ void StoreData(void)
   else
     MinTemp_Trigger = EEPROMReadInt(330);
 
-  if (((MaxTemp_Trigger >= 5) && (MaxTemp_Trigger <= 1000)) && (EEPROMReadInt(320) != MaxTemp_Trigger))
+  if (((MaxTemp_Trigger >= 5) && (MaxTemp_Trigger <= 100)) && (EEPROMReadInt(320) != MaxTemp_Trigger))
   {
     EEPROMWriteInt(320, MaxTemp_Trigger);
     Serial.print("MaxTemp_Trigger :"); Serial.println(MaxTemp_Trigger);
@@ -193,7 +1182,7 @@ void StoreData(void)
   else
     MaxTemp_Trigger = EEPROMReadInt(320);
 
-  if (((MinVent_Trigger >= 5) && (MinVent_Trigger <= 1000)) && (EEPROMReadInt(300) != MinVent_Trigger))
+  if (((MinVent_Trigger >= 5) && (MinVent_Trigger <= 100)) && (EEPROMReadInt(300) != MinVent_Trigger))
   {
     EEPROMWriteInt(300, MinVent_Trigger);
     Serial.print("MinVent_Trigger :"); Serial.println(MinVent_Trigger);
@@ -208,73 +1197,6 @@ void StoreData(void)
   }
   else
     MaxVent_Trigger = EEPROMReadInt(310);
-}
-
-
-void WiFiCheck(void)
-{
-  static unsigned long long int WiFiCheck_previousMillis = 0;
-  static unsigned long long int WiFi_Reconnect_previousMillis = 0;
-
-  if ((currentmillis - WiFiCheck_previousMillis >= WiFiCheck_interval) || (currentmillis < WiFiCheck_previousMillis))
-  {
-    //Serial.println("will start WiFiCheck");
-    WiFiCheck_previousMillis = currentmillis;
-    if ((Error <= 0))
-    {
-      LED_Status = ! LED_Status;
-      digitalWrite(BlueLed, LED_Status);
-    }
-    if (((currentmillis - WiFi_Reconnect_previousMillis >= WiFi_Reconnect_interval) || (currentmillis < WiFi_Reconnect_previousMillis)) && (Error < 0))
-    {
-      WiFi_Reconnect_previousMillis = currentmillis;
-      Serial.println("Inside WiFiReconnect");
-      Serial.print(millis());
-      Serial.println("Reconnecting to WiFi...");
-      WiFi.disconnect();
-      WiFi.reconnect();
-    }
-    //Serial.println("will stop WiFiCheck");
-  }
-}
-void CreditionalsConfig(void)
-{
-  static unsigned long long int CreditionalsConfig_previousMillis = 0;
-  if ((currentmillis - CreditionalsConfig_previousMillis >= CreditionalsConfig_interval) || (currentmillis < CreditionalsConfig_previousMillis))
-  {
-    //Serial.println("will start cred config");
-    CreditionalsConfig_previousMillis = currentmillis;
-    buttonState = digitalRead(buttonPin);
-    if (buttonState == LOW)
-    {
-      delay(2000);
-      buttonState = digitalRead(buttonPin);
-      if (buttonState == LOW)
-      {
-        delay(2000);
-        buttonState = digitalRead(buttonPin);
-        if (buttonState == LOW)
-        {
-          digitalWrite(BlueLed, 0);
-          delay(500);
-          digitalWrite(BlueLed, 1);
-          delay(500);
-          digitalWrite(BlueLed, 0);
-          delay(500);
-          digitalWrite(BlueLed, LED_Status);
-          set_access_point();
-          while (1)
-          {
-            client_handle();
-            delay(1000);
-            if (ConfigResetFlag)
-              ESP.restart();
-          }
-        }
-      }
-    }
-    //Serial.println("will stop cred config");
-  }
 }
 void resetCheck(void)
 {
@@ -293,19 +1215,19 @@ void resetCheck(void)
 }
 void tempFn(void)
 {
-  static unsigned long long int temp_previousMillis = 0;
-  if ((currentmillis - temp_previousMillis >= temp_interval) || (currentmillis < temp_previousMillis))
+  static uint32_t temp_previousMillis = 0;
+  if (currentmillis - temp_previousMillis >= temp_interval)
   {
     //Serial.println("will start temp");
     temp_previousMillis = currentmillis;
     int tempTotalNumber = 5;
     int humTotalNumber  = 5;
-    T1_S =1;
-    T2_S =1;
-    T3_S =1;
-    T4_S =1;
-    T5_S =1;
-    
+    T1_S = 1;
+    T2_S = 1;
+    T3_S = 1;
+    T4_S = 1;
+    T5_S = 1;
+
     Temperature1 = dht1.readTemperature(); // Gets the values of the temperature
     Humidity1 = dht1.readHumidity(); // Gets the values of the humidity
 
@@ -386,22 +1308,24 @@ void tempFn(void)
     if (isnan(Humidity))
       Humidity = 00.0;
     if (Temperature > 80)
-      Temperature = 80;
+      Temperature = 0;
     if (Humidity > 120)
-      Humidity = 120;
+      Humidity = 0;
 
-    Serial.print("Temperature: "); Serial.println(Temperature);
-    Serial.print("Humidity: "); Serial.println(Humidity);
+    //    Serial.print("Temperature: "); Serial.println(Temperature);
+    //    Serial.print("Humidity: "); Serial.println(Humidity);
   }
 }
 void detectGas()
 {
-  static unsigned long long int gas_previousMillis = 0;
-  if((currentmillis - gas_previousMillis >= gas_interval)||(currentmillis < gas_previousMillis))
+  static uint32_t gas_previousMillis = 0;
+  if (currentmillis - gas_previousMillis >= gas_interval)
   {
     //Serial.println("will start detectGas");
-    gas_previousMillis = currentmillis;  
-    gas = analogRead(GASA1);
+    gas_previousMillis = currentmillis;
+    gas1 = analogRead(GASA1) - Gas1_Sen_Cal;
+    gas2 = analogRead(GASA2) - Gas2_Sen_Cal;
+    gas = (gas1 + gas2) / 2;
     quality = "Good";
     if (gas <= MinVent_Trigger)
     {
@@ -421,129 +1345,161 @@ void detectGas()
 }
 void controlStatments(void)
 {
-  static unsigned long long int control_previousMillis = 0;
-  if ((currentmillis - control_previousMillis >= control_interval) || (currentmillis < control_previousMillis))
+  static uint32_t control_previousMillis = 0;
+  if (currentmillis - control_previousMillis >= control_interval)
   {
     //Serial.println("will start control");
     control_previousMillis = currentmillis;
+    { //FanA
+      if (FanA_Auto == "OFF")// if FanA manual
+      {
+        if (Set_ManualFA == "ON")
+        {
+          digitalWrite(FanA, control_ON);
+          if (fanA_status == "OFF")
+            FanAStartTime = currentmillis;
+          fanA_status = "ON";
+        }
+        else if (Set_ManualFA == "OFF")
+        {
+          digitalWrite(FanA, control_OFF);
+          fanA_status = "OFF";
+        }
+      }
+      else
+      {
+        if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanA))
+        {
+          if (0 == FanA_Flag)
+          {
+            FanA_Flag = 1;
+            FanAStartTime = currentmillis;
+          }
+        }
+        else if ((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))// here may be require  - Temp_variance_Cool
+        {
+          FanA_Flag = 0;
+          digitalWrite(FanA, control_OFF);
+          fanA_status = "OFF";
+        }
+      }
 
-    if (FanA_Auto == "OFF")// if FanA manual
-    {
-      if (Set_ManualFA == "ON")
+      if (((currentmillis - FanAStartTime) < Fan_on_time_temperory * 1000) && (FanA_Flag == 1))
       {
         digitalWrite(FanA, control_ON);
-        if(fanA_status == "OFF")
-          FanAStartTime = currentmillis;
         fanA_status = "ON";
       }
-      else if (Set_ManualFA == "OFF")
+      else if (((currentmillis - FanAStartTime) < Fan_off_time_temperory * 1000) && (FanA_Flag == 1))
       {
         digitalWrite(FanA, control_OFF);
         fanA_status = "OFF";
       }
-    }
-    else if (FanA_Auto != "OFF")
-    {
-      if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanA))
+      else if (((currentmillis - FanAStartTime) > Fan_off_time_temperory * 1000) && (FanA_Flag == 1))
       {
-        digitalWrite(FanA, control_ON);
-        if(fanA_status == "OFF")
-          FanAStartTime = currentmillis;
-        fanA_status = "ON";
+        FanAStartTime = currentmillis;
       }
-      else if ((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))// here may be require  - Temp_variance_Cool
+    }
+    { // FanB
+      if (FanB_Auto == "OFF")
       {
-        if(((currentmillis - FanAStartTime) >= Fan_min_interval*1000) || (currentmillis < FanAStartTime))
+        if (Set_ManualFB == "ON")
         {
-        digitalWrite(FanA, control_OFF);
-        fanA_status = "OFF"; 
+          digitalWrite(FanB, control_ON);
+          if (fanB_status == "OFF")
+            FanBStartTime = currentmillis;
+          fanB_status = "ON";
+        }
+        else if (Set_ManualFB == "OFF")
+        {
+          digitalWrite(FanB, control_OFF);
+          fanB_status = "OFF";
         }
       }
-    }
-    
-    if (FanB_Auto == "OFF")
-    {
-      if (Set_ManualFB == "ON")
+      else
       {
-        digitalWrite(FanB, control_ON);
-        if(fanB_status == "OFF")
+        if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanB))
+        {
+          if ((currentmillis - FanAStartTime >= FanDelayBTWN_Fans_interval) || (currentmillis < FanAStartTime))
+          {
+            if (0 == FanB_Flag)
+            {
+              FanB_Flag = 1;
+              FanBStartTime = currentmillis;
+            }
+          }
+        }
+        else if ((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))
+        {
+          if ((currentmillis - FanBStartTime >= Fan_min_interval * 1000) || (currentmillis < FanBStartTime))
+          {
+            FanB_Flag = 0;
+            digitalWrite(FanB, control_OFF);
+            fanB_status = "OFF";
+          }
+        }
+        if ((((currentmillis - FanBStartTime) <= Fan_on_time * 1000) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
+        {
+          digitalWrite(FanB, control_ON);
+          fanB_status = "ON";
+        }
+        else if ((((currentmillis - FanBStartTime) <= Fan_off_time * 1000) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
+        {
+          digitalWrite(FanB, control_OFF);
+          fanB_status = "OFF";
+        }
+        else if ((((currentmillis - FanBStartTime) > Fan_off_time * 1000) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
+        {
           FanBStartTime = currentmillis;
-        fanB_status = "ON";
-      }
-      else if (Set_ManualFB == "OFF")
-      {
-        digitalWrite(FanB, control_OFF);
-        fanB_status = "OFF";
-      }
-    }
-    else if (FanB_Auto != "OFF")
-    {
-      if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanB))
-      {
-        if((currentmillis - FanAStartTime >= FanDelayBTWN_Fans_interval) || (currentmillis < FanAStartTime))
-        {
-        digitalWrite(FanB, control_ON);
-        if(fanB_status == "OFF")
-          FanBStartTime = currentmillis;
-        fanB_status = "ON";
-        }
-      }
-      else if ((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))
-      {
-        if((currentmillis - FanBStartTime >= Fan_min_interval*1000) || (currentmillis < FanBStartTime))
-        {
-        digitalWrite(FanB, control_OFF);
-        fanB_status = "OFF"; 
         }
       }
     }
-{//Cooler code
-    if (Cooler_Auto == "OFF")
-    {
-      if (Set_ManualC == "ON")
+    { //Cooler code
+      if (Cooler_Auto == "OFF")
+      {
+        if (Set_ManualC == "ON")
+        {
+          digitalWrite(Cooler, control_ON);
+          cooler_status = "ON";
+        }
+        else if (Set_ManualC == "OFF")
+        {
+          digitalWrite(Cooler, control_OFF);
+          cooler_status = "OFF";
+        }
+      }
+      else //ON/OFF time 60/240S
+      {
+        if (Temperature > MaxTemp_Trigger + Temp_variance_Cool)//cooler will work after max+Temp_variance_Cool
+        {
+          if (0 == CoolerFlag)
+          {
+            CoolerFlag = 1;
+            CoolerStartTime = currentmillis;
+          }
+        }
+        else if (Temperature < MaxTemp_Trigger )// cooler will close after max+1
+        {
+          CoolerFlag = 0;
+          digitalWrite(Cooler, control_OFF);
+          cooler_status = "OFF";
+        }
+      }
+
+      if ((((currentmillis - CoolerStartTime) <= Cooler_on_time * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
       {
         digitalWrite(Cooler, control_ON);
         cooler_status = "ON";
       }
-      else if (Set_ManualC == "OFF")
+      else if ((((currentmillis - CoolerStartTime) <= Cooler_off_time * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
       {
         digitalWrite(Cooler, control_OFF);
         cooler_status = "OFF";
       }
-    }
-    else //ON/OFF time 60/240S
-    {
-      if (Temperature > MaxTemp_Trigger + Temp_variance_Cool)//cooler will work after max+Temp_variance_Cool
+      else if ((((currentmillis - CoolerStartTime) > Cooler_off_time * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
       {
-        if(0 == CoolerFlag)
-        {     
-          CoolerFlag = 1;
-          CoolerStartTime = currentmillis;
-        }
-      }
-      else if (Temperature < MaxTemp_Trigger )// cooler will close after max+1
-      {
-        CoolerFlag = 0;
-        digitalWrite(Cooler, control_OFF);
-        cooler_status = "OFF";  
+        CoolerStartTime = currentmillis;
       }
     }
-    
-    if((((currentmillis - CoolerStartTime) <= Cooler_on_time*1000)&&(CoolerFlag==1)) || (currentmillis < CoolerStartTime))
-    {
-      digitalWrite(Cooler, control_ON);
-      cooler_status = "ON";  
-    }
-    else if((((currentmillis - CoolerStartTime) <= Cooler_off_time*1000)&&(CoolerFlag==1)) || (currentmillis < CoolerStartTime))
-    {
-      digitalWrite(Cooler, control_OFF);
-      cooler_status = "OFF";  
-    }
-    else if((((currentmillis - CoolerStartTime) > Cooler_off_time*1000)&&(CoolerFlag==1)) || (currentmillis < CoolerStartTime))
-    {
-      CoolerStartTime = currentmillis;
-    }
-}
 
     if ((heaterA_Auto == "OFF") && (heaterB_Auto == "OFF"))
     {
@@ -628,466 +1584,6 @@ void controlStatments(void)
       }
     }
     //Serial.println("will stop control");
-  }
-}
-void firebaseStatments(void)
-{
-  static unsigned long long int firebase_previousMillis = 0;
-  if (((currentmillis - firebase_previousMillis >= firebase_interval * 60000) || (currentmillis < firebase_previousMillis)) && (firebaseErrorDetectNoPrint() > 0))
-  {
-    firebase_previousMillis = currentmillis;
-    Serial.println("will start firebase");
-    int Stime = millis() / 1000;
-    Serial.print("Start Time "); Serial.println(Stime);
-    /***************************************/
-    ///////////////////////////// Getters ////////////////////////////
-    if (WhichHeater_prev != WhichHeater) // the 3 is a number to avoid setting the 0 value to firebase
-    {
-      Serial.print("WhichHeater: "); Serial.println(WhichHeater);
-      WhichHeater_prev = WhichHeater;
-      Firebase.setString(firebaseData, username + "/Heaters/WhichHeater", WhichHeater);
-    }
-    if (temp_prev1 != Temperature1)
-    {
-      if(Temperature1<=1)
-      {
-        Firebase.deleteNode(firebaseData,  username + "/Temp/temp1");
-        temp_prev1 = Temperature1;
-      }
-      else
-      {
-        Serial.print("temp1: "); Serial.println(Temperature1);
-        temp_prev1 = Temperature1;
-        Firebase.setFloat(firebaseData, username + "/Temp/temp1", Temperature1);
-      }
-    }
-    if (temp_prev2 != Temperature2)
-    {
-      if(Temperature2 <= 1)
-      {
-        Firebase.deleteNode(firebaseData,  username + "/Temp/temp2");
-        temp_prev2 = Temperature2;
-      }
-      else
-      {
-        Serial.print("temp2: "); Serial.println(Temperature2);
-        temp_prev2 = Temperature2;
-        Firebase.setFloat(firebaseData, username + "/Temp/temp2", Temperature2);
-      }
-    }
-    if (temp_prev3 != Temperature3)
-    {
-      if(Temperature3 <= 1)
-      {
-        Firebase.deleteNode(firebaseData,  username + "/Temp/temp3");
-        temp_prev3 = Temperature3;
-      }
-      else
-      {
-        Serial.print("temp3: "); Serial.println(Temperature3);
-        temp_prev2 = Temperature2;
-        Firebase.setFloat(firebaseData, username + "/Temp/temp3", Temperature3);
-      }
-    }
-    if (temp_prev4 != Temperature4)
-    {
-      if(Temperature4 <= 1)
-      {
-        Firebase.deleteNode(firebaseData,  username + "/Temp/temp4");
-        temp_prev4 = Temperature4;
-      }
-      else
-      {
-        Serial.print("temp4: "); Serial.println(Temperature4);
-        temp_prev4 = Temperature4;
-        Firebase.setFloat(firebaseData, username + "/Temp/temp4", Temperature4);
-      }
-    }
-    if (temp_prev5 != Temperature5)
-    {
-      if(Temperature5 <= 1)
-      {
-        Firebase.deleteNode(firebaseData,  username + "/Temp/temp5");
-        temp_prev5 = Temperature5;
-      }
-      else
-      {
-        Serial.print("temp5: "); Serial.println(Temperature5);
-        temp_prev5 = Temperature5;
-        Firebase.setFloat(firebaseData, username + "/Temp/temp5", Temperature5);
-      }
-    }
-    if (hum_prev1 != Humidity1)
-    {      
-      if(Humidity1 <= 1)
-      {
-        Firebase.deleteNode(firebaseData,  username + "/Hum/hum1");
-        hum_prev1 = Humidity1;
-      }
-      else
-      {
-        Serial.print("Humidity1: "); Serial.println(Humidity1);
-        hum_prev1 = Humidity1;
-        Firebase.setFloat(firebaseData, username + "/Hum/hum1", Humidity1);
-      }
-    }
-    if (hum_prev2 != Humidity2)
-    {
-      if(Humidity2 <= 1)
-      {
-        Firebase.deleteNode(firebaseData,  username + "/Hum/hum2");
-        hum_prev2 = Humidity2;
-      }
-      else
-      {
-        Serial.print("Humidity2: "); Serial.println(Humidity2);
-        hum_prev2 = Humidity2;
-        Firebase.setFloat(firebaseData, username + "/Hum/hum2", Humidity2);
-      }
-    }
-    if (hum_prev3 != Humidity3)
-    {
-      if(Humidity3 <= 1)
-      {
-        Firebase.deleteNode(firebaseData,  username + "/Hum/hum3");
-        hum_prev3 = Humidity3;
-      }
-      else
-      {
-        Serial.print("Humidity3: "); Serial.println(Humidity3);
-        hum_prev3 = Humidity3;
-        Firebase.setFloat(firebaseData, username + "/Hum/hum3", Humidity3);
-      }
-    }
-    if (hum_prev4 != Humidity4)
-    {
-      if(Humidity4 <= 1)
-      {
-        Firebase.deleteNode(firebaseData,  username + "/Hum/hum4");
-        hum_prev4 = Humidity4;
-      }
-      else
-      {
-        Serial.print("Humidity4: "); Serial.println(Humidity4);
-        hum_prev4 = Humidity4;
-        Firebase.setFloat(firebaseData, username + "/Hum/hum4", Humidity4);
-      }
-    }
-    if (hum_prev5 != Humidity5)
-    {
-      if(Humidity5 <= 1)
-      {
-        Firebase.deleteNode(firebaseData,  username + "/Hum/hum5");
-        hum_prev5 = Humidity5;
-      }
-      else
-      {
-        Serial.print("Humidity5: "); Serial.println(Humidity5);
-        hum_prev5 = Humidity5;
-        Firebase.setFloat(firebaseData, username + "/Hum/hum5", Humidity5);
-      }
-    }
-    if ((gas_prev != gas) && (gas > 3))
-    {
-      // the String will be produced in the android program
-      gas_prev = gas;
-      Serial.print("gas: "); Serial.println(gas);
-      Firebase.setInt(firebaseData, username + "/airQuality", gas);
-    }
-    if (heaterA_status_prev != heaterA_status)
-    {
-      heaterA_status_prev = heaterA_status;
-      Serial.print("heaterA_status: "); Serial.println(heaterA_status);
-      Firebase.setString(firebaseData, username + "/Heaters/heaterA_status", heaterA_status);
-      Firebase.setString(firebaseData, username + "/Heaters/Get_ManualHA", heaterA_status);// temporary because the android is working with this variable
-    }
-    if (heaterB_status_prev != heaterB_status)
-    {
-      heaterB_status_prev = heaterB_status;
-      Serial.print("heaterB_status: "); Serial.println(heaterB_status);
-      Firebase.setString(firebaseData, username + "/Heaters/heaterB_status", heaterB_status);
-      Firebase.setString(firebaseData, username + "/Heaters/Get_ManualHB", heaterB_status);// temporary
-    }
-    if (fanA_status_prev != fanA_status)
-    {
-      fanA_status_prev = fanA_status;
-      Serial.print("fanA_status: "); Serial.println(fanA_status);
-      Firebase.setString(firebaseData, username + "/Heaters/Fan_status", fanA_status); //ABDO Fan_status --> FanA_status
-      Firebase.setString(firebaseData, username + "/Heaters/Get_ManualC", fanA_status);//ABDO temporary
-    }
-    if (fanB_status_prev != fanB_status)
-    {
-      fanB_status_prev = fanB_status;
-      Serial.print("fanB_status: "); Serial.println(fanB_status);
-      Firebase.setString(firebaseData, username + "/Heaters/FanB_status", fanB_status);
-      Firebase.setString(firebaseData, username + "/Heaters/Get_ManualC", fanB_status);// temporary
-    }
-    if (cooler_status_prev != cooler_status)
-    {
-      cooler_status_prev = cooler_status;
-      Serial.print("cooler_status: "); Serial.println(cooler_status);
-      Firebase.setString(firebaseData, username + "/Heaters/Cooler_status", cooler_status);
-      Firebase.setString(firebaseData, username + "/Heaters/Get_ManualC", cooler_status);// temporary
-    }
-    ///////////////////////////// Setters ////////////////////////////
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/FanAuto"); //ABDO FanAuto --> FanA_Auto
-    string = firebaseData.stringData();
-    if ((FanA_Auto_prev != string) && (string == "ON" || string == "OFF"))
-    {
-      Serial.println("FanA_Auto Changed!");
-      FanA_Auto_prev = string;
-      FanA_Auto = FanA_Auto_prev;
-      Serial.print("FanA_Auto: "); Serial.println(FanA_Auto);
-      Firebase.setString(firebaseData, username + "/Heaters/Get_FanAuto", FanA_Auto); //ABDO Get_FanAuto --> Get_FanA_Auto 
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/FanB_Auto");
-    string = firebaseData.stringData();
-    if ((FanB_Auto_prev != string) && (string == "ON" || string == "OFF"))
-    {
-      Serial.println("FanB_Auto Changed!");
-      FanB_Auto_prev = string;
-      FanB_Auto = FanB_Auto_prev;
-      Serial.print("FanB_Auto: "); Serial.println(FanB_Auto);
-      Firebase.setString(firebaseData, username + "/Heaters/Get_FanB_Auto", FanB_Auto);
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/CoolerAuto"); //ABDO need to be changed to Cooler_Auto
-    string = firebaseData.stringData();
-    if ((Cooler_Auto_prev != string) && (string == "ON" || string == "OFF"))
-    {
-      Serial.println("Cooler_Auto Changed!");
-      Cooler_Auto_prev = string;
-      Cooler_Auto = Cooler_Auto_prev;
-      Serial.print("Cooler_Auto: "); Serial.println(Cooler_Auto);
-      Firebase.setString(firebaseData, username + "/Heaters/Get_CoolerAuto", Cooler_Auto);
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/heaterAauto"); //ABDO change the nameing heaterA_Auto
-    string = firebaseData.stringData();
-    if ((heaterA_Auto_prev != string) && (string == "ON" || string == "OFF"))
-    {
-      Serial.println("heaterA_Auto Changed!");
-      heaterA_Auto_prev = string;
-      heaterA_Auto = heaterA_Auto_prev;
-      Serial.print("heaterA_Auto: "); Serial.println(heaterA_Auto);
-      Firebase.setString(firebaseData, username + "/Heaters/Get_heaterAauto", heaterA_Auto);//ABDO change the nameing heaterA_Auto
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/heaterBAuto");//ABDO change the nameing heaterB_Auto
-    string = firebaseData.stringData();
-    if ((heaterB_Auto_prev != string) && (string == "ON" || string == "OFF"))
-    {
-      Serial.println("heaterBAuto Changed!");
-      heaterB_Auto_prev = string;
-      heaterB_Auto = heaterB_Auto_prev;
-      Serial.print("heaterB_Auto: "); Serial.println(heaterB_Auto);
-      Firebase.setString(firebaseData, username + "/Heaters/Get_heaterB_Auto", heaterB_Auto);
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/Set_ManualHA");
-    string = firebaseData.stringData();
-    if ((Set_ManualHA_prev != string) && (string == "ON" || string == "OFF"))
-    {
-      Serial.println("ManualHA Changed!");
-      Set_ManualHA_prev = string;
-      Set_ManualHA = Set_ManualHA_prev;
-      Serial.print("Set_ManualHA: "); Serial.println(Set_ManualHA);
-      //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualHA", Set_ManualHA);// temporary
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/Set_ManualHB");
-    string = firebaseData.stringData();
-    if ((Set_ManualHB_prev != string) && (string == "ON" || string == "OFF"))
-    {
-      Serial.println("ManualHB Changed!");
-      Set_ManualHB_prev = string;
-      Set_ManualHB = Set_ManualHB_prev;
-      Serial.print("Set_ManualHB: "); Serial.println(Set_ManualHB);
-      // Firebase.setString(firebaseData, username + "/Heaters/Get_ManualHB", Set_ManualHB);//temporary
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/Set_ManualC");
-    string = firebaseData.stringData();
-    if ((Set_ManualC_prev != string) && (string == "ON" || string == "OFF"))
-    {
-      Serial.println("ManualC Changed!");
-      Set_ManualC_prev = string;
-      Set_ManualC = Set_ManualC_prev;
-      Serial.print("Set_ManualC: "); Serial.println(Set_ManualC);
-      //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualC", Set_ManualC); //temporary
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/Set_ManualF");//ABDO
-    string = firebaseData.stringData();
-    if ((Set_ManualFA_prev != string) && (string == "ON" || string == "OFF"))
-    {
-      Serial.println("ManualFA Changed!");
-      Set_ManualFA_prev = string;
-      Set_ManualFA = Set_ManualFA_prev;
-      Serial.print("Set_ManualFA: "); Serial.println(Set_ManualFA);
-      //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualFA", Set_ManualFA); //temporary
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/Heaters/Set_ManualFB");
-    string = firebaseData.stringData();
-    if ((Set_ManualFB_prev != string) && (string == "ON" || string == "OFF"))
-    {
-      Serial.println("ManualFB Changed!");
-      Set_ManualFB_prev = string;
-      Set_ManualFB = Set_ManualFB_prev;
-      Serial.print("Set_ManualFB: "); Serial.println(Set_ManualFB);
-      //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualFB", Set_ManualFB); //temporary
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/resetFlag");
-    string = firebaseData.stringData();
-    if ((ResetFlag_prev != string) && (string == "ON" || string == "OFF"))
-    {
-      Serial.println("ResetFlag Changed!");
-      ResetFlag_prev = string;
-      ResetFlag = ResetFlag_prev;
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/Lights/Set_Led1");
-    string = firebaseData.stringData();
-    if ((LED_prev != string) && (string == "ON" || string == "OFF"))
-    {
-      Serial.println("BlueLed Changed!");
-      LED_prev = string;
-      LED_Status_Str = LED_prev;
-      Firebase.setString(firebaseData, username + "/Lights/Get_Led1", LED_Status_Str);
-      if (LED_Status_Str == "ON")
-        LED_Status = 1;
-      else if (LED_Status_Str == "OFF")
-        LED_Status = 0;
-      digitalWrite(BlueLed, LED_Status);
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/Lights/Set_Light");
-    string = firebaseData.stringData();
-    if ((Light_prev != string) && (string == "ON" || string == "OFF"))
-    {
-      Serial.println("Light Changed!");
-      Light_prev = string;
-      Light_Status = Light_prev;
-      Serial.print("Light_Status: "); Serial.println(Light_Status);
-      if (Light_Status == "OFF")
-        digitalWrite(Light, light_OFF);
-      else if (Light_Status == "ON")
-        digitalWrite(Light, light_ON);
-      Firebase.setString(firebaseData, username + "/Lights/Get_Light", Light_Status);
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/valueRanges/vent");
-    string = firebaseData.stringData();
-    if ((VentRange_prev != string))
-    {
-      VentRange_prev = string;
-      String sbstring = VentRange_prev.substring(0, 3);
-      MinVent_Trigger = sbstring.toInt();
-      if (((MinVent_Trigger >= 5) && (MinVent_Trigger <= 1000)) && (EEPROMReadInt(300) != MinVent_Trigger))
-      {
-        EEPROMWriteInt(300, MinVent_Trigger);
-        Serial.print("MinVent_Trigger :"); Serial.println(MinVent_Trigger);
-      }
-      else
-        MinVent_Trigger = EEPROMReadInt(300);
-      sbstring = "";
-      sbstring = VentRange_prev.substring(4, 7);
-      MaxVent_Trigger = sbstring.toInt();
-      if (((MaxVent_Trigger >= 5) && (MaxVent_Trigger <= 1000)) && (EEPROMReadInt(310) != MaxVent_Trigger))
-      {
-        EEPROMWriteInt(310, MaxVent_Trigger);
-        Serial.print("MaxVent_Trigger :"); Serial.println(MaxVent_Trigger);
-      }
-      else
-        MaxVent_Trigger = EEPROMReadInt(310);
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/valueRanges/temp");
-    string = firebaseData.stringData();
-    if ((TempRange_prev != string))
-    {
-      TempRange_prev = string;
-      String sbstring = TempRange_prev.substring(0, 3);
-      MinTemp_Trigger = sbstring.toInt();
-      if (((MinTemp_Trigger >= 5) && (MinTemp_Trigger <= 1000)) && (EEPROMReadInt(330) != MinTemp_Trigger))
-      {
-        EEPROMWriteInt(330, MinTemp_Trigger);
-        Serial.print("MinTemp_Trigger :"); Serial.println(MinTemp_Trigger);
-      }
-      else
-        MinTemp_Trigger = EEPROMReadInt(330);
-      sbstring = "";
-      sbstring = TempRange_prev.substring(3, 7);
-      MaxTemp_Trigger = sbstring.toInt();
-      if (((MaxTemp_Trigger >= 5) && (MaxTemp_Trigger <= 1000)) && (EEPROMReadInt(320) != MaxTemp_Trigger))
-      {
-        EEPROMWriteInt(320, MaxTemp_Trigger);
-        Serial.print("MaxTemp_Trigger :"); Serial.println(MaxTemp_Trigger);
-      }
-      else
-        MaxTemp_Trigger = EEPROMReadInt(320);
-    }
-    firebaseData.clearData();
-    string.clear();
-    Firebase.get(firebaseData, username + "/valueRanges/delay");
-    string = firebaseData.stringData();
-    if ((firebase_interval_prev != string))
-    {
-      firebase_interval_prev = string;
-      firebase_interval = firebase_interval_prev.toInt();
-      if (!((firebase_interval >= 0) && (firebase_interval <= 5000)))
-      {
-        firebase_interval = 1;
-        Serial.print("firebase_interval :"); Serial.println(firebase_interval);
-      }
-    }
-    timeClient.update();
-    Firebase.setInt(firebaseData, username + "/Time/Hour", timeClient.getHours());
-    Firebase.setInt(firebaseData, username + "/Time/Minute", timeClient.getMinutes());
-    Firebase.setInt(firebaseData, username + "/Time/Seconds", timeClient.getSeconds());
-    Serial.println("Done Firebase");
-    int endtime = millis() / 1000 - Stime;
-    Serial.print("End Time "); Serial.println(endtime);
-  }
-}
-void gooogleSheetStatments(void)
-{
-  if (((currentmillis - googleSheet_previousMillis >= googleSheet_interval * 60000) || (currentmillis < googleSheet_previousMillis)) && (Error > 0))
-  {
-    googleSheet_previousMillis = currentmillis;
-    Serial.println("will start googleSheets");
-    sendDataToSheet();
-  }
-}
-void timeUpgrade(void)
-{
-  if (((currentmillis - timeUpgrade_previousMillis >= timeUpgrade_interval) || (currentmillis < timeUpgrade_previousMillis)) && (Error > 0))
-  {
-    //Serial.println("will start timeupgrade");
-    timeUpgrade_previousMillis = currentmillis;
-    timeClient.update();
-    timeClient.getSeconds();
-    timeClient.getMinutes();
-    timeClient.getHours();
   }
 }
 void RFID_Read(boolean RFID_Success)
@@ -1189,7 +1685,7 @@ void LCD_weather()
     LCD_previousMillis = currentmillis;
     line1 = String("Tem:") + String(" ") + String("Hum:") + String(" ") + String("Gas:") + String(" ") + String(" ") + String("L:");
     line2 = String(int(Temperature)) + "." + String((int(Temperature * 10)) % 10) + String(" ") + String(int(Humidity));
-    line3 = String("F1:") + String(" ") + String("F2:") + String(" ") + String("C:") + String(" ") + String(" ") + String("H1:")+ String(" ") + String("H2:");
+    line3 = String("F1:") + String(" ") + String("F2:") + String(" ") + String("C:") + String(" ") + String(" ") + String("H1:") + String(" ") + String("H2:");
     // set cursor to first column, first row
     lcd.setCursor(0, 0);
     lcd.print(line1);    // print line1 in first row
@@ -1211,45 +1707,45 @@ void LCD_weather()
     lcd.print(Light_Status);
     lcd.setCursor(10, 1);
     lcd.print(String(int(gas)));
-    lcd.setCursor(19,0);    // set cursor to second row and sixteenth column to print wifi connection
-    if (WiFi.status() != WL_CONNECTED) 
+    lcd.setCursor(19, 0);   // set cursor to second row and sixteenth column to print wifi connection
+    if (WiFi.status() != WL_CONNECTED)
       lcd.write(2);
-    else 
+    else
       lcd.write(1);
   }
 }
 void LCD_Fast_Update()
 {
-  /* shortcuts names 
-   *  TP_0 --> firebase_interval
-   *  
-   *  TP_1 --> Fan_min_interval
-   *  TP_2 --> Cool_min_interval
-   *  TP_3 --> Heat_min_interval
-   *  
-   *  TP_4 --> Fan_on_time
-   *  TP_5 --> Fan_off_time
-   *  TP_6 --> Cooler_on_time
-   *  TP_7 --> Cooler_off_time
-   *  TP_8 --> Heater_on_time
-   *  TP_9 --> Heater_off_time
-   *  
-   *  TP_10--> Temp_variance_Cool
-   *  TP_11--> Temp_variance_FanA
-   *  TP_12--> Temp_variance_FanB
-   *  TP_13-->
-   *  TP_14-->
-   *  TP_15-->
-   * 
-   */
+  /* shortcuts names
+      TP_0 --> firebase_interval
+
+      TP_1 --> Fan_min_interval
+      TP_2 --> Cool_min_interval
+      TP_3 --> Heat_min_interval
+
+      TP_4 --> Fan_on_time
+      TP_5 --> Fan_off_time
+      TP_6 --> Cooler_on_time
+      TP_7 --> Cooler_off_time
+      TP_8 --> Heater_on_time
+      TP_9 --> Heater_off_time
+
+      TP_10--> Temp_variance_Cool
+      TP_11--> Temp_variance_FanA
+      TP_12--> Temp_variance_FanB
+      TP_13-->
+      TP_14-->
+      TP_15-->
+
+  */
   if (((currentmillis - Fast_LCD_previousMillis >= Fast_LCD_interval) || (currentmillis < Fast_LCD_previousMillis)))
   {
-    Fast_LCD_previousMillis =currentmillis;
-    if(Page_number==0)
+    Fast_LCD_previousMillis = currentmillis;
+    if (Page_number == 0)
     {
       line1 = String("Tem:") + String(" ") + String("Hum:") + String(" ") + String("Gas:") + String(" ") + String(" ") + String("L:");
       line2 = String(int(Temperature)) + "." + String((int(Temperature * 10)) % 10) + String(" ") + String(int(Humidity));
-      line3 = String("F1:") + String(" ") + String("F2:") + String(" ") + String("C:") + String(" ") + String(" ") + String("H1:")+ String(" ") + String("H2:");
+      line3 = String("F1:") + String(" ") + String("F2:") + String(" ") + String("C:") + String(" ") + String(" ") + String("H1:") + String(" ") + String("H2:");
       // set cursor to first column, first row
       lcd.setCursor(0, 0);
       lcd.print(line1);    // print line1 in first row
@@ -1258,21 +1754,35 @@ void LCD_Fast_Update()
       lcd.setCursor(0, 2);
       lcd.print(line3);
       lcd.setCursor(0, 3);
+      lcd.print("   ");
+      lcd.setCursor(0, 3);
       lcd.print(fanA_status);
+      lcd.setCursor(4, 3);
+      lcd.print("   ");
       lcd.setCursor(4, 3);
       lcd.print(fanB_status);
       lcd.setCursor(8, 3);
+      lcd.print("   ");
+      lcd.setCursor(8, 3);
       lcd.print(cooler_status);
+      lcd.setCursor(12, 3);
+      lcd.print("   ");
       lcd.setCursor(12, 3);
       lcd.print(heaterA_status);
       lcd.setCursor(16, 3);
+      lcd.print("   ");
+      lcd.setCursor(16, 3);
       lcd.print(heaterB_status);
+      lcd.setCursor(16, 1);
+      lcd.print("   ");
       lcd.setCursor(16, 1);
       lcd.print(Light_Status);
       lcd.setCursor(10, 1);
+      lcd.print("   ");
+      lcd.setCursor(10, 1);
       lcd.print(String(int(gas)));
     }
-    else if(Page_number==1)
+    else if (Page_number == 1)
     {
       lcd.setCursor(1, 0);
       lcd.print("Max Temp");
@@ -1292,39 +1802,39 @@ void LCD_Fast_Update()
       lcd.setCursor(11, 3);
       lcd.print(String(int(MinVent_Trigger)) + "." + String((int(MinVent_Trigger * 10)) % 10));
 
-      if(Choise_number==1)
+      if (Choise_number == 1)
       {
         lcd.setCursor(0, 0);
         lcd.write(3);
       }
-      else if(Choise_number==2)
+      else if (Choise_number == 2)
       {
         lcd.setCursor(10, 0);
         lcd.write(3);
         lcd.setCursor(0, 0);
         lcd.print(" ");
       }
-      else if(Choise_number==3)
+      else if (Choise_number == 3)
       {
         lcd.setCursor(0, 2);
         lcd.write(3);
         lcd.setCursor(10, 0);
         lcd.print(" ");
       }
-      else if(Choise_number==4)
+      else if (Choise_number == 4)
       {
         lcd.setCursor(10, 2);
         lcd.write(3);
         lcd.setCursor(0, 2);
         lcd.print(" ");
-      }      
+      }
       else
       {
         lcd.setCursor(10, 2);//last arrow added
         lcd.print(" ");
       }
     }
-    else if(Page_number==2)
+    else if (Page_number == 2)
     {
       lcd.setCursor(1, 0);
       lcd.print("TP_0");
@@ -1343,7 +1853,7 @@ void LCD_Fast_Update()
       lcd.print("TP_3");
       lcd.setCursor(16, 1);
       lcd.print(String(Heat_min_interval));
-      
+
       lcd.setCursor(1, 2);
       lcd.print("TP_4");
       lcd.setCursor(6, 2);
@@ -1361,55 +1871,55 @@ void LCD_Fast_Update()
       lcd.print("TP_7");
       lcd.setCursor(16, 3);
       lcd.print(String(Cooler_off_time));
-      
-      if(Choise_number==1)
+
+      if (Choise_number == 1)
       {
         lcd.setCursor(0, 0);
         lcd.write(3);
       }
-      else if(Choise_number==2)
+      else if (Choise_number == 2)
       {
         lcd.setCursor(0, 0);
         lcd.print(" ");
         lcd.setCursor(10, 0);
         lcd.write(3);
       }
-      else if(Choise_number==3)
+      else if (Choise_number == 3)
       {
         lcd.setCursor(0, 1);
         lcd.write(3);
         lcd.setCursor(10, 0);
         lcd.print(" ");
       }
-      else if(Choise_number==4)
+      else if (Choise_number == 4)
       {
         lcd.setCursor(10, 1);
         lcd.write(3);
         lcd.setCursor(0, 1);
         lcd.print(" ");
       }
-      else if(Choise_number==5)
+      else if (Choise_number == 5)
       {
         lcd.setCursor(0, 2);
         lcd.write(3);
         lcd.setCursor(10, 1);
         lcd.print(" ");
       }
-      else if(Choise_number==6)
+      else if (Choise_number == 6)
       {
         lcd.setCursor(10, 2);
         lcd.write(3);
         lcd.setCursor(0, 2);
         lcd.print(" ");
       }
-      else if(Choise_number==7)
+      else if (Choise_number == 7)
       {
         lcd.setCursor(0, 3);
         lcd.write(3);
         lcd.setCursor(10, 2);
         lcd.print(" ");
       }
-      else if(Choise_number==8)
+      else if (Choise_number == 8)
       {
         lcd.setCursor(10, 3);
         lcd.write(3);
@@ -1422,7 +1932,7 @@ void LCD_Fast_Update()
         lcd.print(" ");
       }
     }
-    else if(Page_number==3)
+    else if (Page_number == 3)
     {
       lcd.setCursor(1, 0);
       lcd.print("TP_8");
@@ -1432,7 +1942,7 @@ void LCD_Fast_Update()
       lcd.print("TP_9");
       lcd.setCursor(17, 0);
       lcd.print(String(Heater_off_time));
-  
+
       lcd.setCursor(1, 1);
       lcd.print("TP_10");
       lcd.setCursor(7, 1);
@@ -1441,7 +1951,7 @@ void LCD_Fast_Update()
       lcd.print("TP_11");
       lcd.setCursor(18, 1);
       lcd.print(String(Temp_variance_FanA));
-      
+
       lcd.setCursor(1, 2);
       lcd.print("TP_12");
       lcd.setCursor(7, 2);
@@ -1449,65 +1959,65 @@ void LCD_Fast_Update()
       lcd.setCursor(12, 2);
       lcd.print("TP_13");
       lcd.setCursor(18, 2);
-//    lcd.print(String(Fan_off_time));
+      //    lcd.print(String(Fan_off_time));
 
       lcd.setCursor(1, 3);
       lcd.print("TP_14");
       lcd.setCursor(7, 3);
-//    lcd.print(String(Cooler_on_time));
+      //    lcd.print(String(Cooler_on_time));
       lcd.setCursor(12, 3);
       lcd.print("TP_15");
       lcd.setCursor(18, 3);
-//    lcd.print(String(Cooler_off_time));
+      //    lcd.print(String(Cooler_off_time));
 
-      if(Choise_number==1)
+      if (Choise_number == 1)
       {
         lcd.setCursor(0, 0);
         lcd.write(3);
       }
-      else if(Choise_number==2)
+      else if (Choise_number == 2)
       {
         lcd.setCursor(0, 0);
         lcd.print(" ");
         lcd.setCursor(10, 0);
         lcd.write(3);
       }
-      else if(Choise_number==3)
+      else if (Choise_number == 3)
       {
         lcd.setCursor(0, 1);
         lcd.write(3);
         lcd.setCursor(10, 0);
         lcd.print(" ");
       }
-      else if(Choise_number==4)
+      else if (Choise_number == 4)
       {
         lcd.setCursor(10, 1);
         lcd.write(3);
         lcd.setCursor(0, 1);
         lcd.print(" ");
       }
-      else if(Choise_number==5)
+      else if (Choise_number == 5)
       {
         lcd.setCursor(0, 2);
         lcd.write(3);
         lcd.setCursor(10, 1);
         lcd.print(" ");
       }
-      else if(Choise_number==6)
+      else if (Choise_number == 6)
       {
         lcd.setCursor(10, 2);
         lcd.write(3);
         lcd.setCursor(0, 2);
         lcd.print(" ");
       }
-      else if(Choise_number==7)
+      else if (Choise_number == 7)
       {
         lcd.setCursor(0, 3);
         lcd.write(3);
         lcd.setCursor(10, 2);
         lcd.print(" ");
       }
-      else if(Choise_number==8)
+      else if (Choise_number == 8)
       {
         lcd.setCursor(10, 3);
         lcd.write(3);
@@ -1524,250 +2034,250 @@ void LCD_Fast_Update()
 }
 void buttonUpdate()
 {
-  if((setFlag_l)&&(digitalRead(SW_S)==0))
+  if ((setFlag_l) && (digitalRead(SW_S) == 0))
   {
     delay(50);
-    if (digitalRead(SW_S)==0)
+    if (digitalRead(SW_S) == 0)
     {
       Serial.println("make the process of set");
-      Setting_previousMillis =currentmillis;
-      if((Page_number > 0)&&(Page_number < 2))
+      Setting_previousMillis = currentmillis;
+      if ((Page_number > 0) && (Page_number < 2))
       {
-        Choise_number = (Choise_number + 1)%(Number_of_Choices1+1);
+        Choise_number = (Choise_number + 1) % (Number_of_Choices1 + 1);
       }
-      else if((Page_number > 1)&&(Page_number < 10))
+      else if ((Page_number > 1) && (Page_number < 10))
       {
-        Choise_number = (Choise_number + 1)%(Number_of_Choices2+1);
+        Choise_number = (Choise_number + 1) % (Number_of_Choices2 + 1);
       }
-      setFlag_l=0;
-      setFlag_h=0;
+      setFlag_l = 0;
+      setFlag_h = 0;
 
-      digitalWrite(Buzzer,1);
+      digitalWrite(Buzzer, 1);
       delay (150);
-      digitalWrite(Buzzer,0);
+      digitalWrite(Buzzer, 0);
     }
   }
-  if((negFlag_l) && (digitalRead(SW_N)==0))
+  if ((negFlag_l) && (digitalRead(SW_N) == 0))
   {
     delay(50);
-    if (digitalRead(SW_N)==0)
-      {
-      Setting_previousMillis =currentmillis;
+    if (digitalRead(SW_N) == 0)
+    {
+      Setting_previousMillis = currentmillis;
       Serial.println("make the process of neg");
-      if(Choise_number==0)
+      if (Choise_number == 0)
       {
-        Page_number = (Page_number - 1)%Number_of_Pages;
+        Page_number = (Page_number - 1) % Number_of_Pages;
         if (Page_number < 0)
-        Page_number = Number_of_Pages -1;
+          Page_number = Number_of_Pages - 1;
       }
-      else if ((Choise_number==1)&&(Page_number==1))
-        {
+      else if ((Choise_number == 1) && (Page_number == 1))
+      {
         MaxTemp_Trigger--;
-        }
-      else if ((Choise_number==2)&&(Page_number==1))
-        {
+      }
+      else if ((Choise_number == 2) && (Page_number == 1))
+      {
         MinTemp_Trigger--;
-        }
-      else if ((Choise_number==3)&&(Page_number==1))
-        {
+      }
+      else if ((Choise_number == 3) && (Page_number == 1))
+      {
         MaxVent_Trigger--;
-        }
-      else if ((Choise_number==4)&&(Page_number==1))
-        {
+      }
+      else if ((Choise_number == 4) && (Page_number == 1))
+      {
         MinVent_Trigger--;
-        }
-      else if ((Choise_number==1)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 1) && (Page_number == 2))
+      {
         firebase_interval--;
-        }
-      else if ((Choise_number==2)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 2) && (Page_number == 2))
+      {
         Fan_min_interval--;
-        }
-      else if ((Choise_number==3)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 3) && (Page_number == 2))
+      {
         Cool_min_interval--;
-        }
-      else if ((Choise_number==4)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 4) && (Page_number == 2))
+      {
         Heat_min_interval--;
-        }
-      else if ((Choise_number==5)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 5) && (Page_number == 2))
+      {
         Fan_on_time--;
-        }
-      else if ((Choise_number==6)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 6) && (Page_number == 2))
+      {
         Fan_off_time--;
-        }
-      else if ((Choise_number==7)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 7) && (Page_number == 2))
+      {
         Cooler_on_time--;
-        }
-      else if ((Choise_number==8)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 8) && (Page_number == 2))
+      {
         Cooler_off_time--;
-        }
-      else if ((Choise_number==1)&&(Page_number==3))
-        {
+      }
+      else if ((Choise_number == 1) && (Page_number == 3))
+      {
         Heater_on_time--;
-        }
-      else if ((Choise_number==2)&&(Page_number==3))
-        {
+      }
+      else if ((Choise_number == 2) && (Page_number == 3))
+      {
         Heater_off_time--;
-        }
-      else if ((Choise_number==3)&&(Page_number==3))
-        {
+      }
+      else if ((Choise_number == 3) && (Page_number == 3))
+      {
         Temp_variance_Cool--;
-        }
-      else if ((Choise_number==4)&&(Page_number==3))
-        {
+      }
+      else if ((Choise_number == 4) && (Page_number == 3))
+      {
         Temp_variance_FanA--;
-        }
-      else if ((Choise_number==5)&&(Page_number==3))
-        {
+      }
+      else if ((Choise_number == 5) && (Page_number == 3))
+      {
         Temp_variance_FanB--;
-        }
-      else if ((Choise_number==6)&&(Page_number==3))
-        {
-        
-        }
-      else if ((Choise_number==7)&&(Page_number==3))
-        {
-        
-        }
-      else if ((Choise_number==8)&&(Page_number==3))
-        {
-        
-        }
-        
+      }
+      else if ((Choise_number == 6) && (Page_number == 3))
+      {
+
+      }
+      else if ((Choise_number == 7) && (Page_number == 3))
+      {
+
+      }
+      else if ((Choise_number == 8) && (Page_number == 3))
+      {
+
+      }
+
       Serial.println(Page_number);
-      negFlag_l=0;
-      negFlag_h=0;
-      digitalWrite(Buzzer,1);
+      negFlag_l = 0;
+      negFlag_h = 0;
+      digitalWrite(Buzzer, 1);
       delay (150);
-      digitalWrite(Buzzer,0);
-      lcd.clear(); 
+      digitalWrite(Buzzer, 0);
+      lcd.clear();
       LCD_Fast_Update();
     }
   }
-  if((posFlag_l)&&(posFlag_h))
+  if ((posFlag_l) && (posFlag_h))
   {
     delay(50);
-    if (digitalRead(SW_P)==0)
+    if (digitalRead(SW_P) == 0)
     {
-      Setting_previousMillis =currentmillis;
+      Setting_previousMillis = currentmillis;
       Serial.println("make the process of pos");
-      if(Choise_number==0)
-        Page_number = (Page_number + 1)%Number_of_Pages;
-      else if ((Choise_number==1)&&(Page_number==1))
-        {
+      if (Choise_number == 0)
+        Page_number = (Page_number + 1) % Number_of_Pages;
+      else if ((Choise_number == 1) && (Page_number == 1))
+      {
         MaxTemp_Trigger++;
-        }
-      else if ((Choise_number==2)&&(Page_number==1))
-        {
+      }
+      else if ((Choise_number == 2) && (Page_number == 1))
+      {
         MinTemp_Trigger++;
-        }
-      else if ((Choise_number==3)&&(Page_number==1))
-        {
+      }
+      else if ((Choise_number == 3) && (Page_number == 1))
+      {
         MaxVent_Trigger++;
-        }
-      else if ((Choise_number==4)&&(Page_number==1))
-        {
+      }
+      else if ((Choise_number == 4) && (Page_number == 1))
+      {
         MinVent_Trigger++;
-        }
-      else if ((Choise_number==1)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 1) && (Page_number == 2))
+      {
         firebase_interval++;
-        }
-      else if ((Choise_number==2)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 2) && (Page_number == 2))
+      {
         Fan_min_interval++;
-        }
-      else if ((Choise_number==3)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 3) && (Page_number == 2))
+      {
         Cool_min_interval++;
-        }
-      else if ((Choise_number==4)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 4) && (Page_number == 2))
+      {
         Heat_min_interval++;
-        }
-      else if ((Choise_number==5)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 5) && (Page_number == 2))
+      {
         Fan_on_time++;
-        }
-      else if ((Choise_number==6)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 6) && (Page_number == 2))
+      {
         Fan_off_time++;
-        }
-      else if ((Choise_number==7)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 7) && (Page_number == 2))
+      {
         Cooler_on_time++;
-        }
-      else if ((Choise_number==8)&&(Page_number==2))
-        {
+      }
+      else if ((Choise_number == 8) && (Page_number == 2))
+      {
         Cooler_off_time++;
-        }
-      else if ((Choise_number==1)&&(Page_number==3))
-        {
+      }
+      else if ((Choise_number == 1) && (Page_number == 3))
+      {
         Heater_on_time++;
-        }
-      else if ((Choise_number==2)&&(Page_number==3))
-        {
+      }
+      else if ((Choise_number == 2) && (Page_number == 3))
+      {
         Heater_off_time++;
-        }
-      else if ((Choise_number==3)&&(Page_number==3))
-        {
+      }
+      else if ((Choise_number == 3) && (Page_number == 3))
+      {
         Temp_variance_Cool++;
-        }
-      else if ((Choise_number==4)&&(Page_number==3))
-        {
+      }
+      else if ((Choise_number == 4) && (Page_number == 3))
+      {
         Temp_variance_FanA++;
-        }
-      else if ((Choise_number==5)&&(Page_number==3))
-        {
+      }
+      else if ((Choise_number == 5) && (Page_number == 3))
+      {
         Temp_variance_FanB++;
-        }
-      else if ((Choise_number==6)&&(Page_number==3))
-        {
-        
-        }
-      else if ((Choise_number==7)&&(Page_number==3))
-        {
-        
-        }
-      else if ((Choise_number==8)&&(Page_number==3))
-        {
-        
-        }
-        
+      }
+      else if ((Choise_number == 6) && (Page_number == 3))
+      {
+
+      }
+      else if ((Choise_number == 7) && (Page_number == 3))
+      {
+
+      }
+      else if ((Choise_number == 8) && (Page_number == 3))
+      {
+
+      }
+
       Serial.println(Page_number);
       App_mode = 1;
-      posFlag_l=0;
-      posFlag_h=0;
-      digitalWrite(Buzzer,1);
+      posFlag_l = 0;
+      posFlag_h = 0;
+      digitalWrite(Buzzer, 1);
       delay (150);
-      digitalWrite(Buzzer,0);
-      lcd.clear(); 
+      digitalWrite(Buzzer, 0);
+      lcd.clear();
       LCD_Fast_Update();
     }
   }
 }
-void buttonCheck(void)// here we need to deal with interrupt
+void buttonCheck(void)
 {
-    if((currentmillis - button_previousMillis >= button_interval)||(currentmillis < button_previousMillis))
+  if ((currentmillis - button_previousMillis >= button_interval) || (currentmillis < button_previousMillis))
   {
-    button_previousMillis = currentmillis;  
+    button_previousMillis = currentmillis;
 
-    if (digitalRead(SW_S)==1)
-      {
-        setFlag_h=1;
-      }
-    if (digitalRead(SW_N)==1)
+    if (digitalRead(SW_S) == 1)
+    {
+      setFlag_h = 1;
+    }
+    if (digitalRead(SW_N) == 1)
     {
       negFlag_h = 1;
     }
-    if (digitalRead(SW_P)==1)
+    if (digitalRead(SW_P) == 1)
     {
       posFlag_h = 1;
     }
@@ -1781,28 +2291,33 @@ void buttonCheck(void)// here we need to deal with interrupt
 void pinSetup(void)
 {
   pinMode(GASA1, INPUT);
-  //pinMode(GASA2, INPUT);
+  pinMode(GASA2, INPUT);
+
   pinMode(DHT1Pin, INPUT);
   pinMode(DHT2Pin, INPUT);
   pinMode(DHT3Pin, INPUT);
   pinMode(DHT4Pin, INPUT);
-//  pinMode(DHT5Pin, INPUT);
-  pinMode(SW_N, INPUT_PULLUP); 
+  pinMode(DHT5Pin, INPUT);
+
+  pinMode(SW_N, INPUT_PULLUP);
   pinMode(SW_P, INPUT_PULLUP);
   pinMode(SW_S, INPUT_PULLUP);
-  
+
   pinMode(HeaterA, OUTPUT);
   pinMode(HeaterB, OUTPUT);
+
   pinMode(Cooler, OUTPUT);
+
   pinMode(FanA, OUTPUT);
   pinMode(FanB, OUTPUT);
+
   pinMode(BlueLed, OUTPUT);
   pinMode(Buzzer, OUTPUT);
   pinMode(Light, OUTPUT);
   pinMode(buttonPin, INPUT);
 
   digitalWrite(Buzzer, control_OFF);
-  digitalWrite(HeaterB, control_ON);
+  digitalWrite(HeaterB, control_OFF);
   digitalWrite(HeaterA, control_OFF);
 
   attachInterrupt(SW_N, SW_N_ISR, FALLING);
@@ -1870,16 +2385,30 @@ void firbaseSetup(void)
 {
   Serial.println("firebase setup");
   Firebase.begin(Host, Token);
+  //Set database read timeout to 10 Sec (max 15 minutes)
+  Serial.println("firebase test 1");
+  Firebase.setReadTimeout(firebaseData,10);
+  Serial.println("firebase test 2");
+  Firebase.reconnectWiFi(false);
+  Serial.println("firebase test 3");
   //it tells the project to reconnect to wifi when it's able to, but it keep spaming
+  //Server response read timeout in ms (1 sec - 1 min). 
+//   config.timeout.serverResponse = 10 * 1000; 
+  
+//   //RTDB Stream keep-alive timeout in ms (20 sec - 2 min) when no server's keep-alive event data received. 
+//   config.timeout.rtdbKeepAlive = 45 * 1000; 
+  
+  
   Firebase.get(firebaseData, username + "/Heaters/whichHeater");
+  Serial.println("firebase test 4");
   WhichHeater = firebaseData.stringData();
+  Serial.println("firebase test 5");
   if ((WhichHeater != "A") || (WhichHeater != "B"))
     WhichHeater = "A";
 
 
   Error = firebaseData.httpCode();
   Error_prev = Error;
-  Firebase.reconnectWiFi(false);
 }
 void timeServerSetup(void)
 {
@@ -1910,7 +2439,7 @@ boolean RFID_Setup(void)
 void parameterSetup(void)
 {
   heaterA_status = "OFF";
-  heaterB_status = "ON";
+  heaterB_status = "OFF";
 
   MinVent_Trigger = EEPROMReadInt(300);
   MaxVent_Trigger = EEPROMReadInt(310);
@@ -1945,28 +2474,29 @@ void UpdateCheck(void)
 void LCD_setup()
 {
   static unsigned long int LCD_previousMillis = 0;
-  static int startflag =1;
+  static int startflag = 1;
   if (((currentmillis - LCD_previousMillis >= LCD_reinit_interval) || (currentmillis < LCD_previousMillis) || startflag))
   {
-    startflag=0;
+    startflag = 0;
     LCD_previousMillis = currentmillis;
     // initialize LCD
     Wire.begin(LCD_SDA, LCD_SCL);
-//    Wire.setClock(10000);
+    //    Wire.setClock(10000);
     lcd.init();
     // turn on LCD backlight
     lcd.backlight();
     lcd.createChar(1 , wifi_customChar);   //Creating custom characters in CG-RAM
     lcd.createChar(2, no_wifi );
     lcd.createChar(3, arrow );
-    
+
     // maximum character can be stored in LCD is 8
     lcd.clear(); //clear lcd to print next vlaues
     LCD_previousMillis = currentmillis;
     line1 = String("Tem:") + String(" ") + String("Hum:") + String(" ") + String("Gas:") + String(" ") + String(" ") + String("L:");
     line2 = String(int(Temperature)) + "." + String((int(Temperature * 10)) % 10) + String(" ") + String(int(Humidity));
-    line3 = String("F1:") + String(" ") + String("F2:") + String(" ") + String("C:") + String(" ") + String(" ") + String("H1:")+ String(" ") + String("H2:");
+    line3 = String("F1:") + String(" ") + String("F2:") + String(" ") + String("C:") + String(" ") + String(" ") + String("H1:") + String(" ") + String("H2:");
     // set cursor to first column, first row
+    lcd.setCursor(0, 1);
     lcd.setCursor(0, 0);
     lcd.print(line1);    // print line1 in first row
     lcd.setCursor(0, 1);
@@ -1987,14 +2517,46 @@ void LCD_setup()
     lcd.print(Light_Status);
     lcd.setCursor(10, 1);
     lcd.print(String(int(gas)));
-    lcd.setCursor(19,0);    // set cursor to second row and sixteenth column to print wifi connection
-    if (WiFi.status() != WL_CONNECTED) 
+    lcd.setCursor(19, 0);   // set cursor to second row and sixteenth column to print wifi connection
+    if (WiFi.status() != WL_CONNECTED)
       lcd.write(2);
-    else 
+    else
       lcd.write(1);
   }
 }
+void LCD_StartUp()
+{
+  static unsigned long int LCD_previousMillis = 0;
+  static int startflag = 1;
+  if (((currentmillis - LCD_previousMillis >= LCD_reinit_interval) || (currentmillis < LCD_previousMillis) || startflag))
+  {
+    startflag = 0;
+    LCD_previousMillis = currentmillis;
+    // initialize LCD
+    Wire.begin(LCD_SDA, LCD_SCL);
+    //    Wire.setClock(10000);
+    lcd.init();
+    // turn on LCD backlight
+    lcd.backlight();
+    lcd.createChar(1 , wifi_customChar);   //Creating custom characters in CG-RAM
+    lcd.createChar(2, no_wifi );
+    lcd.createChar(3, arrow );
 
+    // maximum character can be stored in LCD is 8
+    lcd.clear(); //clear lcd to print next vlaues
+    LCD_previousMillis = currentmillis;
+    line1 = String("Tem:") + String(" ") + String("Hum:") + String(" ") + String("Gas:") + String(" ") + String(" ") + String("L:");
+    line2 = String(int(Temperature)) + "." + String((int(Temperature * 10)) % 10) + String(" ") + String(int(Humidity));
+    line3 = String("F1:") + String(" ") + String("F2:") + String(" ") + String("C:") + String(" ") + String(" ") + String("H1:") + String(" ") + String("H2:");
+    // set cursor to first column, first row
+    lcd.setCursor(0, 1);
+    lcd.print("    FarmArt Tech   ");
+    if (WiFi.status() != WL_CONNECTED)
+      lcd.write(2);
+    else
+      lcd.write(1);
+  }
+}
 /********************************************** Support Functions *********************************************************/
 String getChipId()
 {

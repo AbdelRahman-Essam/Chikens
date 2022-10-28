@@ -80,6 +80,9 @@ unsigned int heaterA_Stime = 0;
 unsigned int heaterB_Stime = 0;
 unsigned int heaterA_Stime_previousMillis = 0;
 unsigned int heaterB_Stime_previousMillis = 0; 
+////////////////////////////////Fan
+unsigned int FanA_Flag = 0;
+unsigned int FanB_Flag = 0;
 unsigned int FanAStartTime = 0;
 unsigned int FanBStartTime = 0;
 ////////////////////////////////Cooler 
@@ -203,6 +206,15 @@ int Hour_prev;
 String quality = "FF";
 long int gas_prev;
 long int gas;
+
+String quality1 = "FF";
+long int gas1_prev;
+long int gas1;
+
+String quality2 = "FF";
+long int gas2_prev;
+long int gas2;
+
 int GAS[ADC_READING_NUMBER];
 int Error;
 int Error_prev;
@@ -243,6 +255,29 @@ float temp_prev5 = 200; // save previous to check if there is a change
 float hum_prev5 = 200;
 int   T5_S =1;
 
+String Gas1_Sen_Cal_Prev = "NNN";
+String Gas2_Sen_Cal_Prev = "NNN";
+
+
+//typedef enum {
+//    ESP_RST_UNKNOWN,    //!< Reset reason can not be determined
+//    ESP_RST_POWERON,    //!< Reset due to power-on event
+//    ESP_RST_EXT,        //!< Reset by external pin (not applicable for ESP32)
+//    ESP_RST_SW,         //!< Software reset via esp_restart
+//    ESP_RST_PANIC,      //!< Software reset due to exception/panic
+//    ESP_RST_INT_WDT,    //!< Reset (software or hardware) due to interrupt watchdog
+//    ESP_RST_TASK_WDT,   //!< Reset due to task watchdog
+//    ESP_RST_WDT,        //!< Reset due to other watchdogs
+//    ESP_RST_DEEPSLEEP,  //!< Reset after exiting deep sleep mode
+//    ESP_RST_BROWNOUT,   //!< Brownout reset (software or hardware)
+//    ESP_RST_SDIO,       //!< Reset over SDIO
+//} esp_reset_reason_t;
+
+String Clear_Reset_Reason = "OFF";
+String WDT_Action = "OFF";
+String Clear_Reset_Reason_prev = "H";
+String WDT_Action_prev = "H";
+
 const char * root_ca = \
                        "-----BEGIN CERTIFICATE-----\n" \
                        "MIIDujCCAqKgAwIBAgILBAAAAAABD4Ym5g0wDQYJKoZIhvcNAQEFBQAwTDEgMB4G\n" \
@@ -268,4 +303,4 @@ const char * root_ca = \
                        "-----END CERTIFICATE-----\n";
 
   
-#endif CHICKENS_PRIV_H_
+#endif //CHICKENS_PRIV_H_
