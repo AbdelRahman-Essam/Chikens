@@ -67,4 +67,64 @@ void client_handle(void);
 void CreditionalsConfig(void);
 void WiFiCheck(void);
 
+
+
+
+
+
+
+    Firebase.setString(firebaseData, username + "/CodeVersion", CodeVersion);
+    //WDT Data
+    Firebase.setString(firebaseData, username + "/Status/Clear_Reset_Reason", "OFF");
+    Firebase.setString(firebaseData, username + "/Status/WDT_Action", "NORMAL");
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_UNKNOWN",  0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_POWERON",  0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_EXT",      0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_SW",       0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_PANIC",    0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_INT_WDT",  0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_TASK_WDT", 0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_WDT",      0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_DEEPSLEEP",0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_BROWNOUT", 0);
+    Firebase.setInt(firebaseData, username + "/Status/ESP_RST_SDIO",     0);
+    // GAS CAL
+    Firebase.setString(firebaseData, username + "/Gas_Cal/Gas1",0);
+    Firebase.setString(firebaseData, username + "/Gas_Cal/Gas2",0);
+    Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas1_get",0);
+    Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas1_get",0);
+    // controls
+    //fans
+    Firebase.setString(firebaseData, username + "/controls/fans/fan1","ON");
+    Firebase.setString(firebaseData, username + "/controls/fans/fan1Auto","ON");
+    Firebase.setString(firebaseData, username + "/controls/fans/fan2","ON");
+    Firebase.setString(firebaseData, username + "/controls/fans/fan2Auto","ON");
+    //heater
+    Firebase.setString(firebaseData, username + "/controls/heater/heater1","ON");
+    Firebase.setString(firebaseData, username + "/controls/heater/heater1Auto","ON");
+    Firebase.setString(firebaseData, username + "/controls/heater/heater2","ON");
+    Firebase.setString(firebaseData, username + "/controls/heater/heater2Auto","ON");
+    //Cooler
+    Firebase.setString(firebaseData, username + "/controls/Coolers/Cooler1","ON");
+    Firebase.setString(firebaseData, username + "/controls/Coolers/Cooler1Auto","ON");
+    //LED
+    Firebase.setString(firebaseData, username + "/controls/leds/led1","ON");
+    Firebase.setString(firebaseData, username + "/controls/leds/led2","ON");
+
+    // states
+    //fans
+    Firebase.setString(firebaseData, username + "/states/fans/fan1","ON");
+    Firebase.setString(firebaseData, username + "/states/fans/fan2","ON");
+    //heater
+    Firebase.setString(firebaseData, username + "/states/heater/heater1","ON");
+    Firebase.setString(firebaseData, username + "/states/heater/heater2","ON");
+    //Cooler
+    Firebase.setString(firebaseData, username + "/states/Coolers/Cooler1","ON");
+    //LED
+    Firebase.setString(firebaseData, username + "/states/leds/led1","ON");
+    Firebase.setString(firebaseData, username + "/states/leds/led2","ON");
+
+
+
+
 #endif //CHICKENS_H_
