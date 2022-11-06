@@ -656,7 +656,7 @@ void firebaseStatments(void)
           FanA_Auto_prev = string;
           FanA_Auto = FanA_Auto_prev;
           Serial.print("FanA_Auto: "); Serial.println(FanA_Auto);
-          Firebase.setString(firebaseData, username + "/controls_get/fans/fan1Auto",FanA_Auto);
+          Firebase.setString(firebaseData, username + "/states_get/fans/fan1Auto",FanA_Auto);
         }
         Case++;
       break;
@@ -671,7 +671,7 @@ void firebaseStatments(void)
           FanB_Auto_prev = string;
           FanB_Auto = FanB_Auto_prev;
           Serial.print("FanB_Auto: "); Serial.println(FanB_Auto);
-          Firebase.setString(firebaseData, username + "/controls_get/fans/fan2Auto",FanB_Auto);
+          Firebase.setString(firebaseData, username + "/states_get/fans/fan2Auto",FanB_Auto);
         }
         Case++;
       break;
@@ -686,7 +686,7 @@ void firebaseStatments(void)
           Cooler_Auto_prev = string;
           Cooler_Auto = Cooler_Auto_prev;
           Serial.print("Cooler_Auto: "); Serial.println(Cooler_Auto);
-          Firebase.setString(firebaseData, username + "/controls_get/Coolers/Cooler1Auto",Cooler_Auto);
+          Firebase.setString(firebaseData, username + "/states_get/Coolers/Cooler1Auto",Cooler_Auto);
         }
         Case++;
       break;
@@ -701,14 +701,14 @@ void firebaseStatments(void)
           heaterA_Auto_prev = string;
           heaterA_Auto = heaterA_Auto_prev;
           Serial.print("heaterA_Auto: "); Serial.println(heaterA_Auto);
-          Firebase.setString(firebaseData, username + "/controls_get/heater/heater1Auto",heaterA_Auto);
+          Firebase.setString(firebaseData, username + "/states_get/heater/heater1Auto",heaterA_Auto);
         }
         Case++;
       break;
       case 29:
         firebaseData.clearData();
         string.clear();
-        Firebase.get(firebaseData, username + "/controls/heater/heater2Auto");
+        Firebase.get(firebaseData, username + "/controls/heater/heater2");
         string = firebaseData.stringData();
         if ((heaterB_Auto_prev != string) && (string == "ON" || string == "OFF"))
         {
@@ -716,14 +716,14 @@ void firebaseStatments(void)
           heaterB_Auto_prev = string;
           heaterB_Auto = heaterB_Auto_prev;
           Serial.print("heaterB_Auto: "); Serial.println(heaterB_Auto);
-          Firebase.setString(firebaseData, username + "/controls_get/heater/heater2Auto", heaterB_Auto);
+          Firebase.setString(firebaseData, username + "/Heaters/Get_heaterB_Auto", heaterB_Auto);
         }
         Case++;
       break;
       case 30:
         firebaseData.clearData();
         string.clear();
-        Firebase.get(firebaseData, username + "/controls/heater/heater1");
+        Firebase.get(firebaseData, username + "/Heaters/Set_ManualHA");
         string = firebaseData.stringData();
         if ((Set_ManualHA_prev != string) && (string == "ON" || string == "OFF"))
         {
@@ -731,14 +731,14 @@ void firebaseStatments(void)
           Set_ManualHA_prev = string;
           Set_ManualHA = Set_ManualHA_prev;
           Serial.print("Set_ManualHA: "); Serial.println(Set_ManualHA);
-          Firebase.setString(firebaseData, username + "/controls_get/heater/heater1", Set_ManualHA);
+          //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualHA", Set_ManualHA);// temporary
         }
         Case++;
       break;
       case 31:
         firebaseData.clearData();
         string.clear();
-        Firebase.get(firebaseData, username + "/controls/heater/heater2");
+        Firebase.get(firebaseData, username + "/Heaters/Set_ManualHB");
         string = firebaseData.stringData();
         if ((Set_ManualHB_prev != string) && (string == "ON" || string == "OFF"))
         {
@@ -746,14 +746,14 @@ void firebaseStatments(void)
           Set_ManualHB_prev = string;
           Set_ManualHB = Set_ManualHB_prev;
           Serial.print("Set_ManualHB: "); Serial.println(Set_ManualHB);
-          Firebase.setString(firebaseData, username + "/controls_get/heater/heater2", Set_ManualHB);
+          // Firebase.setString(firebaseData, username + "/Heaters/Get_ManualHB", Set_ManualHB);//temporary
         }
         Case++;
       break;
       case 32:
         firebaseData.clearData();
         string.clear();
-        Firebase.get(firebaseData, username + "/controls/Coolers/Cooler1");
+        Firebase.get(firebaseData, username + "/Heaters/Set_ManualC");
         string = firebaseData.stringData();
         if ((Set_ManualC_prev != string) && (string == "ON" || string == "OFF"))
         {
@@ -761,14 +761,14 @@ void firebaseStatments(void)
           Set_ManualC_prev = string;
           Set_ManualC = Set_ManualC_prev;
           Serial.print("Set_ManualC: "); Serial.println(Set_ManualC);
-          Firebase.setString(firebaseData, username + "/controls_get/Coolers/Cooler1", Set_ManualC);
+          //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualC", Set_ManualC); //temporary
         }
         Case++;
       break;
       case 33:
         firebaseData.clearData();
         string.clear();
-        Firebase.get(firebaseData, username + "/controls/fans/fan1");
+        Firebase.get(firebaseData, username + "/Heaters/Set_ManualF");//ABDO
         string = firebaseData.stringData();
         if ((Set_ManualFA_prev != string) && (string == "ON" || string == "OFF"))
         {
@@ -776,14 +776,14 @@ void firebaseStatments(void)
           Set_ManualFA_prev = string;
           Set_ManualFA = Set_ManualFA_prev;
           Serial.print("Set_ManualFA: "); Serial.println(Set_ManualFA);
-          Firebase.setString(firebaseData, username + "/controls_get/fans/fan1", Set_ManualFA);
+          //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualFA", Set_ManualFA); //temporary
         }
         Case++;
       break;
       case 34:
         firebaseData.clearData();
         string.clear();
-        Firebase.get(firebaseData, username + "/controls/fans/fan2");
+        Firebase.get(firebaseData, username + "/Heaters/Set_ManualFB");
         string = firebaseData.stringData();
         if ((Set_ManualFB_prev != string) && (string == "ON" || string == "OFF"))
         {
@@ -791,7 +791,7 @@ void firebaseStatments(void)
           Set_ManualFB_prev = string;
           Set_ManualFB = Set_ManualFB_prev;
           Serial.print("Set_ManualFB: "); Serial.println(Set_ManualFB);
-          Firebase.setString(firebaseData, username + "/controls_get/fans/fan2", Set_ManualFB);
+          //Firebase.setString(firebaseData, username + "/Heaters/Get_ManualFB", Set_ManualFB); //temporary
         }
         Case++;
       break;
@@ -811,14 +811,14 @@ void firebaseStatments(void)
       case 36:
         firebaseData.clearData();
         string.clear();
-        Firebase.get(firebaseData, username + "/controls/leds/led1");
+        Firebase.get(firebaseData, username + "/Lights/Set_Led1");
         string = firebaseData.stringData();
         if ((LED_prev != string) && (string == "ON" || string == "OFF"))
         {
           Serial.println("BlueLed Changed!");
           LED_prev = string;
           LED_Status_Str = LED_prev;
-          Firebase.setString(firebaseData, username + "/controls_get/leds/led1", LED_Status_Str);
+          Firebase.setString(firebaseData, username + "/Lights/Get_Led1", LED_Status_Str);
           if (LED_Status_Str == "ON")
             LED_Status = 1;
           else if (LED_Status_Str == "OFF")
@@ -830,7 +830,7 @@ void firebaseStatments(void)
       case 37:
         firebaseData.clearData();
         string.clear();
-        Firebase.get(firebaseData, username + "/controls/leds/light1");
+        Firebase.get(firebaseData, username + "/Lights/Set_Light");
         string = firebaseData.stringData();
         if ((Light_prev != string) && (string == "ON" || string == "OFF"))
         {
@@ -842,7 +842,7 @@ void firebaseStatments(void)
             digitalWrite(Light, light_OFF);
           else if (Light_Status == "ON")
             digitalWrite(Light, light_ON);
-          Firebase.setString(firebaseData, username + "/controls_get/leds/light1", Light_Status);
+          Firebase.setString(firebaseData, username + "/Lights/Get_Light", Light_Status);
         }
         Case++;
       break;
@@ -1050,7 +1050,7 @@ void First_FirebaseUse(void)
     Firebase.setString(firebaseData, username + "/states/Coolers/Cooler1","ON");
     //LED
     Firebase.setString(firebaseData, username + "/states/leds/led1","ON");
-    Firebase.setString(firebaseData, username + "/states/leds/Light1","ON");
+    Firebase.setString(firebaseData, username + "/states/leds/led2","ON");
     EEPROMWriteByte(371, 0x5A);
   }
 }
