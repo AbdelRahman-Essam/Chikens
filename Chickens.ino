@@ -22,7 +22,7 @@ void setup()
   ResetReason();
   WDT_Feed();
   parameterSetup();
-  if (EEPROMReadByte(506) < 10)
+  if (((EEPROMReadByte(506)%11) < 10)||(esp_reset_reason() == ESP_RST_SW))
   {
     WifiSetup();
     WDT_Feed();
@@ -30,6 +30,10 @@ void setup()
     WDT_Feed();
     timeServerSetup();
     UpdateCheck();
+  }
+  else
+  {
+    safe_mode_prev = millis();    
   }
 //  RFID_Success = RFID_Setup();
 }
@@ -40,7 +44,7 @@ void loop()
 //  int Stime = currentmillis;
 //  Serial.print("Start Time "); Serial.println(Stime);
   WDT_Feed();
-  if (EEPROMReadByte(506) < 10)
+  if (((EEPROMReadByte(506)%11) < 10)||(esp_reset_reason() == ESP_RST_SW))
   {
    firebaseErrorDetect();
   }
@@ -58,15 +62,22 @@ void loop()
   LCD_setup();
   LCD_weather();
   LCD_Fast_Update();
-  if (EEPROMReadByte(506) < 10)
+  if (((EEPROMReadByte(506)%11) < 10)||(esp_reset_reason() == ESP_RST_SW))
   {
     timeUpgrade();
     WiFiCheck();
   }
+  else if ( millis()== safe_mode_prev +1800000 )
+  {
+    // wdt +1
+    EEPROMWriteByte(506, (EEPROMReadByte(506)+1));
+    // reset
+    ESP.restart();
+  }
   CreditionalsConfig();
   resetCheck();
   controlStatments();
-  if (EEPROMReadByte(506) < 10)
+  if (((EEPROMReadByte(506)%11) < 10)||(esp_reset_reason() == ESP_RST_SW))
   {
     firebaseStatments();
     gooogleSheetStatments();

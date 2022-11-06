@@ -568,6 +568,11 @@ void firebaseStatments(void)
           Gas1_Sen_Cal = Gas1_Sen_Cal_Prev.toInt();
           Serial.println("Gas1_Sen_Cal Changed!");
           Serial.print("Gas1_Sen_Cal: "); Serial.println(Gas1_Sen_Cal);
+          if ((EEPROMReadInt(365) != Gas1_Sen_Cal))
+          {
+            EEPROMWriteInt(365, Gas1_Sen_Cal);
+            Serial.print("Gas1_Sen_Cal :"); Serial.println(Gas1_Sen_Cal);
+          }
           Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas1_get", Gas1_Sen_Cal);
         }
         Case++;
@@ -583,6 +588,11 @@ void firebaseStatments(void)
           Gas2_Sen_Cal = Gas2_Sen_Cal_Prev.toInt();
           Serial.println("Gas2_Sen_Cal Changed!");
           Serial.print("Gas2_Sen_Cal: "); Serial.println(Gas2_Sen_Cal);
+          if ((EEPROMReadInt(369) != Gas2_Sen_Cal))
+          {
+            EEPROMWriteInt(369, Gas2_Sen_Cal);
+            Serial.print("Gas2_Sen_Cal :"); Serial.println(Gas2_Sen_Cal);
+          }
           Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas2_get", Gas2_Sen_Cal);
         }
         Case++;
@@ -616,18 +626,18 @@ void firebaseStatments(void)
         Case++;
       break;
       case 23:
-        //    firebaseData.clearData();
-        //    string.clear();
-        //    Firebase.get(firebaseData, username + "/Gas_Cal/Gas2");
-        //    string = firebaseData.stringData();
-        //    if (Gas2_Sen_Cal_Prev != string)
-        //    {
-        //      Gas2_Sen_Cal_Prev = string;
-        //      Gas2_Sen_Cal = Gas2_Sen_Cal_Prev.toInt();
-        //      Serial.println("Gas2_Sen_Cal Changed!");
-        //      Serial.print("Gas2_Sen_Cal: "); Serial.println(Gas2_Sen_Cal);
-        //      Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas2_get", Gas2_Sen_Cal);
-        //    }////////////////////////////////////////////////////////////////
+//        firebaseData.clearData();
+//        string.clear();
+//        Firebase.get(firebaseData, username + "/Gas_Cal/Gas2");
+//        string = firebaseData.stringData();
+//        if (Gas2_Sen_Cal_Prev != string)
+//        {
+//          Gas2_Sen_Cal_Prev = string;
+//          Gas2_Sen_Cal = Gas2_Sen_Cal_Prev.toInt();
+//          Serial.println("Gas2_Sen_Cal Changed!");
+//          Serial.print("Gas2_Sen_Cal: "); Serial.println(Gas2_Sen_Cal);
+//          Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas2_get", Gas2_Sen_Cal);
+//        }////////////////////////////////////////////////////////////////
         Case++;
       break;
       case 24:
@@ -678,7 +688,8 @@ void firebaseStatments(void)
       case 27:
         firebaseData.clearData();
         string.clear();
-        Firebase.get(firebaseData, username + "/controls/Coolers/Cooler1Auto");
+//        Firebase.get(firebaseData, username + "/controls/Coolers/Cooler1Auto");
+        Firebase.get(firebaseData, username + "/controls/fans/fan3Auto");
         string = firebaseData.stringData();
         if ((Cooler_Auto_prev != string) && (string == "ON" || string == "OFF"))
         {
@@ -686,7 +697,8 @@ void firebaseStatments(void)
           Cooler_Auto_prev = string;
           Cooler_Auto = Cooler_Auto_prev;
           Serial.print("Cooler_Auto: "); Serial.println(Cooler_Auto);
-          Firebase.setString(firebaseData, username + "/controls_get/Coolers/Cooler1Auto",Cooler_Auto);
+//          Firebase.setString(firebaseData, username + "/controls_get/Coolers/Cooler1Auto",Cooler_Auto);
+          Firebase.setString(firebaseData, username + "/controls_get/fans/fan3Auto",Cooler_Auto);
         }
         Case++;
       break;
@@ -753,7 +765,8 @@ void firebaseStatments(void)
       case 32:
         firebaseData.clearData();
         string.clear();
-        Firebase.get(firebaseData, username + "/controls/Coolers/Cooler1");
+//        Firebase.get(firebaseData, username + "/controls/Coolers/Cooler1");
+        Firebase.get(firebaseData, username + "/controls/fans/fan3");
         string = firebaseData.stringData();
         if ((Set_ManualC_prev != string) && (string == "ON" || string == "OFF"))
         {
@@ -761,7 +774,8 @@ void firebaseStatments(void)
           Set_ManualC_prev = string;
           Set_ManualC = Set_ManualC_prev;
           Serial.print("Set_ManualC: "); Serial.println(Set_ManualC);
-          Firebase.setString(firebaseData, username + "/controls_get/Coolers/Cooler1", Set_ManualC);
+//          Firebase.setString(firebaseData, username + "/controls_get/Coolers/Cooler1", Set_ManualC);
+          Firebase.setString(firebaseData, username + "/controls_get/fans/fan3", Set_ManualC);
         }
         Case++;
       break;
@@ -928,6 +942,146 @@ void firebaseStatments(void)
         Case = 0;
         firebase_previousMillis = currentmillis;
       break;
+      case 41:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/config/Fan_min_interval");
+        string = firebaseData.stringData();
+        if (Fan_min_interval_prev != string)
+        {
+          Fan_min_interval_prev = string;
+          Fan_min_interval = Fan_min_interval_prev.toInt();
+          Serial.println("Fan_min_interval Changed!");
+          Serial.print("Fan_min_interval: "); Serial.println(Fan_min_interval);
+          Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
+        }////////////////////////////////////////////////////////////////
+      break;
+      case 42:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/config/Cool_min_interval");
+        string = firebaseData.stringData();
+        if (Cool_min_interval_prev != string)
+        {
+          Cool_min_interval_prev = string;
+          Cool_min_interval = Cool_min_interval_prev.toInt();
+          Serial.println("Cool_min_interval Changed!");
+          Serial.print("Cool_min_interval: "); Serial.println(Cool_min_interval);
+          Firebase.setInt(firebaseData, username + "/config_get/Cool_min_interval", Cool_min_interval);
+        }////////////////////////////////////////////////////////////////
+      break;
+      case 43:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/config/Heat_min_interval");
+        string = firebaseData.stringData();
+        if (Heat_min_interval_prev != string)
+        {
+          Heat_min_interval_prev = string;
+          Heat_min_interval = Heat_min_interval_prev.toInt();
+          Serial.println("Heat_min_interval Changed!");
+          Serial.print("Heat_min_interval: "); Serial.println(Heat_min_interval);
+          Firebase.setInt(firebaseData, username + "/config_get/Heat_min_interval", Heat_min_interval);
+        }////////////////////////////////////////////////////////////////
+      break;
+      case 41:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/config/Fan_min_interval");
+        string = firebaseData.stringData();
+        if (Fan_min_interval_prev != string)
+        {
+          Fan_min_interval_prev = string;
+          Fan_min_interval = Fan_min_interval_prev.toInt();
+          Serial.println("Fan_min_interval Changed!");
+          Serial.print("Fan_min_interval: "); Serial.println(Fan_min_interval);
+          Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
+        }////////////////////////////////////////////////////////////////
+      break;
+      case 41:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/config/Fan_min_interval");
+        string = firebaseData.stringData();
+        if (Fan_min_interval_prev != string)
+        {
+          Fan_min_interval_prev = string;
+          Fan_min_interval = Fan_min_interval_prev.toInt();
+          Serial.println("Fan_min_interval Changed!");
+          Serial.print("Fan_min_interval: "); Serial.println(Fan_min_interval);
+          Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
+        }////////////////////////////////////////////////////////////////
+      break;
+      case 41:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/config/Fan_min_interval");
+        string = firebaseData.stringData();
+        if (Fan_min_interval_prev != string)
+        {
+          Fan_min_interval_prev = string;
+          Fan_min_interval = Fan_min_interval_prev.toInt();
+          Serial.println("Fan_min_interval Changed!");
+          Serial.print("Fan_min_interval: "); Serial.println(Fan_min_interval);
+          Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
+        }////////////////////////////////////////////////////////////////
+      break;
+      case 41:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/config/Fan_min_interval");
+        string = firebaseData.stringData();
+        if (Fan_min_interval_prev != string)
+        {
+          Fan_min_interval_prev = string;
+          Fan_min_interval = Fan_min_interval_prev.toInt();
+          Serial.println("Fan_min_interval Changed!");
+          Serial.print("Fan_min_interval: "); Serial.println(Fan_min_interval);
+          Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
+        }////////////////////////////////////////////////////////////////
+      break;
+      case 41:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/config/Fan_min_interval");
+        string = firebaseData.stringData();
+        if (Fan_min_interval_prev != string)
+        {
+          Fan_min_interval_prev = string;
+          Fan_min_interval = Fan_min_interval_prev.toInt();
+          Serial.println("Fan_min_interval Changed!");
+          Serial.print("Fan_min_interval: "); Serial.println(Fan_min_interval);
+          Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
+        }////////////////////////////////////////////////////////////////
+      break;
+      case 41:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/config/Fan_min_interval");
+        string = firebaseData.stringData();
+        if (Fan_min_interval_prev != string)
+        {
+          Fan_min_interval_prev = string;
+          Fan_min_interval = Fan_min_interval_prev.toInt();
+          Serial.println("Fan_min_interval Changed!");
+          Serial.print("Fan_min_interval: "); Serial.println(Fan_min_interval);
+          Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
+        }////////////////////////////////////////////////////////////////
+      break;
+      case 41:
+        firebaseData.clearData();
+        string.clear();
+        Firebase.get(firebaseData, username + "/config/Fan_min_interval");
+        string = firebaseData.stringData();
+        if (Fan_min_interval_prev != string)
+        {
+          Fan_min_interval_prev = string;
+          Fan_min_interval = Fan_min_interval_prev.toInt();
+          Serial.println("Fan_min_interval Changed!");
+          Serial.print("Fan_min_interval: "); Serial.println(Fan_min_interval);
+          Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
+        }////////////////////////////////////////////////////////////////
+      break;
       default:
         firebase_previousMillis = currentmillis;
         Case = 0;
@@ -987,17 +1141,17 @@ void SettingMode(void)
 }
 void First_Use(void)
 {
-  if (EEPROMReadByte(370) != 0x5A)
+  if (EEPROMReadByte(380) != 0x5A)
   {
     Serial.println("First Use Set the Default Values");
     StoreData();
     ClearResetReason();
-    EEPROMWriteByte(370, 0x5A);
+    EEPROMWriteByte(380, 0x5A);
   }
 }
 void First_FirebaseUse(void)
 {// still need to be implemented
-  if (EEPROMReadByte(371) != 0x5A)
+  if (EEPROMReadByte(381) != 0xAA)
   {
     Serial.println("Firebase First Use Set the Default Values");
     //CodeVersion
@@ -1051,11 +1205,28 @@ void First_FirebaseUse(void)
     //LED
     Firebase.setString(firebaseData, username + "/states/leds/led1","ON");
     Firebase.setString(firebaseData, username + "/states/leds/Light1","ON");
-    EEPROMWriteByte(371, 0x5A);
+    //Config
+    Firebase.setString(firebaseData, username + "/config/Fan_min_interval","60");
+    Firebase.setString(firebaseData, username + "/config/Cool_min_interval","60");
+    Firebase.setString(firebaseData, username + "/config/Heat_min_interval","60");
+    Firebase.setString(firebaseData, username + "/config/Fan_on_time","240");
+    Firebase.setString(firebaseData, username + "/config/Fan_off_time","300");
+    Firebase.setString(firebaseData, username + "/config/Heater_on_time","240");
+    Firebase.setString(firebaseData, username + "/config/Heater_off_time","300");
+    Firebase.setString(firebaseData, username + "/config/Cooler_on_time","60");
+    Firebase.setString(firebaseData, username + "/config/Cooler_off_time","300");
+    Firebase.setString(firebaseData, username + "/config/Temp_variance_Cool","2");
+    Firebase.setString(firebaseData, username + "/config/Temp_variance_FanB","1");
+    Firebase.setString(firebaseData, username + "/config/Temp_variance_FanA","0");
+
+    
+    EEPROMWriteByte(381, 0xAA);
   }
 }
 void RestoreData(void)
 {
+  Gas2_Sen_Cal = EEPROMReadInt(369);
+  Gas1_Sen_Cal = EEPROMReadInt(365);
   firebase_interval = EEPROMReadInt(361);
   Fan_min_interval = EEPROMReadInt(359);
   Cool_min_interval = EEPROMReadInt(357);
@@ -1066,10 +1237,6 @@ void RestoreData(void)
   Cooler_off_time = EEPROMReadInt(347);
   Heater_on_time = EEPROMReadInt(345);
   Heater_off_time = EEPROMReadInt(343);
-  Serial.println(Fan_off_time);
-  Serial.println(Cooler_off_time);
-  Serial.println(Heat_min_interval);
-  Serial.println(Heater_off_time);
   Temp_variance_Cool = EEPROMReadByte(342);
   Temp_variance_FanA = EEPROMReadByte(341);
   Temp_variance_FanB = EEPROMReadByte(340);
@@ -1079,8 +1246,10 @@ void StoreData(void)
   /*
      EEPROM storage positions
      ResetReasons       --> 500-510
-     First_FirebaseUse  --> 371
-     First_Use          --> 370
+     First_FirebaseUse  --> 382
+     First_Use          --> 381
+     Gas2_Sen_Cal       --> 369
+     Gas1_Sen_Cal       --> 365
      firebase_interv    --> 361
      Fan_min_interval   --> 359
      Cool_min_interval  --> 357
@@ -1103,6 +1272,24 @@ void StoreData(void)
      WiFi_SSID          --> 0
   */
 
+
+
+if ((EEPROMReadInt(369) != Gas2_Sen_Cal))
+  {
+    EEPROMWriteInt(369, Gas2_Sen_Cal);
+    Serial.print("Gas2_Sen_Cal :"); Serial.println(Gas2_Sen_Cal);
+  }
+  else
+    Gas2_Sen_Cal = EEPROMReadInt(369);
+
+  if ((EEPROMReadInt(365) != Gas1_Sen_Cal))
+  {
+    EEPROMWriteInt(365, Gas1_Sen_Cal);
+    Serial.print("Gas1_Sen_Cal :"); Serial.println(Gas1_Sen_Cal);
+  }
+  else
+    Gas1_Sen_Cal = EEPROMReadInt(365);
+    
   if ((firebase_interval <= 250) && (EEPROMReadInt(361) != firebase_interval))
   {
     EEPROMWriteInt(361, firebase_interval);

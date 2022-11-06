@@ -62,7 +62,7 @@ uint32_t currentmillis =0;
  * 
  */
 
-
+uint32_t safe_mode_prev =0;
 // ResetCheck
 uint32_t resetCheck_previousMillis = 0;
 // GoogleSheet
@@ -258,6 +258,28 @@ int   T5_S =1;
 String Gas1_Sen_Cal_Prev = "NNN";
 String Gas2_Sen_Cal_Prev = "NNN";
 
+uint16_t Fan_min_interval_prev  = 0; //in seconds
+uint16_t Cool_min_interval_prev = 0; //in seconds
+uint16_t Heat_min_interval_prev = 0; //in seconds
+
+uint16_t Fan_1_on_time_prev  = 0;
+uint16_t Fan_1_off_time_prev = 0;
+
+uint16_t Fan_on_time_prev  = 0;
+uint16_t Fan_off_time_prev = 0;
+
+uint16_t Fan_on_time_temperory_prev  = 0;
+uint16_t Fan_off_time_temperory_prev = 0;
+
+uint16_t Heater_on_time_prev  = 0;
+uint16_t Heater_off_time_prev = 0;
+
+uint16_t Cooler_on_time_prev  = 0;
+uint16_t Cooler_off_time_prev = 0;
+
+uint8_t Temp_variance_Cool_prev = 0; // this is the jetter after the max or less than the min to start the action (after max to start cooler)
+uint8_t Temp_variance_FanB_prev = 0; // this is the jetter after the max or less than the min to start the action (after max to start fan)
+uint8_t Temp_variance_FanA_prev = 0;
 
 //typedef enum {
 //    ESP_RST_UNKNOWN,    //!< Reset reason can not be determined
