@@ -2,7 +2,7 @@
 #define CONFIG_H_
 
 //////////////////////Config Settings//////////////////////
-String CodeVersion ="3.1.1.0";
+String CodeVersion ="3.1.2.0";
 
 const char* ssid_ap     = "ChickenFarm";
 const char* password_ap = "88888888";
@@ -38,24 +38,21 @@ uint32_t ErrorDetect_interval = 1000*60;
 // configurations that might be changed with user
 uint8_t firebase_interval = 0; // in minutes     uses internet periodically send & recieve the data with firebase 0--255
 
-uint16_t Fan_min_interval  = 60; //in seconds
-uint16_t Cool_min_interval = 60; //in seconds
-uint16_t Heat_min_interval = 60; //in seconds
+uint16_t Fan_min_interval  = 10; //in seconds
+uint16_t Cool_min_interval = 10; //in seconds
+uint16_t Heat_min_interval = 10; //in seconds
 
 uint16_t Fan_1_on_time  = 240;
-uint16_t Fan_1_off_time = 0 + Fan_1_on_time;
+uint16_t Fan_1_off_time = 0;
 
 uint16_t Fan_on_time  = 240;
-uint16_t Fan_off_time = 60 + Fan_on_time;
-
-uint16_t Fan_on_time_temperory  = 240;
-uint16_t Fan_off_time_temperory = 0 + Fan_on_time_temperory;
+uint16_t Fan_off_time = 60;
 
 uint16_t Heater_on_time  = 240;
 uint16_t Heater_off_time = 60 + Heater_on_time;
 
 uint16_t Cooler_on_time  = 60;
-uint16_t Cooler_off_time = 240 + Cooler_on_time;
+uint16_t Cooler_off_time = 240;
 
 uint8_t Temp_variance_Cool = 2; // this is the jetter after the max or less than the min to start the action (after max to start cooler)
 uint8_t Temp_variance_FanB = 1; // this is the jetter after the max or less than the min to start the action (after max to start fan)

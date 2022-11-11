@@ -61,6 +61,9 @@ uint32_t currentmillis =0;
  * 
  * 
  */
+String firebase_interval_prev;
+String UpdateCode_prev;
+int Hour_prev;
 
 uint32_t safe_mode_prev =0;
 // ResetCheck
@@ -76,133 +79,11 @@ uint32_t RFID_Read_previousMillis = 0;
 // LCD
 uint32_t ErrorDetect_previousMillis = 0;
 
-unsigned int heaterA_Stime = 0;
-unsigned int heaterB_Stime = 0;
-unsigned int heaterA_Stime_previousMillis = 0;
-unsigned int heaterB_Stime_previousMillis = 0; 
-////////////////////////////////Fan
-unsigned int FanA_Flag = 0;
-unsigned int FanB_Flag = 0;
-unsigned int FanAStartTime = 0;
-unsigned int FanBStartTime = 0;
-////////////////////////////////Cooler 
-uint32_t CoolerStartTime = 0;
-uint8_t CoolerFlag = 0;
-///////////////////////////////////////////////// LCD /////////////////////////////////////////////////////
-String line1, line2,line3,line4;
-byte wifi_customChar[8] = {B00000, B00000, B00000, B00000, B00001, B00011, B00111, B01111};
-byte no_wifi[8] = {B00000, B10100, B01000, B10100, B0001, B00011, B00111, B01111};
-byte arrow[8] = {0x0, 0x4 ,0x6, 0x3f, 0x6, 0x4, 0x0};
-int Page_number = 0;
-int Choise_number = 0;
-int App_mode =0;
-uint32_t LCD_previousMillis = 0;
-uint32_t Fast_LCD_previousMillis = 0;
-uint32_t Setting_previousMillis = 0;
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-String ifttt_server = "http://maker.ifttt.com";
-String eventName = "ESP32_Mod2";
-String IFTTT_Key = "dRKdPFw2Xk3MFxA-JSDKKi7W_Aq_hoU4CADOtnMWXTh";
-String IFTTTUrl="https://maker.ifttt.com/trigger/ESP32/with/key/dRKdPFw2Xk3MFxA-JSDKKi7W_Aq_hoU4CADOtnMWXTh";
-
-/////////////////////////Variables//////////////////////////////////
-boolean RFID_Success = true;
-int httpResponseCode = 0 ; // being here for handling error and send againg http request  if error occured using while loop
-
-
-String ResetFlag = "OFF";
-String UpdateCode ="OFF";
-/************Auto Variables*******************/
-String FanA_Auto="ON";
-String FanB_Auto="ON";
-String Cooler_Auto="ON";
-String heaterA_Auto="ON";
-String heaterB_Auto="ON";
-
-String FanA_Auto_prev="H";
-String FanB_Auto_prev="H";
-String Cooler_Auto_prev="H";
-String heaterA_Auto_prev="H";
-String heaterB_Auto_prev="H";
-
-/********************* BTNs ************************/
-int setFlag_h=0;
-int negFlag_h=0;
-int posFlag_h=0;
-int setFlag_l=0;
-int negFlag_l=0;
-int posFlag_l=0;
-int setFlag=0;
-int negFlag=0;
-int posFlag=0;
-
-// button
-long long int button_previousMillis = 0;
-int buzzer_Status=0;
-
-/*********************************************/
+/******************************* Sensors ************************************/
 float val;
-
-String heaterA_status = "OFF";
-String heaterB_status = "OFF";
-String heaterA_status_prev = "H";
-String heaterB_status_prev = "H";
-
-
-
-String HeaterFlag = "OFF";
-String WhichHeater = "A";
-String cooler_status = "OFF";
-String cooler_status_prev = "H";
-
-String fanA_status = "OFF";
-String fanA_status_prev = "H";
-
-String fanB_status = "OFF";
-String fanB_status_prev = "H";
-
-///////////////////////////////////Creditionals////////////////////////
-int buttonState = 1;
-boolean ConfigResetFlag = false;
-boolean shouldSaveConfig = false;
-
-
-String ssid{};
-String password{};
-String username{};
-// lIkJLB0WSwUwpAhJIPBgXroy9ce2_1
-
-
-
-String header{};
-int count = 0;
-boolean exit_but;
-///////////////////////////////////////////////////////////////////////////
-int LED_Status=0;
-String LED_Status_Str = "OFF";
-String Light_Status = "ON";
-String Set_ManualHA = "OFF";
-String Set_ManualHB = "OFF";
-String Set_ManualFA = "OFF";
-String Set_ManualFB = "OFF";
-String Set_ManualC = "OFF";
-
-String string;
-String Set_ManualHA_prev = "H";
-String Set_ManualHB_prev = "H";
-String Set_ManualFA_prev = "H";
-String Set_ManualFB_prev = "H";
-String Set_ManualC_prev = "H";
-String LED_prev = "H";
-String WhichHeater_prev = "H";
-String Light_prev = "H";
 String VentRange_prev = "H";
 String TempRange_prev = "H";
-String ResetFlag_prev = "H";
-String firebase_interval_prev;
-String UpdateCode_prev;
-int Hour_prev;
-/////////////////mq135/////////////////////
+
 String quality = "FF";
 long int gas_prev;
 long int gas;
@@ -216,8 +97,7 @@ long int gas2_prev;
 long int gas2;
 
 int GAS[ADC_READING_NUMBER];
-int Error;
-int Error_prev;
+
 int gasCounter=0;
 
 float Temperature = 0;
@@ -258,28 +138,156 @@ int   T5_S =1;
 String Gas1_Sen_Cal_Prev = "NNN";
 String Gas2_Sen_Cal_Prev = "NNN";
 
-uint16_t Fan_min_interval_prev  = 0; //in seconds
-uint16_t Cool_min_interval_prev = 0; //in seconds
-uint16_t Heat_min_interval_prev = 0; //in seconds
+/******************************* Fans ************************************/
+uint32_t FanA_Flag = 0;
+uint32_t FanB_Flag = 0;
+uint32_t FanAStartTime = 0;
+uint32_t FanBStartTime = 0;
 
-uint16_t Fan_1_on_time_prev  = 0;
-uint16_t Fan_1_off_time_prev = 0;
+uint32_t FanA_STime_MinInterval = 0;
+uint32_t FanB_STime_MinInterval = 0;
 
-uint16_t Fan_on_time_prev  = 0;
-uint16_t Fan_off_time_prev = 0;
+String FanA_Auto="ON";
+String FanB_Auto="ON";
 
-uint16_t Fan_on_time_temperory_prev  = 0;
-uint16_t Fan_off_time_temperory_prev = 0;
+String FanA_Auto_prev="H";
+String FanB_Auto_prev="H";
 
-uint16_t Heater_on_time_prev  = 0;
-uint16_t Heater_off_time_prev = 0;
+String fanA_status = "OFF";
+String fanA_status_prev = "H";
 
-uint16_t Cooler_on_time_prev  = 0;
-uint16_t Cooler_off_time_prev = 0;
+String fanB_status = "OFF";
+String fanB_status_prev = "H";
 
-uint8_t Temp_variance_Cool_prev = 0; // this is the jetter after the max or less than the min to start the action (after max to start cooler)
-uint8_t Temp_variance_FanB_prev = 0; // this is the jetter after the max or less than the min to start the action (after max to start fan)
-uint8_t Temp_variance_FanA_prev = 0;
+String Set_ManualFA = "OFF";
+String Set_ManualFB = "OFF";
+String Set_ManualFA_prev = "NN";
+String Set_ManualFB_prev = "NN";
+
+String Fan_min_interval_prev  = "0"; //in seconds
+
+String Fan_1_on_time_prev  = "0";
+String Fan_1_off_time_prev = "0";
+
+String Fan_on_time_prev  = "0";
+String Fan_off_time_prev = "0";
+
+String Temp_variance_FanB_prev = "0"; // this is the jetter after the max or less than the min to start the action (after max to start fan)
+String Temp_variance_FanA_prev = "0";
+/******************************* Cooler ************************************/
+uint32_t CoolerStartTime = 0;
+uint8_t  CoolerFlag = 0;
+
+String Cooler_Auto="ON";
+String Cooler_Auto_prev="H";
+
+String cooler_status = "OFF";
+String cooler_status_prev = "H";
+String Set_ManualC = "OFF";
+String Set_ManualC_prev = "NN";
+String Cool_min_interval_prev = "0"; //in seconds
+
+String Cooler_on_time_prev  = "0";
+String Cooler_off_time_prev = "0";
+String Temp_variance_Cool_prev = "0"; // this is the jetter after the max or less than the min to start the action (after max to start cooler)
+
+/******************************* Heaters ************************************/
+uint32_t HeaterA_Flag = 0;
+uint32_t HeaterB_Flag = 0;
+uint32_t HeaterAStartTime = 0;//times used with the reset 
+uint32_t HeaterBStartTime = 0;
+
+uint32_t HeaterA_STime_MinInterval = 0;
+uint32_t HeaterB_STime_MinInterval = 0;
+
+String heaterA_Auto="ON";
+String heaterB_Auto="ON";
+
+String heaterA_Auto_prev="H";
+String heaterB_Auto_prev="H";
+
+String heaterA_status = "OFF";
+String heaterB_status = "OFF";
+String heaterA_status_prev = "H";
+String heaterB_status_prev = "H";
+
+String Set_ManualHA = "OFF";
+String Set_ManualHB = "OFF";
+
+String Heat_min_interval_prev = "0"; //in seconds
+
+String Heater_on_time_prev  = "0";
+String Heater_off_time_prev = "0";
+
+String Set_ManualHA_prev = "NN";
+String Set_ManualHB_prev = "NN";
+/******************************* LCD ************************************/
+String line1, line2,line3,line4;
+byte wifi_customChar[8] = {B00000, B00000, B00000, B00000, B00001, B00011, B00111, B01111};
+byte no_wifi[8] = {B00000, B10100, B01000, B10100, B0001, B00011, B00111, B01111};
+byte arrow[8] = {0x0, 0x4 ,0x6, 0x3f, 0x6, 0x4, 0x0};
+int Page_number = 0;
+int Choise_number = 0;
+int App_mode =0;
+uint32_t LCD_previousMillis = 0;
+uint32_t Fast_LCD_previousMillis = 0;
+uint32_t Setting_previousMillis = 0;
+/******************************* FFT ************************************/
+String ifttt_server = "http://maker.ifttt.com";
+String eventName = "ESP32_Mod2";
+String IFTTT_Key = "dRKdPFw2Xk3MFxA-JSDKKi7W_Aq_hoU4CADOtnMWXTh";
+String IFTTTUrl="https://maker.ifttt.com/trigger/ESP32/with/key/dRKdPFw2Xk3MFxA-JSDKKi7W_Aq_hoU4CADOtnMWXTh";
+
+/******************************* Variables ************************************/
+String string;
+
+boolean RFID_Success = true;
+int httpResponseCode = 0 ; // being here for handling error and send againg http request  if error occured using while loop
+
+
+String ResetFlag = "OFF";
+String UpdateCode ="OFF";
+
+String ResetFlag_prev = "H";
+
+int Error;
+int Error_prev;
+/******************************* BTNs ************************************/
+int setFlag_h=0;
+int negFlag_h=0;
+int posFlag_h=0;
+int setFlag_l=0;
+int negFlag_l=0;
+int posFlag_l=0;
+int setFlag=0;
+int negFlag=0;
+int posFlag=0;
+
+// button
+long long int button_previousMillis = 0;
+int buzzer_Status=0;
+
+/******************************* Credintials ************************************/
+int buttonState = 1;
+boolean ConfigResetFlag = false;
+boolean shouldSaveConfig = false;
+
+
+String ssid{};
+String password{};
+String username{};
+
+String header{};
+int count = 0;
+boolean exit_but;
+/******************************* Light ************************************/
+int LED_Status=0;
+String LED_Status_Str = "OFF";
+String Light_Status = "ON";
+String LED_prev = "H";
+String Light_prev = "H";
+
+/******************************* WDT ************************************/
 
 //typedef enum {
 //    ESP_RST_UNKNOWN,    //!< Reset reason can not be determined
@@ -299,6 +307,8 @@ String Clear_Reset_Reason = "OFF";
 String WDT_Action = "OFF";
 String Clear_Reset_Reason_prev = "H";
 String WDT_Action_prev = "H";
+
+/*******************************       ************************************/
 
 const char * root_ca = \
                        "-----BEGIN CERTIFICATE-----\n" \
