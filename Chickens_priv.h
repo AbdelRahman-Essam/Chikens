@@ -62,7 +62,7 @@ uint32_t currentmillis =0;
  * 
  */
 
-
+uint32_t safe_mode_prev =0;
 // ResetCheck
 uint32_t resetCheck_previousMillis = 0;
 // GoogleSheet

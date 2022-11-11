@@ -573,6 +573,11 @@ void firebaseStatments(void)
           Gas1_Sen_Cal = Gas1_Sen_Cal_Prev.toInt();
           Serial.println("Gas1_Sen_Cal Changed!");
           Serial.print("Gas1_Sen_Cal: "); Serial.println(Gas1_Sen_Cal);
+          if ((EEPROMReadInt(365) != Gas1_Sen_Cal))
+          {
+            EEPROMWriteInt(365, Gas1_Sen_Cal);
+            Serial.print("Gas1_Sen_Cal :"); Serial.println(Gas1_Sen_Cal);
+          }
           Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas1_get", Gas1_Sen_Cal);
         }
         Case++;
@@ -646,6 +651,11 @@ void firebaseStatments(void)
           Gas2_Sen_Cal = Gas2_Sen_Cal_Prev.toInt();
           Serial.println("Gas2_Sen_Cal Changed!");
           Serial.print("Gas2_Sen_Cal: "); Serial.println(Gas2_Sen_Cal);
+          if ((EEPROMReadInt(369) != Gas2_Sen_Cal))
+          {
+            EEPROMWriteInt(369, Gas2_Sen_Cal);
+            Serial.print("Gas2_Sen_Cal :"); Serial.println(Gas2_Sen_Cal);
+          }
           Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas2_get", Gas2_Sen_Cal);
         }
         Case++;
@@ -995,17 +1005,17 @@ void SettingMode(void)
 }
 void First_Use(void)
 {
-  if (EEPROMReadByte(370) != 0x5A)
+  if (EEPROMReadByte(380) != 0x5A)
   {
     Serial.println("First Use Set the Default Values");
     StoreData();
     ClearResetReason();
-    EEPROMWriteByte(370, 0x5A);
+    EEPROMWriteByte(380, 0x5A);
   }
 }
 void First_FirebaseUse(void)
 {// still need to be implemented
-  if (EEPROMReadByte(371) != 0x5A)
+  if (EEPROMReadByte(381) != 0x5A)
   {
     Serial.println("Firebase First Use Set the Default Values");
     //WDT Data
@@ -1027,11 +1037,13 @@ void First_FirebaseUse(void)
     Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas2",0);
     Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas1_get",0);
     Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas1_get",0);
-    EEPROMWriteByte(371, 0x5A);
+    EEPROMWriteByte(381, 0x5A);
   }
 }
 void RestoreData(void)
 {
+  Gas2_Sen_Cal = EEPROMReadInt(369);
+  Gas1_Sen_Cal = EEPROMReadInt(365);
   firebase_interval = EEPROMReadInt(361);
   Fan_min_interval = EEPROMReadInt(359);
   Cool_min_interval = EEPROMReadInt(357);
@@ -1052,11 +1064,13 @@ void RestoreData(void)
 }
 void StoreData(void)
 {
-  /*
+ /*
      EEPROM storage positions
      ResetReasons       --> 500-510
-     First_FirebaseUse  --> 371
-     First_Use          --> 370
+     First_FirebaseUse  --> 382
+     First_Use          --> 381
+     Gas2_Sen_Cal       --> 369
+     Gas1_Sen_Cal       --> 365
      firebase_interv    --> 361
      Fan_min_interval   --> 359
      Cool_min_interval  --> 357
@@ -1078,7 +1092,21 @@ void StoreData(void)
      WiFi_PW            --> 100
      WiFi_SSID          --> 0
   */
+  if ((EEPROMReadInt(369) != Gas2_Sen_Cal))
+  {
+    EEPROMWriteInt(369, Gas2_Sen_Cal);
+    Serial.print("Gas2_Sen_Cal :"); Serial.println(Gas2_Sen_Cal);
+  }
+  else
+    Gas2_Sen_Cal = EEPROMReadInt(369);
 
+  if ((EEPROMReadInt(365) != Gas1_Sen_Cal))
+  {
+    EEPROMWriteInt(365, Gas1_Sen_Cal);
+    Serial.print("Gas1_Sen_Cal :"); Serial.println(Gas1_Sen_Cal);
+  }
+  else
+    Gas1_Sen_Cal = EEPROMReadInt(365);
   if ((firebase_interval <= 250) && (EEPROMReadInt(361) != firebase_interval))
   {
     EEPROMWriteInt(361, firebase_interval);
