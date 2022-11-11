@@ -949,6 +949,7 @@ void firebaseStatments(void)
           Fan_min_interval = Fan_min_interval_prev.toInt();
           Serial.println("Fan_min_interval Changed!");
           Serial.print("Fan_min_interval: "); Serial.println(Fan_min_interval);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
         }////////////////////////////////////////////////////////////////
         Case++;
@@ -964,6 +965,7 @@ void firebaseStatments(void)
           Cool_min_interval = Cool_min_interval_prev.toInt();
           Serial.println("Cool_min_interval Changed!");
           Serial.print("Cool_min_interval: "); Serial.println(Cool_min_interval);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Cool_min_interval", Cool_min_interval);
         }////////////////////////////////////////////////////////////////
         Case++;
@@ -979,6 +981,7 @@ void firebaseStatments(void)
           Heat_min_interval = Heat_min_interval_prev.toInt();
           Serial.println("Heat_min_interval Changed!");
           Serial.print("Heat_min_interval: "); Serial.println(Heat_min_interval);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Heat_min_interval", Heat_min_interval);
         }////////////////////////////////////////////////////////////////
         Case++;
@@ -994,6 +997,7 @@ void firebaseStatments(void)
           Fan_1_on_time = Fan_1_on_time_prev.toInt();
           Serial.println("Fan_1_on_time Changed!");
           Serial.print("Fan_1_on_time: "); Serial.println(Fan_1_on_time);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Fan_1_on_time", Fan_1_on_time);
         }////////////////////////////////////////////////////////////////
         Case++;
@@ -1009,6 +1013,7 @@ void firebaseStatments(void)
           Fan_1_off_time = Fan_1_off_time_prev.toInt();
           Serial.println("Fan_1_off_time Changed!");
           Serial.print("Fan_1_off_time: "); Serial.println(Fan_1_off_time);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Fan_1_off_time", Fan_1_off_time);
         }////////////////////////////////////////////////////////////////
         Case++;
@@ -1024,6 +1029,7 @@ void firebaseStatments(void)
           Fan_on_time = Fan_on_time_prev.toInt();
           Serial.println("Fan_on_time Changed!");
           Serial.print("Fan_on_time: "); Serial.println(Fan_on_time);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Fan_on_time", Fan_on_time);
         }////////////////////////////////////////////////////////////////
         Case++;
@@ -1039,6 +1045,7 @@ void firebaseStatments(void)
           Fan_off_time = Fan_off_time_prev.toInt();
           Serial.println("Fan_off_time Changed!");
           Serial.print("Fan_off_time: "); Serial.println(Fan_off_time);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Fan_off_time", Fan_off_time);
         }////////////////////////////////////////////////////////////////
         Case++;
@@ -1054,6 +1061,7 @@ void firebaseStatments(void)
           Heater_on_time = Heater_on_time_prev.toInt();
           Serial.println("Heater_on_time Changed!");
           Serial.print("Heater_on_time: "); Serial.println(Heater_on_time);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Heater_on_time", Heater_on_time);
         }////////////////////////////////////////////////////////////////
         Case++;
@@ -1069,6 +1077,7 @@ void firebaseStatments(void)
           Heater_off_time = Heater_off_time_prev.toInt();
           Serial.println("Heater_off_time Changed!");
           Serial.print("Heater_off_time: "); Serial.println(Heater_off_time);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Heater_off_time", Heater_off_time);
         }////////////////////////////////////////////////////////////////
         Case++;
@@ -1084,6 +1093,7 @@ void firebaseStatments(void)
           Cooler_on_time = Cooler_on_time_prev.toInt();
           Serial.println("Cooler_on_time Changed!");
           Serial.print("Cooler_on_time: "); Serial.println(Cooler_on_time);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Cooler_on_time", Cooler_on_time);
         }////////////////////////////////////////////////////////////////
         Case++;
@@ -1099,6 +1109,7 @@ void firebaseStatments(void)
           Cooler_off_time = Cooler_off_time_prev.toInt();
           Serial.println("Cooler_off_time Changed!");
           Serial.print("Cooler_off_time: "); Serial.println(Cooler_off_time);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Cooler_off_time", Cooler_off_time);
         }////////////////////////////////////////////////////////////////
         Case++;
@@ -1114,6 +1125,7 @@ void firebaseStatments(void)
           Temp_variance_Cool = Temp_variance_Cool_prev.toInt();
           Serial.println("Temp_variance_Cool Changed!");
           Serial.print("Temp_variance_Cool: "); Serial.println(Temp_variance_Cool);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Temp_variance_Cool", Temp_variance_Cool);
         }////////////////////////////////////////////////////////////////
         Case++;
@@ -1129,6 +1141,7 @@ void firebaseStatments(void)
           Temp_variance_FanB = Temp_variance_FanB_prev.toInt();
           Serial.println("Temp_variance_FanB Changed!");
           Serial.print("Temp_variance_FanB: "); Serial.println(Temp_variance_FanB);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Temp_variance_FanB", Temp_variance_FanB);
         }////////////////////////////////////////////////////////////////
         Case++;
@@ -1144,6 +1157,7 @@ void firebaseStatments(void)
           Temp_variance_FanA = Temp_variance_FanA_prev.toInt();
           Serial.println("Temp_variance_FanA Changed!");
           Serial.print("Temp_variance_FanA: "); Serial.println(Temp_variance_FanA);
+          StoreData();
           Firebase.setInt(firebaseData, username + "/config_get/Temp_variance_FanA", Temp_variance_FanA);
         }////////////////////////////////////////////////////////////////
         Case++;
