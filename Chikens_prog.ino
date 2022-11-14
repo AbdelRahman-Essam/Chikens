@@ -393,6 +393,11 @@ void firebaseStatments(void)
             temp_prev5 = Temperature5;
             Firebase.setFloat(firebaseData, username + "/Temp/temp5", Temperature5);
           }
+        if (Temperature > 75)
+        {
+          Serial.print("Temperature: "); Serial.println(Temperature);
+          Firebase.setFloat(firebaseData, username + "/Temp/Temperature", Temperature);
+        }
         }
         Case++;
       break;
@@ -1352,10 +1357,10 @@ void tempFn(void)
     Humidity = (float) val / 10;
     if (isnan(Humidity))
       Humidity = 00.0;
-    if (Temperature > 80)
-      Temperature = 0;
-    if (Humidity > 120)
-      Humidity = 0;
+    if (Temperature == 0)
+      Temperature = 80;
+    if (Humidity == 0)
+      Humidity = 120;
 
     //    Serial.print("Temperature: "); Serial.println(Temperature);
     //    Serial.print("Humidity: "); Serial.println(Humidity);
@@ -1395,240 +1400,243 @@ void controlStatments(void)
   {
     //Serial.println("will start control");
     control_previousMillis = currentmillis;
-    { //FanA
-      if (FanA_Auto == "OFF")// if FanA manual
-      {
-        if (Set_ManualFA == "ON")
+    if (Temperature < 75)
+    {
+      { //FanA
+        if (FanA_Auto == "OFF")// if FanA manual
         {
-          digitalWrite(FanA, control_ON);
-          if (fanA_status == "OFF")
-            FanAStartTime = currentmillis;
-          fanA_status = "ON";
-        }
-        else if (Set_ManualFA == "OFF")
-        {
-          digitalWrite(FanA, control_OFF);
-          fanA_status = "OFF";
-        }
-      }
-      else
-      {
-        if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanA))
-        {
-          if (0 == FanA_Flag)
+          if (Set_ManualFA == "ON")
           {
-            FanA_Flag = 1;
-            FanAStartTime = currentmillis;
+            digitalWrite(FanA, control_ON);
+            if (fanA_status == "OFF")
+              FanAStartTime = currentmillis;
+            fanA_status = "ON";
+          }
+          else if (Set_ManualFA == "OFF")
+          {
+            digitalWrite(FanA, control_OFF);
+            fanA_status = "OFF";
           }
         }
-        else if ((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))// here may be require  - Temp_variance_Cool
+        else
         {
-          FanA_Flag = 0;
-          digitalWrite(FanA, control_OFF);
-          fanA_status = "OFF";
-        }
-      }
-
-      if (((currentmillis - FanAStartTime) < Fan_on_time_temperory * 1000) && (FanA_Flag == 1))
-      {
-        digitalWrite(FanA, control_ON);
-        fanA_status = "ON";
-      }
-      else if (((currentmillis - FanAStartTime) < Fan_off_time_temperory * 1000) && (FanA_Flag == 1))
-      {
-        digitalWrite(FanA, control_OFF);
-        fanA_status = "OFF";
-      }
-      else if (((currentmillis - FanAStartTime) > Fan_off_time_temperory * 1000) && (FanA_Flag == 1))
-      {
-        FanAStartTime = currentmillis;
-      }
-    }
-    { // FanB
-      if (FanB_Auto == "OFF")
-      {
-        if (Set_ManualFB == "ON")
-        {
-          digitalWrite(FanB, control_ON);
-          if (fanB_status == "OFF")
-            FanBStartTime = currentmillis;
-          fanB_status = "ON";
-        }
-        else if (Set_ManualFB == "OFF")
-        {
-          digitalWrite(FanB, control_OFF);
-          fanB_status = "OFF";
-        }
-      }
-      else
-      {
-        if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanB))
-        {
-          if ((currentmillis - FanAStartTime >= FanDelayBTWN_Fans_interval) || (currentmillis < FanAStartTime))
+          if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanA))
           {
-            if (0 == FanB_Flag)
+            if (0 == FanA_Flag)
             {
-              FanB_Flag = 1;
-              FanBStartTime = currentmillis;
+              FanA_Flag = 1;
+              FanAStartTime = currentmillis;
             }
           }
-        }
-        else if ((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))
-        {
-          if ((currentmillis - FanBStartTime >= Fan_min_interval * 1000) || (currentmillis < FanBStartTime))
+          else if ((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))// here may be require  - Temp_variance_Cool
           {
-            FanB_Flag = 0;
+            FanA_Flag = 0;
+            digitalWrite(FanA, control_OFF);
+            fanA_status = "OFF";
+          }
+        }
+  
+        if (((currentmillis - FanAStartTime) < Fan_on_time_temperory * 1000) && (FanA_Flag == 1))
+        {
+          digitalWrite(FanA, control_ON);
+          fanA_status = "ON";
+        }
+        else if (((currentmillis - FanAStartTime) < Fan_off_time_temperory * 1000) && (FanA_Flag == 1))
+        {
+          digitalWrite(FanA, control_OFF);
+          fanA_status = "OFF";
+        }
+        else if (((currentmillis - FanAStartTime) > Fan_off_time_temperory * 1000) && (FanA_Flag == 1))
+        {
+          FanAStartTime = currentmillis;
+        }
+      }
+      { // FanB
+        if (FanB_Auto == "OFF")
+        {
+          if (Set_ManualFB == "ON")
+          {
+            digitalWrite(FanB, control_ON);
+            if (fanB_status == "OFF")
+              FanBStartTime = currentmillis;
+            fanB_status = "ON";
+          }
+          else if (Set_ManualFB == "OFF")
+          {
             digitalWrite(FanB, control_OFF);
             fanB_status = "OFF";
           }
         }
-        if ((((currentmillis - FanBStartTime) <= Fan_on_time * 1000) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
+        else
         {
-          digitalWrite(FanB, control_ON);
-          fanB_status = "ON";
-        }
-        else if ((((currentmillis - FanBStartTime) <= Fan_off_time * 1000) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
-        {
-          digitalWrite(FanB, control_OFF);
-          fanB_status = "OFF";
-        }
-        else if ((((currentmillis - FanBStartTime) > Fan_off_time * 1000) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
-        {
-          FanBStartTime = currentmillis;
+          if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanB))
+          {
+            if ((currentmillis - FanAStartTime >= FanDelayBTWN_Fans_interval) || (currentmillis < FanAStartTime))
+            {
+              if (0 == FanB_Flag)
+              {
+                FanB_Flag = 1;
+                FanBStartTime = currentmillis;
+              }
+            }
+          }
+          else if ((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))
+          {
+            if ((currentmillis - FanBStartTime >= Fan_min_interval * 1000) || (currentmillis < FanBStartTime))
+            {
+              FanB_Flag = 0;
+              digitalWrite(FanB, control_OFF);
+              fanB_status = "OFF";
+            }
+          }
+          if ((((currentmillis - FanBStartTime) <= Fan_on_time * 1000) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
+          {
+            digitalWrite(FanB, control_ON);
+            fanB_status = "ON";
+          }
+          else if ((((currentmillis - FanBStartTime) <= Fan_off_time * 1000) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
+          {
+            digitalWrite(FanB, control_OFF);
+            fanB_status = "OFF";
+          }
+          else if ((((currentmillis - FanBStartTime) > Fan_off_time * 1000) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
+          {
+            FanBStartTime = currentmillis;
+          }
         }
       }
-    }
-    { //Cooler code
-      if (Cooler_Auto == "OFF")
-      {
-        if (Set_ManualC == "ON")
+      { //Cooler code
+        if (Cooler_Auto == "OFF")
+        {
+          if (Set_ManualC == "ON")
+          {
+            digitalWrite(Cooler, control_ON);
+            cooler_status = "ON";
+          }
+          else if (Set_ManualC == "OFF")
+          {
+            digitalWrite(Cooler, control_OFF);
+            cooler_status = "OFF";
+          }
+        }
+        else //ON/OFF time 60/240S
+        {
+          if (Temperature > MaxTemp_Trigger + Temp_variance_Cool)//cooler will work after max+Temp_variance_Cool
+          {
+            if (0 == CoolerFlag)
+            {
+              CoolerFlag = 1;
+              CoolerStartTime = currentmillis;
+            }
+          }
+          else if (Temperature < MaxTemp_Trigger )// cooler will close after max+1
+          {
+            CoolerFlag = 0;
+            digitalWrite(Cooler, control_OFF);
+            cooler_status = "OFF";
+          }
+        }
+  
+        if ((((currentmillis - CoolerStartTime) <= Cooler_on_time * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
         {
           digitalWrite(Cooler, control_ON);
           cooler_status = "ON";
         }
-        else if (Set_ManualC == "OFF")
+        else if ((((currentmillis - CoolerStartTime) <= Cooler_off_time * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
         {
           digitalWrite(Cooler, control_OFF);
           cooler_status = "OFF";
         }
-      }
-      else //ON/OFF time 60/240S
-      {
-        if (Temperature > MaxTemp_Trigger + Temp_variance_Cool)//cooler will work after max+Temp_variance_Cool
+        else if ((((currentmillis - CoolerStartTime) > Cooler_off_time * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
         {
-          if (0 == CoolerFlag)
-          {
-            CoolerFlag = 1;
-            CoolerStartTime = currentmillis;
-          }
-        }
-        else if (Temperature < MaxTemp_Trigger )// cooler will close after max+1
-        {
-          CoolerFlag = 0;
-          digitalWrite(Cooler, control_OFF);
-          cooler_status = "OFF";
+          CoolerStartTime = currentmillis;
         }
       }
-
-      if ((((currentmillis - CoolerStartTime) <= Cooler_on_time * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
-      {
-        digitalWrite(Cooler, control_ON);
-        cooler_status = "ON";
-      }
-      else if ((((currentmillis - CoolerStartTime) <= Cooler_off_time * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
-      {
-        digitalWrite(Cooler, control_OFF);
-        cooler_status = "OFF";
-      }
-      else if ((((currentmillis - CoolerStartTime) > Cooler_off_time * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
-      {
-        CoolerStartTime = currentmillis;
-      }
-    }
-
-    if ((heaterA_Auto == "OFF") && (heaterB_Auto == "OFF"))
-    {
-      //HeaterA
-      if (Set_ManualHA == "ON")
-      {
-        digitalWrite(HeaterA, control_ON);
-        heaterA_status = Set_ManualHA;
-      }
-      else if (Set_ManualHA == "OFF")
-      {
-        digitalWrite(HeaterA, control_OFF);
-        heaterA_status = Set_ManualHA;
-      }
-      //HeaterB
-      if (Set_ManualHB == "ON")
-      {
-        digitalWrite(HeaterB, control_ON);
-        heaterB_status = Set_ManualHB;
-      }
-      else if (Set_ManualHA == "OFF")
-      {
-        digitalWrite(HeaterB, control_OFF);
-        heaterB_status = Set_ManualHB;
-      }
-    }
-    else
-    {
-      if (Temperature <= MinTemp_Trigger)
+  
+      if ((heaterA_Auto == "OFF") && (heaterB_Auto == "OFF"))
       {
         //HeaterA
-        digitalWrite(HeaterA, control_ON);
-        //HeaterB
-        digitalWrite(HeaterB, control_ON);
-        heaterA_status = "ON";
-        heaterB_status = "ON";
-      }
-      else if ((Temperature > MinTemp_Trigger) && (Temperature < MaxTemp_Trigger))
-      {
-        if (HeaterFlag == "OFF")
+        if (Set_ManualHA == "ON")
         {
-          if ((WhichHeater == "A"))
-          {
-            //HeaterA
-            digitalWrite(HeaterA, control_OFF);
-            heaterA_status = "OFF";
-            //HeaterB
-            digitalWrite(HeaterB, control_ON);
-            heaterB_status = "ON";
-            WhichHeater = "B";
-            heaterB_Stime = currentmillis / (HeaterSwitch_interval);
-          }
-          else if ((WhichHeater == "B"))
-          {
-            //HeaterA
-            digitalWrite(HeaterA, control_ON);
-            heaterA_status = "ON";
-            WhichHeater = "A";
-            //HeaterB
-            digitalWrite(HeaterB, control_OFF);
-            heaterB_status = "OFF";
-            heaterA_Stime = currentmillis / (HeaterSwitch_interval);
-          }
-          HeaterFlag = "ON";
+          digitalWrite(HeaterA, control_ON);
+          heaterA_status = Set_ManualHA;
         }
-        else
+        else if (Set_ManualHA == "OFF")
         {
-          if (((heaterA_status == "ON") && (currentmillis / (HeaterSwitch_interval) != (heaterA_Stime))) || ((heaterB_status == "ON") && (currentmillis / (HeaterSwitch_interval) != (heaterB_Stime))))
-          {
-            HeaterFlag = "OFF";
-          }
+          digitalWrite(HeaterA, control_OFF);
+          heaterA_status = Set_ManualHA;
+        }
+        //HeaterB
+        if (Set_ManualHB == "ON")
+        {
+          digitalWrite(HeaterB, control_ON);
+          heaterB_status = Set_ManualHB;
+        }
+        else if (Set_ManualHA == "OFF")
+        {
+          digitalWrite(HeaterB, control_OFF);
+          heaterB_status = Set_ManualHB;
         }
       }
-      else if (Temperature > MaxTemp_Trigger)
+      else
       {
-        //HeaterA
-        digitalWrite(HeaterA, control_OFF);
-        //HeaterB
-        digitalWrite(HeaterB, control_OFF);
-        heaterA_status = "OFF";
-        heaterB_status = "OFF";
+        if (Temperature <= MinTemp_Trigger)
+        {
+          //HeaterA
+          digitalWrite(HeaterA, control_ON);
+          //HeaterB
+          digitalWrite(HeaterB, control_ON);
+          heaterA_status = "ON";
+          heaterB_status = "ON";
+        }
+        else if ((Temperature > MinTemp_Trigger) && (Temperature < MaxTemp_Trigger))
+        {
+          if (HeaterFlag == "OFF")
+          {
+            if ((WhichHeater == "A"))
+            {
+              //HeaterA
+              digitalWrite(HeaterA, control_OFF);
+              heaterA_status = "OFF";
+              //HeaterB
+              digitalWrite(HeaterB, control_ON);
+              heaterB_status = "ON";
+              WhichHeater = "B";
+              heaterB_Stime = currentmillis / (HeaterSwitch_interval);
+            }
+            else if ((WhichHeater == "B"))
+            {
+              //HeaterA
+              digitalWrite(HeaterA, control_ON);
+              heaterA_status = "ON";
+              WhichHeater = "A";
+              //HeaterB
+              digitalWrite(HeaterB, control_OFF);
+              heaterB_status = "OFF";
+              heaterA_Stime = currentmillis / (HeaterSwitch_interval);
+            }
+            HeaterFlag = "ON";
+          }
+          else
+          {
+            if (((heaterA_status == "ON") && (currentmillis / (HeaterSwitch_interval) != (heaterA_Stime))) || ((heaterB_status == "ON") && (currentmillis / (HeaterSwitch_interval) != (heaterB_Stime))))
+            {
+              HeaterFlag = "OFF";
+            }
+          }
+        }
+        else if (Temperature > MaxTemp_Trigger)
+        {
+          //HeaterA
+          digitalWrite(HeaterA, control_OFF);
+          //HeaterB
+          digitalWrite(HeaterB, control_OFF);
+          heaterA_status = "OFF";
+          heaterB_status = "OFF";
+        }
       }
+      //Serial.println("will stop control");
     }
-    //Serial.println("will stop control");
   }
 }
 void RFID_Read(boolean RFID_Success)
