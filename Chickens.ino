@@ -50,10 +50,10 @@ void loop()
   }
   ResetReason_Update();
   
-//  if (currentmillis > 0x05265C00 ) //Reset every 24h //0xFFFFFFF0 overflow 49 days
-//  {
-//  ESP.restart();
-//  }  
+  if (currentmillis > 0x05265C00 ) //Reset every 24h //0xFFFFFFF0 overflow 49 days
+  {
+  ESP.restart();
+  }  
 
   if (App_mode==0)
   {

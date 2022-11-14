@@ -2432,17 +2432,10 @@ void firbaseSetup(void)
   Firebase.begin(Host, Token);
   //Set database read timeout to 10 Sec (max 15 minutes)
   Serial.println("firebase test 1");
-  Firebase.setReadTimeout(firebaseData,10);
+  Firebase.setReadTimeout(firebaseData,11000);
   Serial.println("firebase test 2");
   Firebase.reconnectWiFi(false);
-  Serial.println("firebase test 3");
-  //it tells the project to reconnect to wifi when it's able to, but it keep spaming
-  //Server response read timeout in ms (1 sec - 1 min). 
-//   config.timeout.serverResponse = 10 * 1000; 
-  
-//   //RTDB Stream keep-alive timeout in ms (20 sec - 2 min) when no server's keep-alive event data received. 
-//   config.timeout.rtdbKeepAlive = 45 * 1000; 
-  
+  Serial.println("firebase test 3");  
   
   Firebase.get(firebaseData, username + "/Heaters/whichHeater");
   Serial.println("firebase test 4");
