@@ -2,7 +2,7 @@
 #define CONFIG_H_
 
 //////////////////////Config Settings//////////////////////
-String CodeVersion ="3.1.2.0";
+String CodeVersion ="4.0.0.0";
 
 const char* ssid_ap     = "ChickenFarm";
 const char* password_ap = "88888888";

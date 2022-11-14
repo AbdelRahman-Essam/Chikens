@@ -317,28 +317,30 @@ void firebaseStatments(void)
         {
           if (Temperature1 <= 1)
           {
-            Firebase.setFloat(firebaseData,  username + "/Temp/temp1", 0);
+//            Firebase.setFloat(firebaseData,  username + "/Temp/T1", 0);
+            Firebase.deleteNode(firebaseData,  username + "/Temp/T1");
             temp_prev1 = Temperature1;
           }
           else
           {
             Serial.print("temp1: "); Serial.println(Temperature1);
             temp_prev1 = Temperature1;
-            Firebase.setFloat(firebaseData, username + "/Temp/temp1", Temperature1);
+            Firebase.setFloat(firebaseData, username + "/Temp/T1", Temperature1);
           }
         }
         if (temp_prev2 != Temperature2)
         {
           if (Temperature2 <= 1)
           {
-            Firebase.setFloat(firebaseData,  username + "/Temp/temp2", 0);
+//            Firebase.setFloat(firebaseData,  username + "/Temp/T2", 0);
+            Firebase.deleteNode(firebaseData,  username + "/Temp/T2");
             temp_prev2 = Temperature2;
           }
           else
           {
             Serial.print("temp2: "); Serial.println(Temperature2);
             temp_prev2 = Temperature2;
-            Firebase.setFloat(firebaseData, username + "/Temp/temp2", Temperature2);
+            Firebase.setFloat(firebaseData, username + "/Temp/T2", Temperature2);
           }
         }
         Case++;
@@ -348,14 +350,15 @@ void firebaseStatments(void)
         {
           if (Temperature3 <= 1)
           {
-            Firebase.setFloat(firebaseData,  username + "/Temp/temp3", 0);
+            //Firebase.setFloat(firebaseData,  username + "/Temp/T3", 0);
+            Firebase.deleteNode(firebaseData,  username + "/Temp/T3");
             temp_prev3 = Temperature3;
           }
           else
           {
             Serial.print("temp3: "); Serial.println(Temperature3);
             temp_prev2 = Temperature2;
-            Firebase.setFloat(firebaseData, username + "/Temp/temp3", Temperature3);
+            Firebase.setFloat(firebaseData, username + "/Temp/T3", Temperature3);
           }
         }
         Case++;
@@ -365,14 +368,15 @@ void firebaseStatments(void)
         {
           if (Temperature4 <= 1)
           {
-            Firebase.setFloat(firebaseData,  username + "/Temp/temp4",0);
+//            Firebase.setFloat(firebaseData,  username + "/Temp/T4",0);
+            Firebase.deleteNode(firebaseData,  username + "/Temp/T4");
             temp_prev4 = Temperature4;
           }
           else
           {
             Serial.print("temp4: "); Serial.println(Temperature4);
             temp_prev4 = Temperature4;
-            Firebase.setFloat(firebaseData, username + "/Temp/temp4", Temperature4);
+            Firebase.setFloat(firebaseData, username + "/Temp/T4", Temperature4);
           }
         }
         Case++;
@@ -382,15 +386,21 @@ void firebaseStatments(void)
         {
           if (Temperature5 <= 1)
           {
-            Firebase.setFloat(firebaseData,  username + "/Temp/temp5", 0);
+//            Firebase.setFloat(firebaseData,  username + "/Temp/T5", 0);
+            Firebase.deleteNode(firebaseData,  username + "/Temp/T5");
             temp_prev5 = Temperature5;
           }
           else
           {
             Serial.print("temp5: "); Serial.println(Temperature5);
             temp_prev5 = Temperature5;
-            Firebase.setFloat(firebaseData, username + "/Temp/temp5", Temperature5);
+            Firebase.setFloat(firebaseData, username + "/Temp/T5", Temperature5);
           }
+        }
+        if (Temperature>75)
+        {
+          Serial.print("Temperature: "); Serial.println(Temperature);
+          Firebase.setFloat(firebaseData, username + "/Temp/T", Temperature);
         }
         Case++;
       break;
@@ -399,14 +409,15 @@ void firebaseStatments(void)
         {
           if (Humidity1 <= 1)
           {
-            Firebase.setFloat(firebaseData,  username + "/Hum/hum1", 0);
+//            Firebase.setFloat(firebaseData,  username + "/Hum/H1", 0);
+            Firebase.deleteNode(firebaseData,  username + "/Hum/H1");
             hum_prev1 = Humidity1;
           }
           else
           {
             Serial.print("Humidity1: "); Serial.println(Humidity1);
             hum_prev1 = Humidity1;
-            Firebase.setFloat(firebaseData, username + "/Hum/hum1", Humidity1);
+            Firebase.setFloat(firebaseData, username + "/Hum/H1", Humidity1);
           }
         }
         Case++;
@@ -416,14 +427,15 @@ void firebaseStatments(void)
         {
           if (Humidity2 <= 1)
           {
-            Firebase.setFloat(firebaseData,  username + "/Hum/hum2", 0);
+//            Firebase.setFloat(firebaseData,  username + "/Hum/H2", 0);
+            Firebase.deleteNode(firebaseData,  username + "/Hum/H2");
             hum_prev2 = Humidity2;
           }
           else
           {
             Serial.print("Humidity2: "); Serial.println(Humidity2);
             hum_prev2 = Humidity2;
-            Firebase.setFloat(firebaseData, username + "/Hum/hum2", Humidity2);
+            Firebase.setFloat(firebaseData, username + "/Hum/H2", Humidity2);
           }
         }
         Case++;
@@ -433,14 +445,15 @@ void firebaseStatments(void)
         {
           if (Humidity3 <= 1)
           {
-            Firebase.setFloat(firebaseData,  username + "/Hum/hum3", 0);
+//            Firebase.setFloat(firebaseData,  username + "/Hum/H3", 0);
+            Firebase.deleteNode(firebaseData,  username + "/Hum/H3");
             hum_prev3 = Humidity3;
           }
           else
           {
             Serial.print("Humidity3: "); Serial.println(Humidity3);
             hum_prev3 = Humidity3;
-            Firebase.setFloat(firebaseData, username + "/Hum/hum3", Humidity3);
+            Firebase.setFloat(firebaseData, username + "/Hum/H3", Humidity3);
           }
         }
         Case++;
@@ -450,14 +463,15 @@ void firebaseStatments(void)
         {
           if (Humidity4 <= 1)
           {
-            Firebase.setFloat(firebaseData,  username + "/Hum/hum4", 0);
+//            Firebase.setFloat(firebaseData,  username + "/Hum/H4", 0);
+            Firebase.deleteNode(firebaseData,  username + "/Hum/H4");
             hum_prev4 = Humidity4;
           }
           else
           {
             Serial.print("Humidity4: "); Serial.println(Humidity4);
             hum_prev4 = Humidity4;
-            Firebase.setFloat(firebaseData, username + "/Hum/hum4", Humidity4);
+            Firebase.setFloat(firebaseData, username + "/Hum/H4", Humidity4);
           }
         }
         Case++;
@@ -467,26 +481,27 @@ void firebaseStatments(void)
         {
           if (Humidity5 <= 1)
           {
-            Firebase.setFloat(firebaseData,  username + "/Hum/hum5", 0);
+//            Firebase.setFloat(firebaseData,  username + "/Hum/hum5", 0);
+            Firebase.deleteNode(firebaseData,  username + "/Hum/H5");
             hum_prev5 = Humidity5;
           }
           else
           {
             Serial.print("Humidity5: "); Serial.println(Humidity5);
             hum_prev5 = Humidity5;
-            Firebase.setFloat(firebaseData, username + "/Hum/hum5", Humidity5);
+            Firebase.setFloat(firebaseData, username + "/Hum/H5", Humidity5);
           }
         }
         Case++;
       break;
       case 11:
-        if ((gas_prev != gas) && (gas > 3))
-        {
-          // the String will be produced in the android program
-          gas_prev = gas;
-          Serial.print("gas: "); Serial.println(gas);
-          Firebase.setInt(firebaseData, username + "/airQuality", gas);
-        }
+//        if ((gas_prev != gas) && (gas > 3))
+//        {
+//          // the String will be produced in the android program
+//          gas_prev = gas;
+//          Serial.print("gas: "); Serial.println(gas);
+//          Firebase.setInt(firebaseData, username + "/airQuality", gas);
+//        }
         Case++;
       break;
       case 12:
@@ -1675,10 +1690,10 @@ void tempFn(void)
     Humidity = (float) val / 10;
     if (isnan(Humidity))
       Humidity = 00.0;
-    if (Temperature > 80)
-      Temperature = 0;
-    if (Humidity > 120)
-      Humidity = 0;
+    if (Temperature == 0)
+      Temperature = 80;
+    if (Humidity == 0)
+      Humidity = 120;
 
     //    Serial.print("Temperature: "); Serial.println(Temperature);
     //    Serial.print("Humidity: "); Serial.println(Humidity);
@@ -1718,264 +1733,267 @@ void controlStatments(void)
   {
     //Serial.println("will start control");
     control_previousMillis = currentmillis;
-    { //FanA
-      if (FanA_Auto == "OFF")// if FanA manual
-      {
-        if (Set_ManualFA == "ON")
+    if (Temperature<75)
+    {
+      { //FanA
+        if (FanA_Auto == "OFF")// if FanA manual
         {
-          digitalWrite(FanA, control_ON);
-          if (fanA_status == "OFF")
+          if (Set_ManualFA == "ON")
           {
-            FanAStartTime = currentmillis;
-            fanA_status = "ON";
-          }
-        }
-        else if (Set_ManualFA == "OFF")
-        {
-          digitalWrite(FanA, control_OFF);
-          fanA_status = "OFF";
-        }
-      }
-      else
-      {
-        if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanA))
-        {
-          if (0 == FanA_Flag)
-          {
-            FanA_Flag = 1;
-            FanAStartTime = currentmillis;
-          }
-        }
-        else if (((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))&&(currentmillis > (FanA_STime_MinInterval + Fan_min_interval*1000)))// here may be require  - Temp_variance_Cool
-        {
-          FanA_Flag = 0;
-          digitalWrite(FanA, control_OFF);
-          fanA_status = "OFF";
-        }
-
-        if (((currentmillis - FanAStartTime) < (Fan_1_on_time * 1000)) && (FanA_Flag == 1))
-        {
-          digitalWrite(FanA, control_ON);
-          fanA_status = "ON";
-        }
-        else if (((currentmillis - FanAStartTime) < ((Fan_1_off_time + Fan_1_on_time) * 1000)) && (FanA_Flag == 1))
-        {
-          digitalWrite(FanA, control_OFF);
-          fanA_status = "RST";
-        }
-        else if (((currentmillis - FanAStartTime) > ((Fan_1_off_time + Fan_1_on_time) * 1000)) && (FanA_Flag == 1))
-        {
-          FanAStartTime = currentmillis;
-        }
-      }
-    }
-    { // FanB
-      if (FanB_Auto == "OFF")
-      {
-        if (Set_ManualFB == "ON")
-        {
-          digitalWrite(FanB, control_ON);
-          if (fanB_status == "OFF")
-          {
-            FanBStartTime = currentmillis;
-            fanB_status = "ON";
-          }
-        }
-        else if (Set_ManualFB == "OFF")
-        {
-          digitalWrite(FanB, control_OFF);
-          fanB_status = "OFF";
-        }
-      }
-      else
-      {
-        if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanB))
-        {
-          if ((currentmillis - FanAStartTime >= FanDelayBTWN_Fans_interval) || (currentmillis < FanAStartTime))
-          {
-            if (0 == FanB_Flag)
+            digitalWrite(FanA, control_ON);
+            if (fanA_status == "OFF")
             {
-              FanB_Flag = 1;
-              FanBStartTime = currentmillis;
+              FanAStartTime = currentmillis;
+              fanA_status = "ON";
             }
           }
+          else if (Set_ManualFA == "OFF")
+          {
+            digitalWrite(FanA, control_OFF);
+            fanA_status = "OFF";
+          }
         }
-        else if (((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))&&(currentmillis > (FanB_STime_MinInterval + Fan_min_interval*1000)))
+        else
         {
-          FanB_Flag = 0;
-          digitalWrite(FanB, control_OFF);
-          fanB_status = "OFF";
-        }
-
-        
-        if ((((currentmillis - FanBStartTime) <= Fan_on_time * 1000) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
-        {
-          digitalWrite(FanB, control_ON);
-          fanB_status = "ON";
-        }
-        else if ((((currentmillis - FanBStartTime) <= ((Fan_off_time + Fan_on_time) * 1000)) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
-        {
-          digitalWrite(FanB, control_OFF);
-          fanB_status = "RST";
-        }
-        else if ((((currentmillis - FanBStartTime) > ((Fan_off_time + Fan_on_time) * 1000)) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
-        {
-          FanBStartTime = currentmillis;
+          if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanA))
+          {
+            if (0 == FanA_Flag)
+            {
+              FanA_Flag = 1;
+              FanAStartTime = currentmillis;
+            }
+          }
+          else if (((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))&&(currentmillis > (FanA_STime_MinInterval + Fan_min_interval*1000)))// here may be require  - Temp_variance_Cool
+          {
+            FanA_Flag = 0;
+            digitalWrite(FanA, control_OFF);
+            fanA_status = "OFF";
+          }
+  
+          if (((currentmillis - FanAStartTime) < (Fan_1_on_time * 1000)) && (FanA_Flag == 1))
+          {
+            digitalWrite(FanA, control_ON);
+            fanA_status = "ON";
+          }
+          else if (((currentmillis - FanAStartTime) < ((Fan_1_off_time + Fan_1_on_time) * 1000)) && (FanA_Flag == 1))
+          {
+            digitalWrite(FanA, control_OFF);
+            fanA_status = "RST";
+          }
+          else if (((currentmillis - FanAStartTime) > ((Fan_1_off_time + Fan_1_on_time) * 1000)) && (FanA_Flag == 1))
+          {
+            FanAStartTime = currentmillis;
+          }
         }
       }
-    }
-    { //Cooler code
-      if (Cooler_Auto == "OFF")
-      {
-        if (Set_ManualC == "ON")
+      { // FanB
+        if (FanB_Auto == "OFF")
+        {
+          if (Set_ManualFB == "ON")
+          {
+            digitalWrite(FanB, control_ON);
+            if (fanB_status == "OFF")
+            {
+              FanBStartTime = currentmillis;
+              fanB_status = "ON";
+            }
+          }
+          else if (Set_ManualFB == "OFF")
+          {
+            digitalWrite(FanB, control_OFF);
+            fanB_status = "OFF";
+          }
+        }
+        else
+        {
+          if (((gas > MaxVent_Trigger) && (Temperature > MinTemp_Trigger)) || (Temperature > MaxTemp_Trigger + Temp_variance_FanB))
+          {
+            if ((currentmillis - FanAStartTime >= FanDelayBTWN_Fans_interval) || (currentmillis < FanAStartTime))
+            {
+              if (0 == FanB_Flag)
+              {
+                FanB_Flag = 1;
+                FanBStartTime = currentmillis;
+              }
+            }
+          }
+          else if (((Temperature < (MinTemp_Trigger)) || ((gas < MinVent_Trigger) && ((Temperature < MaxTemp_Trigger))))&&(currentmillis > (FanB_STime_MinInterval + Fan_min_interval*1000)))
+          {
+            FanB_Flag = 0;
+            digitalWrite(FanB, control_OFF);
+            fanB_status = "OFF";
+          }
+  
+          
+          if ((((currentmillis - FanBStartTime) <= Fan_on_time * 1000) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
+          {
+            digitalWrite(FanB, control_ON);
+            fanB_status = "ON";
+          }
+          else if ((((currentmillis - FanBStartTime) <= ((Fan_off_time + Fan_on_time) * 1000)) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
+          {
+            digitalWrite(FanB, control_OFF);
+            fanB_status = "RST";
+          }
+          else if ((((currentmillis - FanBStartTime) > ((Fan_off_time + Fan_on_time) * 1000)) && (FanB_Flag == 1)) || (currentmillis < FanBStartTime))
+          {
+            FanBStartTime = currentmillis;
+          }
+        }
+      }
+      { //Cooler code
+        if (Cooler_Auto == "OFF")
+        {
+          if (Set_ManualC == "ON")
+          {
+            digitalWrite(Cooler, control_ON);
+            cooler_status = "ON";
+          }
+          else if (Set_ManualC == "OFF")
+          {
+            digitalWrite(Cooler, control_OFF);
+            cooler_status = "OFF";
+          }
+        }
+        else //ON/OFF time 60/240S
+        {
+          if (Temperature > MaxTemp_Trigger + Temp_variance_Cool)//cooler will work after max+Temp_variance_Cool
+          {
+            if (0 == CoolerFlag)
+            {
+              CoolerFlag = 1;
+              CoolerStartTime = currentmillis;
+            }
+          }
+          else if (Temperature < MaxTemp_Trigger )// cooler will close after max+1
+          {
+            CoolerFlag = 0;
+            digitalWrite(Cooler, control_OFF);
+            cooler_status = "OFF";
+          }
+        }
+  
+        if ((((currentmillis - CoolerStartTime) <= Cooler_on_time * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
         {
           digitalWrite(Cooler, control_ON);
           cooler_status = "ON";
         }
-        else if (Set_ManualC == "OFF")
+        else if ((((currentmillis - CoolerStartTime) <= (Cooler_off_time + Cooler_on_time) * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
         {
           digitalWrite(Cooler, control_OFF);
-          cooler_status = "OFF";
+          cooler_status = "RST";
+        }
+        else if ((((currentmillis - CoolerStartTime) > (Cooler_off_time + Cooler_on_time) * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
+        {
+          CoolerStartTime = currentmillis;
         }
       }
-      else //ON/OFF time 60/240S
-      {
-        if (Temperature > MaxTemp_Trigger + Temp_variance_Cool)//cooler will work after max+Temp_variance_Cool
+      { //HeaterA
+        if (heaterA_Auto == "OFF")// if HeaterA manual
         {
-          if (0 == CoolerFlag)
+          if (Set_ManualHA == "ON")
           {
-            CoolerFlag = 1;
-            CoolerStartTime = currentmillis;
+            digitalWrite(HeaterA, control_ON);
+            if (heaterA_status == "OFF")
+            {
+              HeaterAStartTime = currentmillis;
+              heaterA_status = "ON";
+            }
+          }
+          else if (Set_ManualHA == "OFF")
+          {
+            digitalWrite(HeaterA, control_OFF);
+            heaterA_status = "OFF";
           }
         }
-        else if (Temperature < MaxTemp_Trigger )// cooler will close after max+1
+        else
         {
-          CoolerFlag = 0;
-          digitalWrite(Cooler, control_OFF);
-          cooler_status = "OFF";
-        }
-      }
-
-      if ((((currentmillis - CoolerStartTime) <= Cooler_on_time * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
-      {
-        digitalWrite(Cooler, control_ON);
-        cooler_status = "ON";
-      }
-      else if ((((currentmillis - CoolerStartTime) <= (Cooler_off_time + Cooler_on_time) * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
-      {
-        digitalWrite(Cooler, control_OFF);
-        cooler_status = "RST";
-      }
-      else if ((((currentmillis - CoolerStartTime) > (Cooler_off_time + Cooler_on_time) * 1000) && (CoolerFlag == 1)) || (currentmillis < CoolerStartTime))
-      {
-        CoolerStartTime = currentmillis;
-      }
-    }
-    { //HeaterA
-      if (heaterA_Auto == "OFF")// if HeaterA manual
-      {
-        if (Set_ManualHA == "ON")
-        {
-          digitalWrite(HeaterA, control_ON);
-          if (heaterA_status == "OFF")
+          if (Temperature < MaxTemp_Trigger)
           {
-            HeaterAStartTime = currentmillis;
+            if (0 == HeaterA_Flag)
+            {
+              HeaterA_Flag = 1;
+              HeaterAStartTime = currentmillis;
+              HeaterA_STime_MinInterval = currentmillis;
+            }
+          }
+          else if ((Temperature > MaxTemp_Trigger)&&(currentmillis > (HeaterA_STime_MinInterval + Heat_min_interval)))
+          {
+            HeaterA_Flag = 0;
+            digitalWrite(HeaterA, control_OFF);
+            heaterA_status = "OFF";
+          }
+  
+          if (((currentmillis - HeaterAStartTime) < (Heater_on_time * 1000)) && (HeaterA_Flag == 1))
+          {
+            digitalWrite(HeaterA, control_ON);
             heaterA_status = "ON";
           }
-        }
-        else if (Set_ManualHA == "OFF")
-        {
-          digitalWrite(HeaterA, control_OFF);
-          heaterA_status = "OFF";
-        }
-      }
-      else
-      {
-        if (Temperature < MaxTemp_Trigger)
-        {
-          if (0 == HeaterA_Flag)
+          else if (((currentmillis - HeaterAStartTime) < ((Heater_off_time + Heater_on_time) * 1000)) && (HeaterA_Flag == 1))
           {
-            HeaterA_Flag = 1;
+            digitalWrite(HeaterA, control_OFF);
+            heaterA_status = "RST";
+          }
+          else if (((currentmillis - HeaterAStartTime) > (Heater_off_time + Heater_on_time) * 1000) && (HeaterA_Flag == 1))
+          {
             HeaterAStartTime = currentmillis;
-            HeaterA_STime_MinInterval = currentmillis;
           }
         }
-        else if ((Temperature > MaxTemp_Trigger)&&(currentmillis > (HeaterA_STime_MinInterval + Heat_min_interval)))
-        {
-          HeaterA_Flag = 0;
-          digitalWrite(HeaterA, control_OFF);
-          heaterA_status = "OFF";
-        }
-
-        if (((currentmillis - HeaterAStartTime) < (Heater_on_time * 1000)) && (HeaterA_Flag == 1))
-        {
-          digitalWrite(HeaterA, control_ON);
-          heaterA_status = "ON";
-        }
-        else if (((currentmillis - HeaterAStartTime) < ((Heater_off_time + Heater_on_time) * 1000)) && (HeaterA_Flag == 1))
-        {
-          digitalWrite(HeaterA, control_OFF);
-          heaterA_status = "RST";
-        }
-        else if (((currentmillis - HeaterAStartTime) > (Heater_off_time + Heater_on_time) * 1000) && (HeaterA_Flag == 1))
-        {
-          HeaterAStartTime = currentmillis;
-        }
       }
-    }
-    { //HeaterB
-      if (heaterB_Auto == "OFF")// if HeaterB manual
-      {
-        if (Set_ManualHB == "ON")
+      { //HeaterB
+        if (heaterB_Auto == "OFF")// if HeaterB manual
         {
-          digitalWrite(HeaterB, control_ON);
-          if (heaterB_status == "OFF")
+          if (Set_ManualHB == "ON")
           {
-            HeaterBStartTime = currentmillis;
+            digitalWrite(HeaterB, control_ON);
+            if (heaterB_status == "OFF")
+            {
+              HeaterBStartTime = currentmillis;
+              heaterB_status = "ON";
+            }
+          }
+          else if (Set_ManualHB == "OFF")
+          {
+            digitalWrite(HeaterB, control_OFF);
+            heaterB_status = "OFF";
+          }
+        }
+        else
+        {
+          if (Temperature < MaxTemp_Trigger)
+          {
+            if (0 == HeaterB_Flag)
+            {
+              HeaterB_Flag = 1;
+              HeaterBStartTime = currentmillis;
+              HeaterB_STime_MinInterval = currentmillis;
+            }
+          }
+          else if ((Temperature > MaxTemp_Trigger)&&(currentmillis > (HeaterB_STime_MinInterval + Heat_min_interval)))
+          {
+            HeaterB_Flag = 0;
+            digitalWrite(HeaterB, control_OFF);
+            heaterB_status = "OFF";
+          }
+  
+          if (((currentmillis - HeaterBStartTime) < Heater_on_time * 1000) && (HeaterB_Flag == 1))
+          {
+            digitalWrite(HeaterB, control_ON);
             heaterB_status = "ON";
           }
-        }
-        else if (Set_ManualHB == "OFF")
-        {
-          digitalWrite(HeaterB, control_OFF);
-          heaterB_status = "OFF";
-        }
-      }
-      else
-      {
-        if (Temperature < MaxTemp_Trigger)
-        {
-          if (0 == HeaterB_Flag)
+          else if (((currentmillis - HeaterBStartTime) < (Heater_off_time + Heater_on_time) * 1000) && (HeaterB_Flag == 1))
           {
-            HeaterB_Flag = 1;
+            digitalWrite(HeaterB, control_OFF);
+            heaterB_status = "RST";
+          }
+          else if (((currentmillis - HeaterBStartTime) > (Heater_off_time + Heater_on_time) * 1000) && (HeaterB_Flag == 1))
+          {
             HeaterBStartTime = currentmillis;
-            HeaterB_STime_MinInterval = currentmillis;
           }
         }
-        else if ((Temperature > MaxTemp_Trigger)&&(currentmillis > (HeaterB_STime_MinInterval + Heat_min_interval)))
-        {
-          HeaterB_Flag = 0;
-          digitalWrite(HeaterB, control_OFF);
-          heaterB_status = "OFF";
-        }
-
-        if (((currentmillis - HeaterBStartTime) < Heater_on_time * 1000) && (HeaterB_Flag == 1))
-        {
-          digitalWrite(HeaterB, control_ON);
-          heaterB_status = "ON";
-        }
-        else if (((currentmillis - HeaterBStartTime) < (Heater_off_time + Heater_on_time) * 1000) && (HeaterB_Flag == 1))
-        {
-          digitalWrite(HeaterB, control_OFF);
-          heaterB_status = "RST";
-        }
-        else if (((currentmillis - HeaterBStartTime) > (Heater_off_time + Heater_on_time) * 1000) && (HeaterB_Flag == 1))
-        {
-          HeaterBStartTime = currentmillis;
-        }
-      }
-    }    
-    //Serial.println("will stop control");
+      }    
+      //Serial.println("will stop control");
+    }
   }
 }
 void RFID_Read(boolean RFID_Success)
