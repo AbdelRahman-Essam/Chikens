@@ -284,6 +284,7 @@ boolean exit_but;
 int LED_Status=0;
 String LED_Status_Str = "OFF";
 String Light_Status = "ON";
+uint8_t Light_Status_Char = '1';
 String LED_prev = "H";
 String Light_prev = "H";
 

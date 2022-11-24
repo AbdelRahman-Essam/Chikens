@@ -292,7 +292,7 @@ void firebaseStatments(void)
 {
   static uint32_t firebase_previousMillis = 0;
   static uint32_t Case = 0;
-  if ((currentmillis - firebase_previousMillis >= firebase_interval * 60000) && (firebaseErrorDetectNoPrint() > 0))
+  if (((currentmillis - firebase_previousMillis) >= (firebase_interval * 60000)) && (Error > 0))
   {
 //    Serial.println("will start firebase");
 //    int Stime = millis();
@@ -300,19 +300,19 @@ void firebaseStatments(void)
     Serial.print("Case "); Serial.println(Case);
     /***************************************/
     switch (Case) {
-      case 0:
+      case 0:{//First_FirebaseUse
         First_FirebaseUse();
         Case++;
-      break;
-      case 1:
+      break;}
+      case 1:{//timeClient
         ///////////////////////////// Getters ////////////////////////////
         timeClient.update();
         Firebase.setInt(firebaseData, username + "/Time/Hour", timeClient.getHours());
         Firebase.setInt(firebaseData, username + "/Time/Minute", timeClient.getMinutes());
         Firebase.setInt(firebaseData, username + "/Time/Seconds", timeClient.getSeconds());
         Case++;
-      break;
-      case 2:
+      break;}
+      case 2:{//temp1,temp2
         if (temp_prev1 != Temperature1)
         {
           if (Temperature1 <= 1)
@@ -344,8 +344,8 @@ void firebaseStatments(void)
           }
         }
         Case++;
-      break;
-      case 3:
+      break;}
+      case 3:{//temp3
         if (temp_prev3 != Temperature3)
         {
           if (Temperature3 <= 1)
@@ -362,8 +362,8 @@ void firebaseStatments(void)
           }
         }
         Case++;
-      break;
-      case 4:
+      break;}
+      case 4:{//temp4
         if (temp_prev4 != Temperature4)
         {
           if (Temperature4 <= 1)
@@ -380,8 +380,8 @@ void firebaseStatments(void)
           }
         }
         Case++;
-      break;
-      case 5:
+      break;}
+      case 5:{//temp5,temp @ failure
         if (temp_prev5 != Temperature5)
         {
           if (Temperature5 <= 1)
@@ -403,8 +403,8 @@ void firebaseStatments(void)
           Firebase.setFloat(firebaseData, username + "/Temp/T", Temperature);
         }
         Case++;
-      break;
-      case 6:
+      break;}
+      case 6:{//Hum1
         if (hum_prev1 != Humidity1)
         {
           if (Humidity1 <= 1)
@@ -421,8 +421,8 @@ void firebaseStatments(void)
           }
         }
         Case++;
-      break;
-      case 7:
+      break;}
+      case 7:{//Hum2
         if (hum_prev2 != Humidity2)
         {
           if (Humidity2 <= 1)
@@ -439,8 +439,8 @@ void firebaseStatments(void)
           }
         }
         Case++;
-      break;
-      case 8:
+      break;}
+      case 8:{//Hum3
         if (hum_prev3 != Humidity3)
         {
           if (Humidity3 <= 1)
@@ -457,8 +457,8 @@ void firebaseStatments(void)
           }
         }
         Case++;
-      break;
-      case 9:
+      break;}
+      case 9:{//Hum4
         if (hum_prev4 != Humidity4)
         {
           if (Humidity4 <= 1)
@@ -475,8 +475,8 @@ void firebaseStatments(void)
           }
         }
         Case++;
-      break;
-      case 10:
+      break;}
+      case 10:{//Hum5
         if (hum_prev5 != Humidity5)
         {
           if (Humidity5 <= 1)
@@ -493,8 +493,8 @@ void firebaseStatments(void)
           }
         }
         Case++;
-      break;
-      case 11:
+      break;}
+      case 11:{//Empty
 //        if ((gas_prev != gas) && (gas > 3))
 //        {
 //          // the String will be produced in the android program
@@ -503,8 +503,8 @@ void firebaseStatments(void)
 //          Firebase.setInt(firebaseData, username + "/airQuality", gas);
 //        }
         Case++;
-      break;
-      case 12:
+      break;}
+      case 12:{//AQ1
         if ((gas1_prev != gas1) && (gas1 > 3))
         {
           // the String will be produced in the android program
@@ -513,8 +513,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/airQuality/airQuality1", gas1);
         }
         Case++;
-      break;
-      case 13:
+      break;}
+      case 13:{//AQ2
         if ((gas2_prev != gas2) && (gas2 > 3))
         {
           // the String will be produced in the android program
@@ -523,8 +523,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/airQuality/airQuality2", gas2);
         }
         Case++;
-      break;
-      case 14:
+      break;}
+      case 14:{//heaterA Status
         if (heaterA_status_prev != heaterA_status)
         {
           heaterA_status_prev = heaterA_status;
@@ -532,8 +532,8 @@ void firebaseStatments(void)
           Firebase.setString(firebaseData, username + "/states/Heater_1", heaterA_status);
         }
         Case++;
-      break;
-      case 15:
+      break;}
+      case 15:{//heaterB Status
         if (heaterB_status_prev != heaterB_status)
         {
           heaterB_status_prev = heaterB_status;
@@ -541,8 +541,8 @@ void firebaseStatments(void)
           Firebase.setString(firebaseData, username + "/states/Heater_2", heaterB_status);
         }
         Case++;
-      break;
-      case 16:
+      break;}
+      case 16:{//fanA Status
         if (fanA_status_prev != fanA_status)
         {
           fanA_status_prev = fanA_status;
@@ -550,8 +550,8 @@ void firebaseStatments(void)
           Firebase.setString(firebaseData, username + "/states/Fan_1", fanA_status);
         }
         Case++;
-      break;
-      case 17:
+      break;}
+      case 17:{//fanB Status
         if (fanB_status_prev != fanB_status)
         {
           fanB_status_prev = fanB_status;
@@ -559,8 +559,8 @@ void firebaseStatments(void)
           Firebase.setString(firebaseData, username + "/states/Fan_2", fanB_status);
         }
         Case++;
-      break;
-      case 18:
+      break;}
+      case 18:{//Cooler Status
         if (cooler_status_prev != cooler_status)
         {
           cooler_status_prev = cooler_status;
@@ -568,12 +568,21 @@ void firebaseStatments(void)
           Firebase.setString(firebaseData, username + "/states/Cooler_1", cooler_status);
         }
         Case++;
-      break;
-      case 19:
+      break;}
+      case 19:{//Light Status
+        if (Light_prev != Light_Status)
+        {
+          Light_prev = Light_Status;
+          Serial.print("Light_Status: "); Serial.println(Light_Status);
+          Firebase.setString(firebaseData, username + "/states/Light_1", Light_Status);
+        }
+        Case++;
+      break;}
+      case 20:{//Gas1_Cal
         ///////////////////////////// Setters ////////////////////////////
         firebaseData.clearData();/////////////////////////////////////////////
         string.clear();
-        Firebase.get(firebaseData, username + "/Gas_Cal/Gas1");
+        Firebase.get(firebaseData, username + "/config/Gas1_Cal");
         string = firebaseData.stringData();
         if (Gas1_Sen_Cal_Prev != string)
         {
@@ -586,14 +595,14 @@ void firebaseStatments(void)
             EEPROMWriteInt(365, Gas1_Sen_Cal);
             Serial.print("Gas1_Sen_Cal :"); Serial.println(Gas1_Sen_Cal);
           }
-          Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas1_get", Gas1_Sen_Cal);
+          Firebase.setInt(firebaseData, username + "/config_get/Gas1_Cal", Gas1_Sen_Cal);
         }
         Case++;
-      break;
-      case 20:
+      break;}
+      case 21:{//Gas2_Cal
         firebaseData.clearData();/////////////////////////////////////////////
         string.clear();
-        Firebase.get(firebaseData, username + "/Gas_Cal/Gas2");
+        Firebase.get(firebaseData, username + "/config/Gas2_Cal");
         string = firebaseData.stringData();
         if (Gas2_Sen_Cal_Prev != string)
         {
@@ -606,11 +615,11 @@ void firebaseStatments(void)
             EEPROMWriteInt(369, Gas2_Sen_Cal);
             Serial.print("Gas2_Sen_Cal :"); Serial.println(Gas2_Sen_Cal);
           }
-          Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas2_get", Gas2_Sen_Cal);
+          Firebase.setInt(firebaseData, username + "/config_get/Gas2_Cal", Gas2_Sen_Cal);
         }
         Case++;
-      break;
-      case 21:
+      break;}
+      case 22:{//WDT_Action
           firebaseData.clearData();/////////////////////////////////////////////
           string.clear();
           Firebase.get(firebaseData, username + "/Status/WDT_Action");
@@ -623,8 +632,8 @@ void firebaseStatments(void)
           Serial.print("WDT_Action: "); Serial.println(WDT_Action);
           }
           Case++;
-      break;
-      case 22:
+      break;}
+      case 23:{//Clear_Reset_Reason
         firebaseData.clearData();/////////////////////////////////////////////
         string.clear();
         Firebase.get(firebaseData, username + "/Status/Clear_Reset_Reason");
@@ -637,23 +646,8 @@ void firebaseStatments(void)
           Serial.print("Clear_Reset_Reason: "); Serial.println(Clear_Reset_Reason);
         }
         Case++;
-      break;
-      case 23:
-//        firebaseData.clearData();
-//        string.clear();
-//        Firebase.get(firebaseData, username + "/Gas_Cal/Gas2");
-//        string = firebaseData.stringData();
-//        if (Gas2_Sen_Cal_Prev != string)
-//        {
-//          Gas2_Sen_Cal_Prev = string;
-//          Gas2_Sen_Cal = Gas2_Sen_Cal_Prev.toInt();
-//          Serial.println("Gas2_Sen_Cal Changed!");
-//          Serial.print("Gas2_Sen_Cal: "); Serial.println(Gas2_Sen_Cal);
-//          Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas2_get", Gas2_Sen_Cal);
-//        }////////////////////////////////////////////////////////////////
-        Case++;
-      break;
-      case 24:
+      break;}
+      case 24:{//Empty
         //    firebaseData.clearData();/////////////////////////////////////////////
         //    string.clear();
         //    Firebase.get(firebaseData, username + "/Gas_Cal/Gas2");
@@ -667,8 +661,8 @@ void firebaseStatments(void)
         //      Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas2_get", Gas2_Sen_Cal);
         //    }
         Case++;
-      break;
-      case 25:
+      break;}
+      case 25:{//Fan_1_Auto
         firebaseData.clearData();/////////////////////////////////////////////
         string.clear();
         Firebase.get(firebaseData, username + "/states/Fan_1_Auto");
@@ -682,8 +676,8 @@ void firebaseStatments(void)
           Firebase.setString(firebaseData, username + "/controls_get/Fan_1_Auto",FanA_Auto);
         }
         Case++;
-      break;
-      case 26:
+      break;}
+      case 26:{//Fan_2_Auto
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/states/Fan_2_Auto");
@@ -697,8 +691,8 @@ void firebaseStatments(void)
           Firebase.setString(firebaseData, username + "/controls_get/Fan_2_Auto",FanB_Auto);
         }
         Case++;
-      break;
-      case 27:
+      break;}
+      case 27:{//Cooler_1_Auto
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/states/Cooler_1_Auto");
@@ -712,8 +706,8 @@ void firebaseStatments(void)
           Firebase.setString(firebaseData, username + "/controls_get/Cooler_1_Auto",Cooler_Auto);
         }
         Case++;
-      break;
-      case 28:
+      break;}
+      case 28:{//Heater_1_Auto
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/states/Heater_1_Auto");
@@ -727,8 +721,8 @@ void firebaseStatments(void)
           Firebase.setString(firebaseData, username + "/controls_get/Heater_1_Auto",heaterA_Auto);
         }
         Case++;
-      break;
-      case 29:
+      break;}
+      case 29:{//Heater_2_Auto
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/states/Heater_2_Auto");
@@ -742,8 +736,8 @@ void firebaseStatments(void)
           Firebase.setString(firebaseData, username + "/controls_get/Heater_2_Auto", heaterB_Auto);
         }
         Case++;
-      break;
-      case 30:
+      break;}
+      case 30:{//Heater_1
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/controls/Heater_1");
@@ -755,11 +749,10 @@ void firebaseStatments(void)
           Set_ManualHA = Set_ManualHA_prev;
           Serial.print("Set_ManualHA: "); Serial.println(Set_ManualHA);
           Firebase.setString(firebaseData, username + "/controls_get/Heater_1", Set_ManualHA);
-          Firebase.setString(firebaseData, username + "/states/Heater_1", Set_ManualHA);
         }
         Case++;
-      break;
-      case 31:
+      break;}
+      case 31:{//Heater_2
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/controls/Heater_2");
@@ -771,11 +764,10 @@ void firebaseStatments(void)
           Set_ManualHB = Set_ManualHB_prev;
           Serial.print("Set_ManualHB: "); Serial.println(Set_ManualHB);
           Firebase.setString(firebaseData, username + "/controls_get/Heater_2", Set_ManualHB);
-          Firebase.setString(firebaseData, username + "/states/Heater_2", Set_ManualHB);
         }
         Case++;
-      break;
-      case 32:
+      break;}
+      case 32:{//Cooler_1
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/controls/Cooler_1");
@@ -787,11 +779,10 @@ void firebaseStatments(void)
           Set_ManualC = Set_ManualC_prev;
           Serial.print("Set_ManualC: "); Serial.println(Set_ManualC);
           Firebase.setString(firebaseData, username + "/controls_get/Cooler_1", Set_ManualC);
-          Firebase.setString(firebaseData, username + "/states/Cooler_1", Set_ManualC);
         }
         Case++;
-      break;
-      case 33:
+      break;}
+      case 33:{//Fan_1
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/controls/Fan_1");
@@ -803,11 +794,10 @@ void firebaseStatments(void)
           Set_ManualFA = Set_ManualFA_prev;
           Serial.print("Set_ManualFA: "); Serial.println(Set_ManualFA);
           Firebase.setString(firebaseData, username + "/controls_get/Fan_1", Set_ManualFA);
-          Firebase.setString(firebaseData, username + "/states/Fan_1", Set_ManualFA);
         }
         Case++;
-      break;
-      case 34:
+      break;}
+      case 34:{//Fan_2
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/controls/Fan_2");
@@ -819,11 +809,10 @@ void firebaseStatments(void)
           Set_ManualFB = Set_ManualFB_prev;
           Serial.print("Set_ManualFB: "); Serial.println(Set_ManualFB);
           Firebase.setString(firebaseData, username + "/controls_get/Fan_2", Set_ManualFB);
-          Firebase.setString(firebaseData, username + "/states/Fan_2", Set_ManualFB);
         }
         Case++;
-      break;
-      case 35:
+      break;}
+      case 35:{//resetFlag
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/resetFlag");
@@ -835,8 +824,8 @@ void firebaseStatments(void)
           ResetFlag = ResetFlag_prev;
         }
         Case++;
-      break;
-      case 36:
+      break;}
+      case 36:{//Led_1
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/controls/Led_1");
@@ -855,8 +844,8 @@ void firebaseStatments(void)
           digitalWrite(BlueLed, LED_Status);
         }
         Case++;
-      break;
-      case 37:
+      break;}
+      case 37:{//Light_1
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/controls/Light_1");
@@ -868,15 +857,14 @@ void firebaseStatments(void)
           Light_Status = Light_prev;
           Serial.print("Light_Status: "); Serial.println(Light_Status);
           if (Light_Status == "OFF")
-            digitalWrite(Light, light_OFF);
+            Light_Status_Char = 0;
           else if (Light_Status == "ON")
-            digitalWrite(Light, light_ON);
+            Light_Status_Char = 1;
           Firebase.setString(firebaseData, username + "/controls_get/Light_1", Light_Status);
-          Firebase.setString(firebaseData, username + "/states/Light_1", Light_Status);
         }
         Case++;
-      break;
-      case 38:
+      break;}
+      case 38:{//vent
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/valueRanges/vent");
@@ -905,8 +893,8 @@ void firebaseStatments(void)
             MaxVent_Trigger = EEPROMReadInt(310);
         }
         Case++;
-      break;
-      case 39:
+      break;}
+      case 39:{//temp
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/valueRanges/temp");
@@ -935,8 +923,8 @@ void firebaseStatments(void)
             MaxTemp_Trigger = EEPROMReadInt(320);
         }
         Case++;
-      break;
-      case 40:
+      break;}
+      case 40:{//delay
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/valueRanges/delay");
@@ -952,8 +940,8 @@ void firebaseStatments(void)
           }
         }
         Case++;
-      break;
-      case 41:
+      break;}
+      case 41:{//Fan_min_interval
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Fan_min_interval");
@@ -968,8 +956,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-      case 42:
+      break;}
+      case 42:{//Cool_min_interval
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Cool_min_interval");
@@ -984,8 +972,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Cool_min_interval", Cool_min_interval);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-      case 43:
+      break;}
+      case 43:{//Heat_min_interval
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Heat_min_interval");
@@ -1000,8 +988,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Heat_min_interval", Heat_min_interval);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-      case 44:
+      break;}
+      case 44:{//Fan_1_on_time
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Fan_1_on_time");
@@ -1016,8 +1004,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Fan_1_on_time", Fan_1_on_time);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-      case 45:
+      break;}
+      case 45:{//Fan_1_off_time
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Fan_1_off_time");
@@ -1032,8 +1020,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Fan_1_off_time", Fan_1_off_time);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-      case 46:
+      break;}
+      case 46:{//Fan_on_time
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Fan_on_time");
@@ -1048,8 +1036,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Fan_on_time", Fan_on_time);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-      case 47:
+      break;}
+      case 47:{//Fan_off_time
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Fan_off_time");
@@ -1064,8 +1052,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Fan_off_time", Fan_off_time);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-      case 48:
+      break;}
+      case 48:{//Heater_on_time
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Heater_on_time");
@@ -1080,8 +1068,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Heater_on_time", Heater_on_time);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-      case 49:
+      break;}
+      case 49:{//Heater_off_time
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Heater_off_time");
@@ -1096,8 +1084,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Heater_off_time", Heater_off_time);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-      case 50:
+      break;}
+      case 50:{//Cooler_on_time
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Cooler_on_time");
@@ -1112,8 +1100,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Cooler_on_time", Cooler_on_time);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-      case 51:
+      break;}
+      case 51:{//Cooler_off_time
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Cooler_off_time");
@@ -1128,8 +1116,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Cooler_off_time", Cooler_off_time);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-      case 52:
+      break;}
+      case 52:{//Temp_variance_Cool
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Temp_variance_Cool");
@@ -1144,8 +1132,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Temp_variance_Cool", Temp_variance_Cool);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-      case 53:
+      break;}
+      case 53:{//Temp_variance_FanB
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Temp_variance_FanB");
@@ -1160,8 +1148,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Temp_variance_FanB", Temp_variance_FanB);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-      case 54:
+      break;}
+      case 54:{//Temp_variance_FanA
         firebaseData.clearData();
         string.clear();
         Firebase.get(firebaseData, username + "/config/Temp_variance_FanA");
@@ -1176,8 +1164,8 @@ void firebaseStatments(void)
           Firebase.setInt(firebaseData, username + "/config_get/Temp_variance_FanA", Temp_variance_FanA);
         }////////////////////////////////////////////////////////////////
         Case++;
-      break;
-//      case 55:
+      break;}
+      case 55:{//Empty
 //        firebaseData.clearData();
 //        string.clear();
 //        Firebase.get(firebaseData, username + "/config/Fan_min_interval");
@@ -1190,9 +1178,9 @@ void firebaseStatments(void)
 //          Serial.print("Fan_min_interval: "); Serial.println(Fan_min_interval);
 //          Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
 //        }////////////////////////////////////////////////////////////////
-//        Case++;
-//      break;
-//      case 56:
+        Case++;
+      break;}
+      case 56:{//Empty
 //        firebaseData.clearData();
 //        string.clear();
 //        Firebase.get(firebaseData, username + "/config/Fan_min_interval");
@@ -1205,9 +1193,9 @@ void firebaseStatments(void)
 //          Serial.print("Fan_min_interval: "); Serial.println(Fan_min_interval);
 //          Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
 //        }////////////////////////////////////////////////////////////////
-//        Case++;
-//      break;
-//      case 57:
+        Case++;
+      break;}
+      case 57:{//Empty
 //        firebaseData.clearData();
 //        string.clear();
 //        Firebase.get(firebaseData, username + "/config/Fan_min_interval");
@@ -1220,9 +1208,9 @@ void firebaseStatments(void)
 //          Serial.print("Fan_min_interval: "); Serial.println(Fan_min_interval);
 //          Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
 //        }////////////////////////////////////////////////////////////////
-//        Case++;
-//      break;
-//      case 58:
+        Case++;
+      break;}
+      case 58:{//Empty
 //        firebaseData.clearData();
 //        string.clear();
 //        Firebase.get(firebaseData, username + "/config/Fan_min_interval");
@@ -1235,12 +1223,12 @@ void firebaseStatments(void)
 //          Serial.print("Fan_min_interval: "); Serial.println(Fan_min_interval);
 //          Firebase.setInt(firebaseData, username + "/config_get/Fan_min_interval", Fan_min_interval);
 //        }////////////////////////////////////////////////////////////////
-//        Case++;
-//      break;
-      default:
+        Case++;
+      break;}
+      default:{
         firebase_previousMillis = currentmillis;
         Case = 0;
-      break;
+      break;}
     }
 //    Serial.println("Done Firebase");
 //    int endtime = millis() - Stime;
@@ -1306,7 +1294,7 @@ void First_Use(void)
 }
 void First_FirebaseUse(void)
 {// still need to be implemented
-  if (EEPROMReadByte(381) != 0xAA)
+  if (EEPROMReadByte(381) != 0xBB)
   {
     Serial.println("Firebase First Use Set the Default Values");
     //CodeVersion
@@ -1326,10 +1314,8 @@ void First_FirebaseUse(void)
     Firebase.setInt(firebaseData, username + "/Status/ESP_RST_BROWNOUT", 0);
     Firebase.setInt(firebaseData, username + "/Status/ESP_RST_SDIO",     0);
     // GAS CAL
-    Firebase.setString(firebaseData, username + "/Gas_Cal/Gas1",0);
-    Firebase.setString(firebaseData, username + "/Gas_Cal/Gas2",0);
-    Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas1_get",0);
-    Firebase.setInt(firebaseData, username + "/Gas_Cal/Gas1_get",0);
+    Firebase.setString(firebaseData, username + "/config/Gas1_Cal",0);
+    Firebase.setString(firebaseData, username + "/config/Gas2_Cal",0);
     // controls
     //fans
     Firebase.setString(firebaseData, username + "/controls/Fan_1","ON");
@@ -1356,7 +1342,7 @@ void First_FirebaseUse(void)
     Firebase.setString(firebaseData, username + "/states/Heater_2_Auto","ON");
     //Cooler
     Firebase.setString(firebaseData, username + "/states/Cooler_1","ON");
-    Firebase.setString(firebaseData, username + "/controls/Cooler_1_Auto","ON");
+    Firebase.setString(firebaseData, username + "/states/Cooler_1_Auto","ON");
     //LED
     Firebase.setString(firebaseData, username + "/states/Led_1","ON");
     Firebase.setString(firebaseData, username + "/states/Light_1","ON");
@@ -1375,11 +1361,13 @@ void First_FirebaseUse(void)
     Firebase.setString(firebaseData, username + "/config/Temp_variance_FanA","0");
 
     
-    EEPROMWriteByte(381, 0xAA);
+    EEPROMWriteByte(381, 0xBB);
   }
 }
 void RestoreData(void)
 {
+  Light_Status_Char = EEPROMReadByte(371);
+  Gas2_Sen_Cal = EEPROMReadInt(369);
   Gas2_Sen_Cal = EEPROMReadInt(369);
   Gas1_Sen_Cal = EEPROMReadInt(365);
   firebase_interval = EEPROMReadInt(361);
@@ -1403,6 +1391,7 @@ void StoreData(void)
      ResetReasons       --> 500-510
      First_FirebaseUse  --> 382
      First_Use          --> 381
+     Light_Status       --> 371
      Gas2_Sen_Cal       --> 369
      Gas1_Sen_Cal       --> 365
      firebase_interv    --> 361
@@ -1422,9 +1411,9 @@ void StoreData(void)
      MaxTemp_Trigger    --> 320
      MaxVent_Trigger    --> 310
      MinVent_Trigger    --> 300
-     mobapp_username    --> 200
-     WiFi_PW            --> 100
-     WiFi_SSID          --> 0
+     mobapp_username    --> 120-179
+     WiFi_PW            --> 60-119
+     WiFi_SSID          --> 0-59
   */
 
 
@@ -1677,9 +1666,16 @@ void tempFn(void)
       Humidity5 = 0.0;
       humTotalNumber--;
     }
-    Temperature = (( Temperature1 + Temperature2 + Temperature3 + Temperature4 + Temperature5) / tempTotalNumber);
-    Humidity    = ((Humidity1 + Humidity2 + Humidity3 + Humidity4 + Humidity5) / humTotalNumber);
-
+    if (tempTotalNumber>0)
+    {
+      Temperature = (( Temperature1 + Temperature2 + Temperature3 + Temperature4 + Temperature5) / tempTotalNumber);
+      Humidity    = ((Humidity1 + Humidity2 + Humidity3 + Humidity4 + Humidity5) / humTotalNumber);
+    }
+    else
+    {
+    Temperature = 90;
+    Humidity = 110;
+    }
 
 
     val = (int)(Temperature * 10 + 0.5);
@@ -1917,7 +1913,7 @@ void controlStatments(void)
               HeaterA_STime_MinInterval = currentmillis;
             }
           }
-          else if ((Temperature > MaxTemp_Trigger)&&(currentmillis > (HeaterA_STime_MinInterval + Heat_min_interval)))
+          else if ((Temperature > MaxTemp_Trigger)&&(currentmillis > (HeaterA_STime_MinInterval + (Heat_min_interval*1000))))
           {
             HeaterA_Flag = 0;
             digitalWrite(HeaterA, control_OFF);
@@ -1969,7 +1965,7 @@ void controlStatments(void)
               HeaterB_STime_MinInterval = currentmillis;
             }
           }
-          else if ((Temperature > MaxTemp_Trigger)&&(currentmillis > (HeaterB_STime_MinInterval + Heat_min_interval)))
+          else if ((Temperature > MaxTemp_Trigger)&&(currentmillis > (HeaterB_STime_MinInterval + (Heat_min_interval*1000))))
           {
             HeaterB_Flag = 0;
             digitalWrite(HeaterB, control_OFF);
@@ -1991,8 +1987,15 @@ void controlStatments(void)
             HeaterBStartTime = currentmillis;
           }
         }
-      }    
+      }
+      {//Light
+      digitalWrite(Light, Light_Status_Char);
+      }
       //Serial.println("will stop control");
+    }
+    else
+    {
+      
     }
   }
 }
@@ -2755,14 +2758,15 @@ void EEPROMSetup(void)
     Serial.println(password);
     Serial.println(username);
     eeprom_Write(0, ssid.c_str(), stringLength);
-    eeprom_Write(100, password.c_str(), stringLength);
-    eeprom_Write(200, username.c_str(), stringLength);
+    eeprom_Write(60, password.c_str(), stringLength);
+    eeprom_Write(120, username.c_str(), stringLength);//180
+    EEPROMWriteByte(381, 0x00);
   }
   else
   {
     ssid = eeprom_read(0, stringLength);
-    password = eeprom_read(100, stringLength);
-    username = eeprom_read(200, stringLength);
+    password = eeprom_read(60, stringLength);
+    username = eeprom_read(120, stringLength);
   }
 }
 void WifiSetup(void)
@@ -3206,7 +3210,7 @@ void client_handle(void)// uses local wifi
 }
 int firebaseErrorDetectNoPrint(void)//uses NTP & firebase
 {
-  Firebase.setInt(firebaseData, username + "/keepAlive", timeClient.getSeconds());
+//  Firebase.setInt(firebaseData, username + "/keepAlive", timeClient.getSeconds());
   Error = firebaseData.httpCode();
   return (Error);
 }
@@ -3218,8 +3222,6 @@ int firebaseErrorDetect(void)//uses NTP & firebase
     Firebase.setInt(firebaseData, username + "/keepAlive", timeClient.getSeconds());
     Error = firebaseData.httpCode();
     Serial.print("HTTPC_ERROR_NOT_CONNECTED : "); Serial.println(Error);
-    //if ((Error != Error_prev) && (Error != 200))  ResetFlag = 1;
-    return (Error);
   }
   return (Error);
 }
@@ -3245,5 +3247,12 @@ void SW_P_ISR(void)
     posFlag_l = 1;
   }
 }
-
+void millis_update(void)
+{
+  currentmillis = millis();
+  if (currentmillis > 0xFFFFFFF0 ) //Reset every 49 //0xFFFFFFF0 overflow 49 days (0x05265C00 24h)
+  {
+    ESP.restart();
+  }  
+}
 

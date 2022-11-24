@@ -4,7 +4,6 @@ WiFiServer server(80);
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP);
 FirebaseData firebaseData;
-//FirebaseConfig config;
 //PN532_HSU pn532hsu(Serial2);
 //PN532 nfc(pn532hsu);
 
@@ -40,21 +39,10 @@ void setup()
 
 void loop()
 {
-  currentmillis = millis();
-//  int Stime = currentmillis;
-//  Serial.print("Start Time "); Serial.println(Stime);
+  //  int Stime = currentmillis;
+  //  Serial.print("Start Time "); Serial.println(Stime);
   WDT_Feed();
-  if (((EEPROMReadByte(506)%11) < 10)||(esp_reset_reason() == ESP_RST_SW))
-  {
-   firebaseErrorDetect();
-  }
   ResetReason_Update();
-  
-//  if (currentmillis > 0x05265C00 ) //Reset every 24h //0xFFFFFFF0 overflow 49 days
-//  {
-//  ESP.restart();
-//  }  
-
   if (App_mode==0)
   {
   tempFn();
@@ -62,10 +50,17 @@ void loop()
   LCD_setup();
   LCD_weather();
   LCD_Fast_Update();
+  CreditionalsConfig();
+  resetCheck();
+  controlStatments();
+
   if (((EEPROMReadByte(506)%11) < 10)||(esp_reset_reason() != ESP_RST_TASK_WDT))
   {
+    firebaseErrorDetect();
     timeUpgrade();
     WiFiCheck();
+    firebaseStatments();
+    //gooogleSheetStatments();
   }
   else if ( currentmillis >= safe_mode_prev + 300000 )
   {
@@ -74,17 +69,9 @@ void loop()
     // reset
     ESP.restart();
   }
-  CreditionalsConfig();
-  resetCheck();
-  controlStatments();
-  if (((EEPROMReadByte(506)%11) < 10)||(esp_reset_reason() != ESP_RST_TASK_WDT))
-  {
-    firebaseStatments();
-    gooogleSheetStatments();
-  }
+  buttonCheck();
   //RFID_Read(RFID_Success);
 //  serialPrints();
-  buttonCheck();
   }
   else 
   {

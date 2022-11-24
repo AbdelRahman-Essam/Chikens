@@ -2,7 +2,7 @@
 #define CONFIG_H_
 
 //////////////////////Config Settings//////////////////////
-String CodeVersion ="4.0.0.0";
+String CodeVersion ="4.0.0.1";
 
 const char* ssid_ap     = "ChickenFarm";
 const char* password_ap = "88888888";
@@ -11,7 +11,7 @@ String Token= "Wzsly4ViUy5D579xhksXRkIPGnTbYMjfp2xxWvzx";
 
 // Timing intervals in seconds
 
-#define WDT_TIMEOUT 60 //30 seconds WDT
+#define WDT_TIMEOUT 90 //30 seconds WDT
 
 uint32_t WiFiCheck_interval = 1000;//            uses internet periodically update the keepalive
 uint32_t WiFi_Reconnect_interval = 30000;
