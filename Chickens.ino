@@ -34,6 +34,7 @@ void setup()
   {
     safe_mode_prev = millis();    
   }
+  Serial.println("FinishSetup");
 //  RFID_Success = RFID_Setup();
 }
 
@@ -41,6 +42,7 @@ void loop()
 {
   //  int Stime = currentmillis;
   //  Serial.print("Start Time "); Serial.println(Stime);
+  millis_update();
   WDT_Feed();
   ResetReason_Update();
   if (App_mode==0)

@@ -381,7 +381,7 @@ void firebaseStatments(void)
         }
         Case++;
       break;}
-      case 5:{//temp5,temp @ failure
+      case 5:{//temp5,T @ failure
         if (temp_prev5 != Temperature5)
         {
           if (Temperature5 <= 1)
@@ -401,6 +401,10 @@ void firebaseStatments(void)
         {
           Serial.print("Temperature: "); Serial.println(Temperature);
           Firebase.setFloat(firebaseData, username + "/Temp/T", Temperature);
+        }
+        else 
+        {
+          Firebase.deleteNode(firebaseData, username + "/Temp/T");
         }
         Case++;
       break;}
@@ -476,7 +480,7 @@ void firebaseStatments(void)
         }
         Case++;
       break;}
-      case 10:{//Hum5
+      case 10:{//Hum5,T
         if (hum_prev5 != Humidity5)
         {
           if (Humidity5 <= 1)
@@ -491,6 +495,15 @@ void firebaseStatments(void)
             hum_prev5 = Humidity5;
             Firebase.setFloat(firebaseData, username + "/Hum/H5", Humidity5);
           }
+        }
+        if (Humidity>100)
+        {
+          Serial.print("Humidity: "); Serial.println(Humidity);
+          Firebase.setFloat(firebaseData, username + "/Hum/H", Humidity);
+        }
+        else
+        {
+          Firebase.deleteNode(firebaseData, username + "/Hum/H");
         }
         Case++;
       break;}
@@ -2758,15 +2771,15 @@ void EEPROMSetup(void)
     Serial.println(password);
     Serial.println(username);
     eeprom_Write(0, ssid.c_str(), stringLength);
-    eeprom_Write(60, password.c_str(), stringLength);
-    eeprom_Write(120, username.c_str(), stringLength);//180
+    eeprom_Write(100, password.c_str(), stringLength);
+    eeprom_Write(200, username.c_str(), stringLength);//180
     EEPROMWriteByte(381, 0x00);
   }
   else
   {
     ssid = eeprom_read(0, stringLength);
-    password = eeprom_read(60, stringLength);
-    username = eeprom_read(120, stringLength);
+    password = eeprom_read(100, stringLength);
+    username = eeprom_read(200, stringLength);
   }
 }
 void WifiSetup(void)
@@ -2804,11 +2817,16 @@ void firbaseSetup(void)
 
   Error = firebaseData.httpCode();
   Error_prev = Error;
+  Serial.print("HTTPC_ERROR_NOT_CONNECTED : "); Serial.println(Error);
 }
 void timeServerSetup(void)
 {
-  timeClient.begin();
-  timeClient.setTimeOffset(7200);
+  Serial.println("timeServerSetup");
+  if (firebaseErrorDetectNoPrint()>=0)
+  {
+    timeClient.begin();
+    timeClient.setTimeOffset(7200);
+  }
 }
 boolean RFID_Setup(void)
 {
@@ -2848,20 +2866,26 @@ void parameterSetup(void)
 }
 void UpdateCheck(void)
 {
-  firebaseData.clearData();
-  Firebase.get(firebaseData, "/Admin/updateCode");
-  string = " ";
-  string = firebaseData.stringData();
-  if (UpdateCode_prev != string)
+  Serial.println("UpdateCheck");
+  if (firebaseErrorDetectNoPrint()>=0)
   {
-    if (string == "ON" || string == "OFF")
+    firebaseData.clearData();
+    Firebase.get(firebaseData, "/Admin/updateCode");
+    Serial.println("1");
+    string = " ";
+    string = firebaseData.stringData();
+    Serial.println("2");
+    if (UpdateCode_prev != string)
     {
-      UpdateCode_prev = string;
-      UpdateCode = UpdateCode_prev;
-      if (UpdateCode == "ON")
+      if (string == "ON" || string == "OFF")
       {
-        Firebase.setString(firebaseData, username + "/CodeVersion", CodeVersion);
-        UPDATE();
+        UpdateCode_prev = string;
+        UpdateCode = UpdateCode_prev;
+        if (UpdateCode == "ON")
+        {
+          Firebase.setString(firebaseData, username + "/CodeVersion", CodeVersion);
+          UPDATE();
+        }
       }
     }
   }
