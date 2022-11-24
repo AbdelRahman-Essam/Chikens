@@ -397,7 +397,12 @@ void firebaseStatments(void)
             Firebase.setFloat(firebaseData, username + "/Temp/T5", Temperature5);
           }
         }
-        if (Temperature>75)
+        if (Temperature>100)
+        {
+          Serial.print("Temperature: "); Serial.println(Temperature);
+          Firebase.setFloat(firebaseData, username + "/Temp/T", 100);
+        }
+        else if (Temperature > 75)
         {
           Serial.print("Temperature: "); Serial.println(Temperature);
           Firebase.setFloat(firebaseData, username + "/Temp/T", Temperature);
@@ -480,7 +485,7 @@ void firebaseStatments(void)
         }
         Case++;
       break;}
-      case 10:{//Hum5,T
+      case 10:{//Hum5,H
         if (hum_prev5 != Humidity5)
         {
           if (Humidity5 <= 1)
@@ -496,7 +501,12 @@ void firebaseStatments(void)
             Firebase.setFloat(firebaseData, username + "/Hum/H5", Humidity5);
           }
         }
-        if (Humidity>100)
+        if (Humidity > 120)
+        {
+          Serial.print("Humidity: "); Serial.println(Humidity);
+          Firebase.setFloat(firebaseData, username + "/Hum/H", 120);
+        }
+        else if (Humidity > 100)
         {
           Serial.print("Humidity: "); Serial.println(Humidity);
           Firebase.setFloat(firebaseData, username + "/Hum/H", Humidity);
